@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "89430517869",
+    "project_id": "sereluna2024",
+    "storage_bucket": "sereluna2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89430517869:android:422e7a04602dacf0bc7764",
+        "android_client_info": {
+          "package_name": "com.android.capstone.sereluna"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxNez4TDxto-uaMixm_o4axR0I7udSQ3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

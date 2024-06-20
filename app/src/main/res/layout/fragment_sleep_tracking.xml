@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="?attr/colorSurface">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Input for Bedtime -->
+        <TextView
+            android:id="@+id/bedtime_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bedtime"
+            android:textSize="18sp"
+            android:textColor="?attr/colorOnSurface"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TimePicker
+            android:id="@+id/bedtime_picker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:timePickerMode="spinner"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/bedtime_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Input for Wakeup -->
+        <TextView
+            android:id="@+id/wakeup_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wakeup"
+            android:textSize="18sp"
+            android:textColor="?attr/colorOnSurface"
+            app:layout_constraintTop_toBottomOf="@id/bedtime_picker"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"/>
+
+        <TimePicker
+            android:id="@+id/wakeup_picker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:timePickerMode="spinner"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/wakeup_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Button to Save Sleep Data -->
+        <Button
+            android:id="@+id/save_sleep_data_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save Sleep Data"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/wakeup_picker"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- TextView to Display Sleep Quality -->
+        <TextView
+            android:id="@+id/sleep_quality_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sleep Quality: "
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:textColor="?attr/colorOnSurface"
+            app:layout_constraintTop_toBottomOf="@id/save_sleep_data_button"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- RecyclerView for Sleep History -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sleep_history_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/sleep_quality_result"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

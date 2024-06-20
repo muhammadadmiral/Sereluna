@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Sereluna</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor.
+    </string>
+
+    <string name="lorem_ipsum_short">
+        vacant
+    </string>
+    <string name="name_hint">Username</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="email_error">Email not valid.</string>
+    <string name="password_error">Password should be 8 characters long.</string>
+    <string name="password_confirmation_hint">Confirm Password</string>
+    <string name="name">Name</string>
+    <string name="name_error">Name musn\'t be empty!</string>
+    <string name="profile">Profile</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="your_daily_diary">Diary History</string>
+    <string name="back_button_description">Back</string>
+    <string name="diary_history">Diary History</string>
+    <string name="add_diary">Add Diary</string>"
+    <string name="edit_diary">Edit Diary</string>
+    <string name="delete_diary">Delete Diary</string>
+    <string name="diary_title">Diary Title"</string>
+    <string name="diary_content">Diary Content"</string>
+    <string name="diary_date">Diary Date"</string>
+    <string name="diary_created_at">Created At"</string>
+    <string name="diary_updated_at">Updated At"</string>
+    <string name="diary_photo">Photo"</string>
+    <string name="diary_photo_description">Photo Description"</string>
+    <string name="diary_photo_url">Photo Url"</string>
+    <string name="diary_photo_id">Photo Id"</string>
+    <string name="diary_photo_created_at">Photo Created At"</string>
+    <string name="diary_image_description">Hello</string>
+    <string name="diary_chatbot_header">"What's going on today?"</string>
+    <string name="bot_response_placeholder">"I'm listening..."</string>
+    <string name="today_diary_hint">Write your diary here</string>
+    <string name="write_your_story_hint">Write your story here...</string>
+    <string name="no_records_yet">"You don't have any records yet"</string>
+    <string name="click_plus_to_add">Click the plus button to add</string>
+    <string name="empty_diary_image_description"></string>
+    <string name="share_button_description"></string>
+    <string name="article_title">Your Article Title Here</string>
+    <string name="article_date">Date Here</string>
+    <string name="article_content">Content goes here...</string>
+    <string name="article_image">Image</string>
+    <string name="article_image_description"></string>
+    <string name="article_image_url"></string>
+</resources>
