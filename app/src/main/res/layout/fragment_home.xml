@@ -232,9 +232,8 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- CardView untuk lainnya -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/cvButton2"
+        android:id="@+id/cvSleeptracking"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="16dp"
@@ -250,13 +249,13 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/tvButton2"
+                android:id="@+id/tvSleepTracking"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:text="Menu 5"
+                android:text="Sleep Tracking"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnBackground"
@@ -265,7 +264,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
-                android:id="@+id/ivButton2"
+                android:id="@+id/ivMoon"
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"

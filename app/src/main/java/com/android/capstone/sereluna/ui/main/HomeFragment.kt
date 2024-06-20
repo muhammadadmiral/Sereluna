@@ -12,6 +12,7 @@ import com.android.capstone.sereluna.databinding.FragmentHomeBinding
 import com.android.capstone.sereluna.ui.article.ArticleFragment
 import com.android.capstone.sereluna.ui.diary.ChatbotActivity
 import com.android.capstone.sereluna.ui.diary.DiaryActivity
+import com.android.capstone.sereluna.ui.sleeptracking.SleepTrackingFragment
 import com.android.capstone.sereluna.ui.viewmodel.UserViewModel
 import com.squareup.picasso.Picasso
 
@@ -59,6 +60,15 @@ class HomeFragment : Fragment() {
             val intent = Intent(requireContext(), ChatbotActivity::class.java)
             startActivity(intent)
         }
+
+        binding.cvSleeptracking.setOnClickListener {
+            // Gunakan FragmentTransaction untuk menampilkan SleepTrackingFragment
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.frame_layout, SleepTrackingFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
     }
 
     override fun onDestroyView() {
