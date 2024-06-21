@@ -52,4 +52,6 @@
     <string name="article_image">Image</string>
     <string name="article_image_description"></string>
     <string name="article_image_url"></string>
+    <string name="submit_fab_description">Submit Diary Entry</string>
+
 </resources>

@@ -3,18 +3,18 @@ package com.android.capstone.sereluna
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.android.capstone.sereluna.databinding.ActivityMainBinding
-import com.android.capstone.sereluna.ui.main.HomeFragment
-import com.android.capstone.sereluna.ui.notification.NotificationFragment
-import com.android.capstone.sereluna.ui.setting.SettingFragment
 import com.android.capstone.sereluna.util.DarkModePrefUtil
 import com.google.firebase.FirebaseApp
 
 class MainActivity : AppCompatActivity() {
 
-
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,34 +30,20 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.bottomNavigationView.background = null
+        // Initialize Navigation Component
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
-        if (savedInstanceState == null) {
-            replaceFragment(HomeFragment())
-        }
+        // Setup Toolbar with NavController
+        setSupportActionBar(binding.toolbar)
+        setupActionBarWithNavController(navController)
 
-        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.home -> {
-                    replaceFragment(HomeFragment())
-                    true
-                }
-                R.id.notification -> {
-                    replaceFragment(NotificationFragment())
-                    true
-                }
-                R.id.setting -> {
-                    replaceFragment(SettingFragment())
-                    true
-                }
-                else -> false
-            }
-        }
+        // Setup BottomNavigationView with NavController
+        binding.bottomNavigationView.setupWithNavController(navController)
     }
 
-    private fun replaceFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.frame_layout, fragment)
-            .commit()
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 }

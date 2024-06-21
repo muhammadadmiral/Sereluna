@@ -46,19 +46,29 @@
             android:exported="false"
             />
 
-        <activity android:name=".ui.diary.ChatbotActivity"></activity>
+        <activity android:name=".ui.chatbot.ChatbotActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".ui.profile.ProfileActivity"
             android:exported="false"
             />
 
-        <activity android:name=".ui.diary.DiaryEmptyActivity"></activity>
+        <activity android:name=".ui.diary.DiaryEmptyActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".ui.article.ArticleDetailActivity" />
+        <activity android:name=".ui.calendar.CalendarActivity" />
+        <activity android:name=".ui.main.DoctorFragment" />
+
+
 
 
 

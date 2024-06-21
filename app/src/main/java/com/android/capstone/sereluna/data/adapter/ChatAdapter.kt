@@ -7,20 +7,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.model.Chat
-import de.hdodenhof.circleimageview.CircleImageView
 
-class ChatAdapter(private val chatList: List<Chat>) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
+class ChatAdapter(private val chatList: List<Chat>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val MESSAGE_TYPE_USER = 0
     private val MESSAGE_TYPE_BOT = 1
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == MESSAGE_TYPE_BOT) {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_bot, parent, false)
-            ViewHolder(view)
+            BotViewHolder(view)
         } else {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_user, parent, false)
-            ViewHolder(view)
+            UserViewHolder(view)
         }
     }
 
@@ -28,13 +27,13 @@ class ChatAdapter(private val chatList: List<Chat>) : RecyclerView.Adapter<ChatA
         return chatList.size
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val chat = chatList[position]
-        holder.txtMessage.text = chat.message
-    }
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txtMessage: TextView = view.findViewById(R.id.tvMessage)
+        if (holder is BotViewHolder) {
+            holder.txtMessage.text = chat.message
+        } else if (holder is UserViewHolder) {
+            holder.txtMessage.text = chat.message
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -44,5 +43,13 @@ class ChatAdapter(private val chatList: List<Chat>) : RecyclerView.Adapter<ChatA
         } else {
             MESSAGE_TYPE_USER
         }
+    }
+
+    class BotViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val txtMessage: TextView = view.findViewById(R.id.tvMessage)
+    }
+
+    class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val txtMessage: TextView = view.findViewById(R.id.tvMessage)
     }
 }

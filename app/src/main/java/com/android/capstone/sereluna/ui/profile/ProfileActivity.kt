@@ -66,7 +66,7 @@ class ProfileActivity : AppCompatActivity() {
                         val photoUrl = document.getString("photoUrl") ?: ""
 
                         binding.nameEditText.setText(name)
-                        binding.emailEditText.setText(email)
+                        binding.emailTextView.setText(email)
                         if (photoUrl.isNotEmpty()) {
                             Picasso.get().load(photoUrl).into(binding.profileImageView)
                         }
@@ -89,7 +89,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun saveProfileData() {
         val name = binding.nameEditText.text.toString()
-        val email = binding.emailEditText.text.toString()
+        val email = binding.emailTextView.text.toString()
         val user = auth.currentUser
 
         if (user != null) {

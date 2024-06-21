@@ -4,10 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.adapter.DiaryAdapter
 import com.android.capstone.sereluna.data.model.Diary
 import com.android.capstone.sereluna.databinding.ActivityDiaryBinding
+import com.android.capstone.sereluna.ui.chatbot.ChatbotActivity
+import com.google.firebase.firestore.FirebaseFirestore
 
 class DiaryActivity : AppCompatActivity() {
 
@@ -27,15 +28,7 @@ class DiaryActivity : AppCompatActivity() {
             adapter = diaryAdapter
         }
 
-        val diaryList = getMockData()
-        if (diaryList.isEmpty()) {
-            // Jika daftar diary kosong, arahkan ke DiaryEmptyActivity
-            val intent = Intent(this, DiaryEmptyActivity::class.java)
-            startActivity(intent)
-            finish()
-        } else {
-            diaryAdapter.submitList(diaryList)
-        }
+        loadDiaries()
 
         binding.fab.setOnClickListener {
             val intent = Intent(this, ChatbotActivity::class.java)
@@ -43,8 +36,20 @@ class DiaryActivity : AppCompatActivity() {
         }
     }
 
-    private fun getMockData(): List<Diary> {
-        // Return an empty list for demonstration
-        return listOf()
+    private fun loadDiaries() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("diaries").get()
+            .addOnSuccessListener { result ->
+                val diaryList = mutableListOf<Diary>()
+                for (document in result) {
+                    val diary = document.toObject(Diary::class.java)
+                    diary.id = document.id // Atur ID dokumen secara manual
+                    diaryList.add(diary)
+                }
+                diaryAdapter.submitList(diaryList)
+            }
+            .addOnFailureListener { exception ->
+                // Tangani kegagalan
+            }
     }
 }

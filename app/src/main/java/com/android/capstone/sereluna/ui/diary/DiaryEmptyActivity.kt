@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.android.capstone.sereluna.databinding.ActivityDiaryEmptyBinding
-import com.android.capstone.sereluna.ui.diary.ChatbotActivity
+import com.android.capstone.sereluna.ui.chatbot.ChatbotActivity
 
 class DiaryEmptyActivity : AppCompatActivity() {
 

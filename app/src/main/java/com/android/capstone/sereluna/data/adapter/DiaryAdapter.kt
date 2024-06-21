@@ -7,28 +7,18 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.android.capstone.sereluna.data.model.Diary
-import com.android.capstone.sereluna.data.model.getNotifStatus
-import com.android.capstone.sereluna.data.utils.getTimeAgoFormat
 import com.android.capstone.sereluna.databinding.ItemDiaryListBinding
-import com.android.capstone.sereluna.databinding.NotificationItemListBinding
 
-class DiaryAdapter: ListAdapter<Diary,DiaryAdapter.ViewHolder>(DIFF_CALLBACK) {
+class DiaryAdapter : ListAdapter<Diary, DiaryAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-
-    class ViewHolder(private val binding: ItemDiaryListBinding): RecyclerView.ViewHolder(binding.root) {
-
+    class ViewHolder(private val binding: ItemDiaryListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(diary: Diary) {
-            // Set the title & description text
-            binding.tvDiaryDate.text = diary.date.getTimeAgoFormat()
-            binding.tvDiaryDescription.text = diary.content
+            binding.tvDiaryDate.text = diary.date // Menampilkan tanggal diary
+            binding.tvDiaryDescription.text = diary.content // Menampilkan konten diary
 
-
+            // Menambahkan tindakan jika item diary di klik, disesuaikan sesuai kebutuhan
             binding.root.setOnClickListener {
-                // Uncomment the code below and implement the intent to navigate to DetailAcneActivity
-                // val intent = Intent(binding.root.context, DetailAcneActivity::class.java).apply {
-                //     putExtra(DetailAcneActivity.EXTRA_STORY_ITEM, history)
-                // }
-                // binding.root.context.startActivity(intent)
+                // Lakukan aksi, seperti membuka detail diary
             }
         }
     }
@@ -43,20 +33,17 @@ class DiaryAdapter: ListAdapter<Diary,DiaryAdapter.ViewHolder>(DIFF_CALLBACK) {
     }
 
     companion object {
-        val DIFF_CALLBACK: DiffUtil.ItemCallback<Diary> =
-            object : DiffUtil.ItemCallback<Diary>() {
-
-
-                override fun areItemsTheSame(oldItem: Diary, storyItem: Diary): Boolean {
-                    return oldItem.id == storyItem.id
-                }
-
-
-                @SuppressLint("DiffUtilEquals")
-                override fun areContentsTheSame(oldItem: Diary, storyItem: Diary): Boolean {
-                    return oldItem == storyItem
-                }
+        val DIFF_CALLBACK: DiffUtil.ItemCallback<Diary> = object : DiffUtil.ItemCallback<Diary>() {
+            override fun areItemsTheSame(oldItem: Diary, newItem: Diary): Boolean {
+                // Bandingkan ID untuk memastikan apakah item adalah yang sama
+                return oldItem.id == newItem.id
             }
-    }
 
+            @SuppressLint("DiffUtilEquals")
+            override fun areContentsTheSame(oldItem: Diary, newItem: Diary): Boolean {
+                // Bandingkan semua properti untuk memastikan apakah kontennya sama
+                return oldItem == newItem
+            }
+        }
+    }
 }

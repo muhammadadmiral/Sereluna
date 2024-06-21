@@ -6,11 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.databinding.FragmentHomeBinding
 import com.android.capstone.sereluna.ui.article.ArticleFragment
-import com.android.capstone.sereluna.ui.diary.ChatbotActivity
+import com.android.capstone.sereluna.ui.calendar.CalendarActivity
 import com.android.capstone.sereluna.ui.diary.DiaryActivity
 import com.android.capstone.sereluna.ui.sleeptracking.SleepTrackingFragment
 import com.android.capstone.sereluna.ui.viewmodel.UserViewModel
@@ -33,6 +34,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Observe user data to update UI
         userViewModel.userName.observe(viewLifecycleOwner, { name ->
             binding.tvUserName.text = "👋🏻 Hi $name!"
         })
@@ -45,30 +47,37 @@ class HomeFragment : Fragment() {
             }
         })
 
-        binding.cvArticle.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.frame_layout, ArticleFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
+        // Setup onClickListeners for each CardView
         binding.cvDiary.setOnClickListener {
             val intent = Intent(requireContext(), DiaryActivity::class.java)
             startActivity(intent)
         }
-        binding.cvButton1.setOnClickListener {
-            val intent = Intent(requireContext(), ChatbotActivity::class.java)
+
+        binding.cvArticle.setOnClickListener {
+            parentFragmentManager.commit {
+                replace(R.id.nav_host_fragment, ArticleFragment())
+                addToBackStack(null)
+            }
+        }
+
+        binding.cvDoctor.setOnClickListener {
+            parentFragmentManager.commit {
+                replace(R.id.nav_host_fragment, DoctorFragment())
+                addToBackStack(null)
+            }
+        }
+
+        binding.cvCalendar.setOnClickListener {
+            val intent = Intent(requireContext(), CalendarActivity::class.java)
             startActivity(intent)
         }
 
         binding.cvSleeptracking.setOnClickListener {
-            // Gunakan FragmentTransaction untuk menampilkan SleepTrackingFragment
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.frame_layout, SleepTrackingFragment())
-                .addToBackStack(null)
-                .commit()
+            parentFragmentManager.commit {
+                replace(R.id.nav_host_fragment, SleepTrackingFragment())
+                addToBackStack(null)
+            }
         }
-
     }
 
     override fun onDestroyView() {

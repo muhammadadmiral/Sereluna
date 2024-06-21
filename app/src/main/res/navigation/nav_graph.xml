@@ -11,21 +11,65 @@
         android:label="Home"
         tools:layout="@layout/fragment_home">
 
+        <!-- Action to navigate to DoctorFragment -->
+        <action
+            android:id="@+id/action_mainFragment_to_doctorFragment"
+            app:destination="@id/DoctorFragment" />
 
+        <!-- Action to navigate to ArticleFragment -->
+        <action
+            android:id="@+id/action_mainFragment_to_articleFragment"
+            app:destination="@id/ArticleFragment" />
+
+        <!-- Action to navigate to SleepTrackingFragment -->
+        <action
+            android:id="@+id/action_mainFragment_to_sleepTrackingFragment"
+            app:destination="@id/SleepTrackingFragment" />
+
+        <!-- Action to navigate to NotificationFragment -->
+        <action
+            android:id="@+id/action_mainFragment_to_notificationFragment"
+            app:destination="@id/NotificationFragment" />
+
+        <!-- Action to navigate to SettingFragment -->
+        <action
+            android:id="@+id/action_mainFragment_to_settingFragment"
+            app:destination="@id/SettingFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/DoctorFragment"
+        android:name="com.android.capstone.sereluna.ui.main.DoctorFragment"
+        android:label="Doctor"
+        tools:layout="@layout/fragment_doctor">
+    </fragment>
+
+    <fragment
+        android:id="@+id/ArticleFragment"
+        android:name="com.android.capstone.sereluna.ui.article.ArticleFragment"
+        android:label="Article"
+        tools:layout="@layout/fragment_article">
+    </fragment>
+
+    <fragment
+        android:id="@+id/SleepTrackingFragment"
+        android:name="com.android.capstone.sereluna.ui.sleeptracking.SleepTrackingFragment"
+        android:label="Sleep Tracking"
+        tools:layout="@layout/fragment_sleep_tracking">
     </fragment>
 
     <fragment
         android:id="@+id/NotificationFragment"
         android:name="com.android.capstone.sereluna.ui.notification.NotificationFragment"
-        android:label="Notifcation"
+        android:label="Notification"
         tools:layout="@layout/fragment_notification">
     </fragment>
 
     <fragment
         android:id="@+id/SettingFragment"
         android:name="com.android.capstone.sereluna.ui.setting.SettingFragment"
-        android:label="Notifcation"
-        tools:layout="@layout/fragment_notification">
+        android:label="Setting"
+        tools:layout="@layout/fragment_setting">
     </fragment>
 
 </navigation>
