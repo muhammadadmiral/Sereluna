@@ -16,6 +16,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private var rememberMe: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +27,10 @@ class LoginActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
 
         binding.apply {
+            cbRememberMe.setOnCheckedChangeListener { _, isChecked ->
+                rememberMe = isChecked
+            }
+
             btnLogin.setOnClickListener {
                 val email = emailEditText.text.toString()
                 val password = passwordEditText.text.toString()
@@ -67,6 +72,7 @@ class LoginActivity : AppCompatActivity() {
                     val user = task.result?.user
                     if (user != null) {
                         createUserDocument(user) {
+                            com.android.capstone.sereluna.util.AuthSessionManager.startSession(this, rememberMe)
                             navigateToOnboarding()
                         }
                     } else {
@@ -86,6 +92,7 @@ class LoginActivity : AppCompatActivity() {
                     val user = task.result?.user
                     if (user != null) {
                         ensureUserDocument(user) {
+                            com.android.capstone.sereluna.util.AuthSessionManager.startSession(this, rememberMe)
                             navigateToOnboarding()
                         }
                     } else {

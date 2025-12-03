@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.android.capstone.sereluna.databinding.ActivityLoginBinding
 import com.android.capstone.sereluna.databinding.ActivitySplashBinding
+import com.android.capstone.sereluna.MainActivity
 import com.android.capstone.sereluna.ui.auth.LoginActivity
 import com.android.capstone.sereluna.ui.auth.SignupActivity
+import com.android.capstone.sereluna.util.AuthSessionManager
+import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity: AppCompatActivity() {
@@ -18,6 +20,15 @@ class SplashActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val auth = FirebaseAuth.getInstance()
+        if (auth.currentUser != null && AuthSessionManager.isSessionValid(this)) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        } else if (auth.currentUser != null && !AuthSessionManager.isSessionValid(this)) {
+            AuthSessionManager.clear(this)
+        }
 
         binding.apply {
 

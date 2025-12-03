@@ -15,6 +15,8 @@ import com.android.capstone.sereluna.ui.calendar.CalendarActivity
 import com.android.capstone.sereluna.ui.diary.DiaryActivity
 import com.android.capstone.sereluna.ui.sleeptracking.SleepTrackingFragment
 import com.android.capstone.sereluna.ui.viewmodel.UserViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 
 class HomeFragment : Fragment() {
@@ -34,20 +36,20 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Observe user data to update UI
-        userViewModel.userName.observe(viewLifecycleOwner, { name ->
-            binding.tvUserName.text = "👋🏻 Hi $name!"
-        })
+        loadProfile()
 
-        userViewModel.userPhotoUrl.observe(viewLifecycleOwner, { photoUrl ->
+        userViewModel.userName.observe(viewLifecycleOwner) { name ->
+            binding.tvUserName.text = "Hi, ${name.ifBlank { "there" }}!"
+        }
+
+        userViewModel.userPhotoUrl.observe(viewLifecycleOwner) { photoUrl ->
             if (photoUrl.isNotEmpty()) {
                 Picasso.get().load(photoUrl).into(binding.circleImageView)
             } else {
                 binding.circleImageView.setImageResource(R.drawable.profile_image)
             }
-        })
+        }
 
-        // Setup onClickListeners for each CardView
         binding.cvDiary.setOnClickListener {
             val intent = Intent(requireContext(), DiaryActivity::class.java)
             startActivity(intent)
@@ -78,6 +80,20 @@ class HomeFragment : Fragment() {
                 addToBackStack(null)
             }
         }
+    }
+
+    private fun loadProfile() {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(user.uid)
+            .get()
+            .addOnSuccessListener { doc ->
+                val name = doc.getString("name").orEmpty()
+                val photo = doc.getString("photoUrl").orEmpty()
+                userViewModel.updateUserName(name.ifBlank { "there" })
+                userViewModel.updateUserPhotoUrl(photo)
+            }
     }
 
     override fun onDestroyView() {

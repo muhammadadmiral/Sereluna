@@ -75,6 +75,11 @@ class ChatbotActivity : AppCompatActivity() {
             summarizeChat()
         }
 
+        binding.btnFinish.setOnClickListener {
+            summarizeChat()
+            finish()
+        }
+
         binding.backButton.setOnClickListener {
             finish()
         }

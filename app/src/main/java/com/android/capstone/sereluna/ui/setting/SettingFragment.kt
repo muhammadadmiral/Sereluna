@@ -13,6 +13,9 @@ import com.android.capstone.sereluna.ui.auth.LoginActivity
 import com.android.capstone.sereluna.ui.profile.ProfileActivity
 import com.android.capstone.sereluna.ui.viewmodel.UserViewModel
 import com.android.capstone.sereluna.util.DarkModePrefUtil
+import com.android.capstone.sereluna.util.AuthSessionManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 
 class SettingFragment : Fragment() {
@@ -30,6 +33,8 @@ class SettingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        loadProfile()
 
         // Mengamati data pengguna dari ViewModel
         userViewModel.userName.observe(viewLifecycleOwner, { name ->
@@ -55,6 +60,7 @@ class SettingFragment : Fragment() {
 
         // Logout
         binding.btnLogout.setOnClickListener {
+            AuthSessionManager.clear(requireContext())
             val intent = Intent(requireContext(), LoginActivity::class.java)
             startActivity(intent)
             requireActivity().finish()
@@ -65,5 +71,19 @@ class SettingFragment : Fragment() {
             val intent = Intent(requireContext(), ProfileActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun loadProfile() {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(user.uid)
+            .get()
+            .addOnSuccessListener { doc ->
+                val name = doc.getString("name").orEmpty()
+                val photo = doc.getString("photoUrl").orEmpty()
+                userViewModel.updateUserName(name.ifBlank { "Guest" })
+                userViewModel.updateUserPhotoUrl(photo)
+            }
     }
 }

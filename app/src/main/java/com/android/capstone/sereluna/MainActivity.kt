@@ -1,5 +1,6 @@
 package com.android.capstone.sereluna
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -8,6 +9,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android.capstone.sereluna.databinding.ActivityMainBinding
+import com.android.capstone.sereluna.ui.auth.LoginActivity
+import com.android.capstone.sereluna.util.AuthSessionManager
 import com.android.capstone.sereluna.util.DarkModePrefUtil
 import com.google.firebase.FirebaseApp
 
@@ -19,6 +22,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
+
+        if (!AuthSessionManager.isSessionValid(this)) {
+            AuthSessionManager.clear(this)
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
 
         // Apply dark mode based on saved preference
         val isDarkMode = DarkModePrefUtil.isDarkMode(this)
