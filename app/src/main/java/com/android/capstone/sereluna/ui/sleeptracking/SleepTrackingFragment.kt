@@ -8,10 +8,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.capstone.sereluna.databinding.FragmentSleepTrackingBinding
+import com.android.capstone.sereluna.data.repository.FirestoreDiaryRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 class SleepTrackingFragment : Fragment() {
 
@@ -19,6 +22,7 @@ class SleepTrackingFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private lateinit var diaryRepository: FirestoreDiaryRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +37,7 @@ class SleepTrackingFragment : Fragment() {
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+        diaryRepository = FirestoreDiaryRepository(firestore)
 
         binding.saveSleepDataButton.setOnClickListener {
             saveSleepData()
@@ -76,7 +81,8 @@ class SleepTrackingFragment : Fragment() {
                 "wakeup" to wakeup.time,
                 "sleepDuration" to sleepDuration,
                 "sleepQuality" to sleepQuality,
-                "timestamp" to Calendar.getInstance().time
+                "timestamp" to Calendar.getInstance().time,
+                "date" to SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(bedtime.time)
             )
 
             firestore.collection("users")
@@ -86,6 +92,7 @@ class SleepTrackingFragment : Fragment() {
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Sleep data saved successfully", Toast.LENGTH_SHORT).show()
                     binding.sleepQualityResult.text = "Sleep Quality: $sleepQuality"
+                    diaryRepository.appendSleepDailyMetric(user.uid, sleepData["date"] as String, sleepQuality, sleepDuration)
                     loadSleepHistory()
                 }
                 .addOnFailureListener { e ->

@@ -122,7 +122,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
-        android:id="@+id/botResponseTextView"
+        android:id="@+id/summaryTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -134,8 +134,21 @@
         android:text="@string/bot_response_placeholder"
         android:textColor="@color/purple"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/submitFab"
+        app:layout_constraintBottom_toTopOf="@+id/btnSummarize"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSummarize"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="96dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/summarize"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/submitFab"
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
