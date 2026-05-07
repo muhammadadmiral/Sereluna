@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.android.capstone.sereluna.data.api.ChatRequest
 import com.android.capstone.sereluna.data.api.ChatbotApiService
 import com.android.capstone.sereluna.data.model.Chat
-import com.android.capstone.sereluna.data.repository.ChatMessage
-import com.android.capstone.sereluna.data.repository.ChatRepository
+import com.android.capstone.sereluna.data.model.ChatMessage
+import com.android.capstone.sereluna.data.repository.DiaryRepository
 import com.android.capstone.sereluna.data.repository.ScreeningRepository
 import com.android.capstone.sereluna.data.repository.UserRepository
 import com.android.capstone.sereluna.data.ml.SentimentAnalyzer
@@ -25,7 +25,7 @@ import java.util.Locale
 
 class ChatViewModel : ViewModel() {
 
-    private val chatRepository = ChatRepository()
+    private val diaryRepository = DiaryRepository()
     private val screeningRepository = ScreeningRepository()
     private val userRepository = UserRepository()
     private val apiService = ChatbotApiService.create()
@@ -47,12 +47,12 @@ class ChatViewModel : ViewModel() {
 
     private var diaryId: String? = null
     private var sessionId: String? = null
-    private val modelName = "gemini-1.5-flash-dass21-hybrid-v8"
+    private val modelName = "llama-3.3-70b-thesis-v1" // Update model name to match backend
     private var latestScreeningSummary: String? = null
     private var previousSessionSummary: String? = null
     private var userName: String? = null
     private var userMessageCount: Int = 0
-    private val maxMessagesPerSession = 10
+    private val maxMessagesPerSession = 15 // Tingkatkan limit biar asik ngobrolnya
     private var sessionClosedFlag: Boolean = false
 
     init {
@@ -64,10 +64,10 @@ class ChatViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                diaryId = chatRepository.getOrCreateDiaryForDate(today)
-                previousSessionSummary = chatRepository.getLatestSessionSummary(diaryId!!)
+                diaryId = diaryRepository.getOrCreateDiaryForDate(today)
+                previousSessionSummary = diaryRepository.getLatestSessionSummary(diaryId!!)
                 _previousSummary.value = previousSessionSummary
-                sessionId = chatRepository.startChatSession(diaryId!!, modelName)
+                sessionId = diaryRepository.startChatSession(diaryId!!, modelName)
                 userMessageCount = 0
                 sessionClosedFlag = false
                 _sessionClosed.value = false
@@ -106,11 +106,11 @@ class ChatViewModel : ViewModel() {
 
     fun sendMessage(userMessage: String) {
         if (sessionClosedFlag) {
-            _errorState.value = "Sesi ini sudah ditutup. Mulai lagi besok setelah skrining."
+            _errorState.value = "Sesi ini sudah ditutup. Mari mulai sesi baru."
             return
         }
         if (userMessageCount >= maxMessagesPerSession) {
-            _errorState.value = "Batas 10 pesan per sesi tercapai. Akhiri sesi."
+            _errorState.value = "Batas percakapan tercapai. Silakan selesaikan sesi ini."
             return
         }
         // Add user message to UI immediately
@@ -119,7 +119,7 @@ class ChatViewModel : ViewModel() {
         userMessageCount++
 
         // Show typing indicator
-        addMessageToList(Chat("Typing...", "bot", true))
+        addMessageToList(Chat("Sedang berpikir...", "bot", true))
 
         val mood = sentimentAnalyzer.analyze(userMessage).first
         val nbRisk = riskNaiveBayes.classify(userMessage)
@@ -158,7 +158,7 @@ class ChatViewModel : ViewModel() {
                                 persistRollingSummary(rollingSummary)
                             }
                         } else {
-                            val errorDetails = body?.details ?: "Empty or invalid response."
+                            val errorDetails = body?.details ?: "Maaf, Sereluna sedang kehilangan fokus. Coba lagi ya."
                             _errorState.value = errorDetails
                         }
                     } else {
@@ -169,7 +169,7 @@ class ChatViewModel : ViewModel() {
 
                 override fun onFailure(call: Call<com.android.capstone.sereluna.data.api.ChatResponse>, t: Throwable) {
                     removeTypingIndicator()
-                    _errorState.value = "Network Failure: ${t.message}"
+                    _errorState.value = "Koneksi terganggu. Pastikan internetmu aktif ya."
                 }
             })
     }
@@ -188,7 +188,7 @@ class ChatViewModel : ViewModel() {
                     }
                 }
                 if (diaryId != null && sessionId != null && finalSummary.isNotBlank()) {
-                    chatRepository.saveSessionSummary(diaryId!!, sessionId!!, finalSummary)
+                    diaryRepository.saveSessionSummary(diaryId!!, sessionId!!, finalSummary)
                     previousSessionSummary = finalSummary
                     addMessageToList(Chat(finalSummary, "bot", true))
                     _sessionClosed.value = true
@@ -247,7 +247,7 @@ class ChatViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val chatMessage = ChatMessage(role = role, text = text, createdAt = Date())
-                chatRepository.addMessageToHistory(diaryId!!, sessionId!!, chatMessage)
+                diaryRepository.addMessageToHistory(diaryId!!, sessionId!!, chatMessage)
             } catch (e: Exception) {
                 // Optionally handle persistence error, though UI is already updated
             }
@@ -258,7 +258,7 @@ class ChatViewModel : ViewModel() {
         if (diaryId == null || sessionId == null) return
         viewModelScope.launch {
             try {
-                chatRepository.updateRollingSummary(diaryId!!, sessionId!!, summary)
+                diaryRepository.updateRollingSummary(diaryId!!, sessionId!!, summary)
             } catch (_: Exception) {
             }
         }
@@ -272,7 +272,7 @@ class ChatViewModel : ViewModel() {
 
     private fun removeTypingIndicator() {
         val list = _chatMessages.value ?: mutableListOf()
-        if (list.isNotEmpty() && list.last().isBot && list.last().message == "Typing...") {
+        if (list.isNotEmpty() && list.last().isBot && (list.last().message == "Typing..." || list.last().message == "Sedang berpikir...")) {
             list.removeAt(list.size - 1)
             _chatMessages.value = list
         }

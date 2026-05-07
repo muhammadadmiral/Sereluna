@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.capstone.sereluna.databinding.FragmentSleepTrackingBinding
-import com.android.capstone.sereluna.data.repository.FirestoreDiaryRepository
+import com.android.capstone.sereluna.data.repository.DiaryRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -22,7 +22,7 @@ class SleepTrackingFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var firestore: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
-    private lateinit var diaryRepository: FirestoreDiaryRepository
+    private lateinit var diaryRepository: DiaryRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +37,7 @@ class SleepTrackingFragment : Fragment() {
 
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-        diaryRepository = FirestoreDiaryRepository(firestore)
+        diaryRepository = DiaryRepository(auth, firestore)
 
         binding.saveSleepDataButton.setOnClickListener {
             saveSleepData()

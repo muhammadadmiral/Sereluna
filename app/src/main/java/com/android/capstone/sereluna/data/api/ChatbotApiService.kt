@@ -46,7 +46,7 @@ interface ChatbotApiService {
     fun sendMessage(@Url url: String, @Body request: ChatRequest): Call<ChatResponse>
 
     companion object {
-        const val FULL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQu_xsaOvMUJ6F8BPeHq-wopRYXLrwKtcuOtDS0J4j4lHbfj8vdorOudj1aahaF8I3/exec"
+        const val FULL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoVi39-hqUwSNjNMoBWLhV8bq9od3KgP8wGU2dtyBNL0al-DdCGRanidsNxWE7reQS/exec"
 
         fun create(): ChatbotApiService {
             val logging = HttpLoggingInterceptor()
