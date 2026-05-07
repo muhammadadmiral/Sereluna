@@ -6,7 +6,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.capstone.sereluna.data.model.UserProfile
 import com.android.capstone.sereluna.databinding.ActivitySignupBinding
+import com.android.capstone.sereluna.ui.onboarding.OnboardingActivity
+import com.android.capstone.sereluna.util.AuthSessionManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 
 class SignupActivity : AppCompatActivity() {
@@ -25,8 +28,8 @@ class SignupActivity : AppCompatActivity() {
 
         binding.apply {
             btnRegister.setOnClickListener {
-                val name = usernameEditText.text.toString()
-                val email = emailEditText.text.toString()
+                val name = usernameEditText.text.toString().trim()
+                val email = emailEditText.text.toString().trim()
                 val password = emailEditText2.text.toString()
 
                 if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
@@ -36,10 +39,13 @@ class SignupActivity : AppCompatActivity() {
                 }
             }
 
-            tvToLogin.setOnClickListener {
+            val openLogin = {
                 val intent = Intent(this@SignupActivity, LoginActivity::class.java)
                 startActivity(intent)
+                finish()
             }
+            loginLinkContainer.setOnClickListener { openLogin() }
+            tvToLogin.setOnClickListener { openLogin() }
         }
     }
 
@@ -49,17 +55,26 @@ class SignupActivity : AppCompatActivity() {
             return
         }
 
+        setLoading(true)
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    val userId = task.result?.user?.uid
-                    if (userId != null) {
-                        createUserDocument(userId, name, email)
+                    val user = task.result?.user
+                    if (user != null) {
+                        val profileUpdates = UserProfileChangeRequest.Builder()
+                            .setDisplayName(name)
+                            .build()
+
+                        user.updateProfile(profileUpdates)
+                            .addOnCompleteListener {
+                                createUserDocument(user.uid, name, email)
+                            }
                     } else {
+                        setLoading(false)
                         Toast.makeText(this@SignupActivity, "Registration succeeded but user is unavailable", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Registrasi gagal, tampilkan pesan error yang spesifik
+                    setLoading(false)
                     val errorMessage = when (task.exception?.message) {
                         "The email address is already in use by another account." -> "Email already registered. Please use a different email."
                         else -> "Registration failed: ${task.exception?.message}"
@@ -80,12 +95,19 @@ class SignupActivity : AppCompatActivity() {
         firestore.collection("users").document(userId)
             .set(userProfile)
             .addOnSuccessListener {
-                val intent = Intent(this@SignupActivity, LoginActivity::class.java)
+                AuthSessionManager.startSession(this, rememberMe = false)
+                val intent = Intent(this@SignupActivity, OnboardingActivity::class.java)
                 startActivity(intent)
                 finish()
             }
             .addOnFailureListener { exception ->
+                setLoading(false)
                 Toast.makeText(this@SignupActivity, "Failed to save profile: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        binding.btnRegister.isEnabled = !isLoading
+        binding.btnRegister.text = if (isLoading) "Creating Account..." else "Create Account"
     }
 }

@@ -42,47 +42,14 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
 
-            btnCreateAccount.setOnClickListener {
-                val email = emailEditText.text.toString()
-                val password = passwordEditText.text.toString()
-
-                if (email.isNotEmpty() && password.isNotEmpty()) {
-                    createAccount(email, password)
-                } else {
-                    Toast.makeText(this@LoginActivity, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            tvToRegister.setOnClickListener {
+            val openSignup = {
                 val intent = Intent(this@LoginActivity, SignupActivity::class.java)
                 startActivity(intent)
             }
+            btnOpenSignup.setOnClickListener { openSignup() }
+            createAccountContainer.setOnClickListener { openSignup() }
+            tvToRegister.setOnClickListener { openSignup() }
         }
-    }
-
-    private fun createAccount(email: String, password: String) {
-        if (password.length < 6) {
-            Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val user = task.result?.user
-                    if (user != null) {
-                        createUserDocument(user) {
-                            com.android.capstone.sereluna.util.AuthSessionManager.startSession(this, rememberMe)
-                            navigateToOnboarding()
-                        }
-                    } else {
-                        Toast.makeText(this, "Failed to create account", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    val errorMessage = "Registration failed: ${task.exception?.message}"
-                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
-                }
-            }
     }
 
     private fun loginUser(email: String, password: String) {
