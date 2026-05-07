@@ -7,11 +7,6 @@
         android:icon="@drawable/home"/>
 
     <item
-        android:id="@+id/NotificationFragment"
-        android:title="Notification"
-        android:icon="@drawable/bell"/>
-
-    <item
         android:id="@+id/SettingFragment"
         android:title="Setting"
         android:icon="@drawable/setting"/>

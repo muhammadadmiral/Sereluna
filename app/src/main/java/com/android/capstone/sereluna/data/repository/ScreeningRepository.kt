@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -28,7 +29,8 @@ data class ScreeningResult(
 
 class ScreeningRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val notificationRepository: NotificationRepository = NotificationRepository(auth, firestore)
 ) {
 
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -43,8 +45,15 @@ class ScreeningRepository(
     ) {
         val uid = userId()
         val today = dateFormatter.format(Date())
-        val docRef = firestore.collection("users").document(uid)
+        val userRef = firestore.collection("users").document(uid)
+        val docRef = userRef
             .collection("screenings").document(today)
+
+        if (docRef.get().await().exists()) {
+            throw IllegalStateException("Skrining hari ini sudah dilakukan")
+        }
+
+        val aiContext = buildAiContext(today, scores, note)
 
         val data = hashMapOf(
             "date" to today,
@@ -56,9 +65,34 @@ class ScreeningRepository(
             "severityAnxiety" to scores.severityAnxiety,
             "severityStress" to scores.severityStress,
             "note" to note,
+            "aiContext" to aiContext,
             "createdAt" to FieldValue.serverTimestamp()
         )
         docRef.set(data).await()
+        userRef.collection("medicalRecords").document(today)
+            .set(
+                data + mapOf(
+                    "type" to "daily_screening",
+                    "source" to "DASS-21"
+                )
+            )
+            .await()
+        userRef.set(
+            mapOf(
+                "hasScreening" to true,
+                "hasScreeningToday" to true,
+                "lastScreeningDate" to today,
+                "lastScreeningAt" to FieldValue.serverTimestamp(),
+                "latestScreeningSummary" to aiContext,
+                "updatedAt" to FieldValue.serverTimestamp()
+            ),
+            SetOptions.merge()
+        ).await()
+        notificationRepository.addNotification(
+            title = "Skrining harian tersimpan",
+            body = "Hasil DASS-21 hari ini sudah masuk rekam medis dan konteks AI.",
+            type = "screening"
+        )
     }
 
     suspend fun hasTodayScreening(): Boolean {
@@ -68,7 +102,17 @@ class ScreeningRepository(
             .collection("screenings").document(today)
             .get()
             .await()
-        return doc.exists()
+        val exists = doc.exists()
+        firestore.collection("users").document(uid)
+            .set(
+                mapOf(
+                    "hasScreeningToday" to exists,
+                    "screeningStatusDate" to today
+                ),
+                SetOptions.merge()
+            )
+            .await()
+        return exists
     }
 
     suspend fun getLatestScreeningSummary(): String? {
@@ -91,5 +135,38 @@ class ScreeningRepository(
         val note = doc.getString("note") ?: ""
 
         return "Skrining terakhir ($date): Depresi $dep ($sevDep), Kecemasan $anx ($sevAnx), Stres $str ($sevStr). Catatan: $note"
+    }
+
+    suspend fun getScreeningHabitContext(limit: Long = 7): String? {
+        val uid = userId()
+        val screenings = firestore.collection("users").document(uid)
+            .collection("screenings")
+            .orderBy("date", Query.Direction.DESCENDING)
+            .limit(limit)
+            .get()
+            .await()
+
+        if (screenings.isEmpty) return null
+
+        val items = screenings.documents.mapNotNull { doc ->
+            val date = doc.getString("date") ?: return@mapNotNull null
+            val dep = doc.getLong("depressionScore") ?: 0
+            val anx = doc.getLong("anxietyScore") ?: 0
+            val stress = doc.getLong("stressScore") ?: 0
+            val sevDep = doc.getString("severityDepression") ?: ""
+            val sevAnx = doc.getString("severityAnxiety") ?: ""
+            val sevStress = doc.getString("severityStress") ?: ""
+            "$date: depresi $dep/$sevDep, kecemasan $anx/$sevAnx, stres $stress/$sevStress"
+        }
+
+        if (items.isEmpty()) return null
+        return "Riwayat skrining DASS-21 terbaru untuk konteks kebiasaan user: ${items.joinToString(" | ")}"
+    }
+
+    private fun buildAiContext(date: String, scores: DassScore, note: String?): String {
+        val noteText = note?.takeIf { it.isNotBlank() } ?: "tidak ada catatan tambahan"
+        return "Skrining DASS-21 $date: depresi ${scores.depression} (${scores.severityDepression}), " +
+            "kecemasan ${scores.anxiety} (${scores.severityAnxiety}), stres ${scores.stress} (${scores.severityStress}). " +
+            "Catatan user: $noteText."
     }
 }

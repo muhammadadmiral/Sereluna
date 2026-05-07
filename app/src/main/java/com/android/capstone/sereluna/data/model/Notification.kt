@@ -1,12 +1,14 @@
 package com.android.capstone.sereluna.data.model
 
 import androidx.recyclerview.widget.DiffUtil
+import java.util.Date
 
 data class Notification(
     val id: String,
     val title: String,
     val body: String,
-    val notifStatus: String = ""
+    val notifStatus: String = "",
+    val createdAt: Date? = null
 ) {
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Notification>() {

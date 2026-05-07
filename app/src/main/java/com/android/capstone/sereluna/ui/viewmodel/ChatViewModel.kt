@@ -95,7 +95,9 @@ class ChatViewModel : ViewModel() {
     private fun fetchScreeningContext() {
         viewModelScope.launch {
             try {
-                latestScreeningSummary = screeningRepository.getLatestScreeningSummary()
+                latestScreeningSummary =
+                    screeningRepository.getScreeningHabitContext()
+                        ?: screeningRepository.getLatestScreeningSummary()
             } catch (e: Exception) {
                 // ignore, context is optional
             }

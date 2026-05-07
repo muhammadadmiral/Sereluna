@@ -9,7 +9,8 @@ import kotlinx.coroutines.tasks.await
 class UserRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance(),
+    private val notificationRepository: NotificationRepository = NotificationRepository(auth, firestore)
 ) {
 
     fun getCurrentUserId(): String? {
@@ -33,12 +34,16 @@ class UserRepository(
             val provider = doc.getString("provider") ?: ""
             val joined = doc.getDate("createdAt")?.toString() ?: ""
             val note = doc.getString("note") ?: ""
+            val latestScreening = doc.getString("latestScreeningSummary") ?: ""
+            val personalContext = doc.getString("personalContext") ?: ""
             val pieces = listOf(
                 if (name.isNotEmpty()) "Nama: $name" else "",
                 if (email.isNotEmpty()) "Email: $email" else "",
                 if (provider.isNotEmpty()) "Provider: $provider" else "",
                 if (joined.isNotEmpty()) "Bergabung: $joined" else "",
-                if (note.isNotEmpty()) "Catatan: $note" else ""
+                if (note.isNotEmpty()) "Catatan: $note" else "",
+                if (latestScreening.isNotEmpty()) "Skrining terbaru: $latestScreening" else "",
+                if (personalContext.isNotEmpty()) "Konteks personal dari diary: $personalContext" else ""
             ).filter { it.isNotEmpty() }
             if (pieces.isEmpty()) null else pieces.joinToString("; ")
         } catch (_: Exception) {
@@ -62,6 +67,11 @@ class UserRepository(
             )
 
             firestore.collection("users").document(userId).update(userData as Map<String, Any>).await()
+            notificationRepository.addNotification(
+                title = "Profil diperbarui",
+                body = "Data profilmu sudah tersimpan.",
+                type = "profile"
+            )
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

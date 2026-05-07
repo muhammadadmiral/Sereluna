@@ -101,6 +101,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     // Other
     implementation("com.loopj.android:android-async-http:1.4.9")

@@ -29,6 +29,10 @@ class NotificationAdapter : ListAdapter<Notification, NotificationAdapter.ViewHo
 
             val context = itemView.context
             val (colorRes, iconRes) = when (notification.notifStatus) {
+                "profile" -> R.color.notif_blue to R.drawable.ic_account
+                "screening" -> R.color.notif_purple to R.drawable.ic_notification
+                "diary" -> R.color.notif_yellow to R.drawable.diary
+                "reminder" -> R.color.notif_purple to R.drawable.ic_notification
                 "Ordered" -> R.color.notif_purple to R.drawable.ic_ordered
                 "Canceled" -> R.color.notif_purple to R.drawable.ic_cancel
                 "Delivered" -> R.color.notif_blue to R.drawable.ic_delivered

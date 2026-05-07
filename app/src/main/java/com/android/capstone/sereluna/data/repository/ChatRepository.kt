@@ -13,7 +13,8 @@ data class ChatMessage(val role: String, val text: String, val createdAt: Date)
 
 class ChatRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val notificationRepository: NotificationRepository = NotificationRepository(auth, firestore)
 ) {
 
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -79,6 +80,12 @@ class ChatRepository(
         val diaryRef = firestore.collection("users").document(userId)
             .collection("diaries").document(diaryId)
         diaryRef.set(mapOf("chatSummary" to summary), com.google.firebase.firestore.SetOptions.merge()).await()
+        savePersonalContext(summary)
+        notificationRepository.addNotification(
+            title = "Diary AI tersimpan",
+            body = "Curhatanmu sudah diringkas dan disimpan sebagai konteks personal.",
+            type = "diary"
+        )
     }
 
     suspend fun updateRollingSummary(diaryId: String, sessionId: String, summary: String) {
@@ -103,6 +110,7 @@ class ChatRepository(
             ),
             SetOptions.merge()
         ).await()
+        savePersonalContext(summary)
     }
 
     suspend fun getLatestSessionSummary(diaryId: String): String? {
@@ -116,5 +124,27 @@ class ChatRepository(
             .await()
         val doc = sessions.documents.firstOrNull() ?: return null
         return doc.getString("summary")
+    }
+
+    private suspend fun savePersonalContext(summary: String) {
+        if (summary.isBlank()) return
+        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
+        val userRef = firestore.collection("users").document(userId)
+        val data = mapOf(
+            "latestDiarySummary" to summary,
+            "personalContext" to summary,
+            "personalContextUpdatedAt" to FieldValue.serverTimestamp()
+        )
+        userRef.set(data, SetOptions.merge()).await()
+
+        userRef.collection("personalContexts")
+            .add(
+                mapOf(
+                    "type" to "diary_summary",
+                    "summary" to summary,
+                    "createdAt" to FieldValue.serverTimestamp()
+                )
+            )
+            .await()
     }
 }

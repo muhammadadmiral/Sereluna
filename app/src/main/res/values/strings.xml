@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Sereluna</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="screening_notification_channel_id" translatable="false">daily_screening_channel</string>
+    <string name="screening_notification_channel_name">Pengingat skrining</string>
+    <string name="screening_reminder_title">Waktunya skrining harian</string>
+    <string name="screening_reminder_body">Isi DASS-21 hari ini supaya Sereluna lebih paham pola kesehatan mentalmu.</string>
     <string name="back_button_description">Kembali</string>
     <string name="article_title">Judul artikel</string>
     <string name="article_date">Tanggal publikasi</string>

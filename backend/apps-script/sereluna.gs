@@ -3,7 +3,8 @@
  * Copy this file into your Google Apps Script project and deploy as a web app.
  */
 
-const MODEL_NAME = "gemini-2.0-flash";
+const GEMINI_MODEL_NAME = "gemini-2.0-flash";
+const GROQ_MODEL_NAME = "llama-3.3-70b-versatile";
 const HISTORY_LIMIT = 10;
 const CACHE_TTL_SECONDS = 60 * 60; // 1 hour
 const SUMMARY_MAX_LEN = 1200;
@@ -133,8 +134,6 @@ function doPost(e) {
 
 function analyzeSymptoms(userMessage) {
   try {
-    const apiKey = getApiKey();
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     const dassReference = `
         Reference DASS-21 Indicators:
         1. DEPRESSION: Hopelessness, devaluation of life, self-deprecation, lack of interest, anhedonia.
@@ -152,16 +151,8 @@ function analyzeSymptoms(userMessage) {
         - Return JSON ONLY.
         - Schema: { "detected_symptoms": ["string"], "dominant_category": "Depression" | "Anxiety" | "Stress" | "None" | "Mixed" }
       `;
-    const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { response_mime_type: "application/json" } };
-    const response = UrlFetchApp.fetch(endpoint, {
-      method: "post",
-      contentType: "application/json",
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    });
-    const json = JSON.parse(response.getContentText());
-    if (!json.candidates) return { detected_symptoms: [], dominant_category: "None" };
-    return JSON.parse(json.candidates[0].content.parts[0].text);
+    const text = callTextModel(prompt, true);
+    return JSON.parse(text);
   } catch (e) {
     Logger.log("Analysis Error: " + e);
     return { detected_symptoms: [], dominant_category: "None" };
@@ -180,8 +171,6 @@ function generateDialog({
   historyText
 }) {
   try {
-    const apiKey = getApiKey();
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     const symptoms = analysisData.detected_symptoms || [];
     const category = analysisData.dominant_category || "None";
     const prompt = `
@@ -220,33 +209,7 @@ OUTPUT JSON SCHEMA:
   "risk_flag": false
 }
       `;
-    const payload = {
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { response_mime_type: "application/json" },
-      safetySettings: [
-        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_LOW_AND_ABOVE" },
-        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_LOW_AND_ABOVE" },
-        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_LOW_AND_ABOVE" },
-        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_LOW_AND_ABOVE" }
-      ]
-    };
-    const response = UrlFetchApp.fetch(endpoint, {
-      method: "post",
-      contentType: "application/json",
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    });
-    const json = JSON.parse(response.getContentText());
-    if (json.promptFeedback?.blockReason) {
-      return {
-        reply: "Maaf, saya tidak dapat membahas topik ini demi keamanan. Mari bicarakan hal lain yang lebih positif.",
-        sentiment_score: 1,
-        suggested_action: "Hubungi Layanan Krisis",
-        risk_flag: true
-      };
-    }
-    if (!json.candidates) throw new Error("No response candidates.");
-    return JSON.parse(json.candidates[0].content.parts[0].text);
+    return JSON.parse(callTextModel(prompt, true));
   } catch (e) {
     Logger.log("Dialog Generation Error: " + e);
     return {
@@ -264,8 +227,6 @@ function generateSummary({ sessionRaw, screeningContext, sessionSummary, userNam
     const compact = deriveSummaryFromText(sessionRaw);
     if (compact) return compact;
 
-    const apiKey = getApiKey();
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${apiKey}`;
     const prompt = `
 RINGKAS PERCAKAPAN
 - Nama: ${userName}
@@ -278,16 +239,7 @@ ${sessionRaw}
 
 Buat ringkasan 2-3 kalimat, bahasa Indonesia, hangat, fokus pada poin utama dan sikap supportif.
   `;
-    const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: { response_mime_type: "text/plain" } };
-    const response = UrlFetchApp.fetch(endpoint, {
-      method: "post",
-      contentType: "application/json",
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    });
-    const json = JSON.parse(response.getContentText());
-    if (!json.candidates) return "Ringkasan tidak tersedia.";
-    return json.candidates[0].content.parts[0].text || "Ringkasan tidak tersedia.";
+    return callTextModel(prompt, false) || "Ringkasan tidak tersedia.";
   } catch (e) {
     Logger.log("Summary Error: " + e);
     return "Ringkasan tidak tersedia.";
@@ -399,7 +351,67 @@ function saveContext(roomId, ctx) {
   PropertiesService.getScriptProperties().setProperty(roomId, json);
 }
 
-function getApiKey() {
+function callTextModel(prompt, jsonMode) {
+  const groqKey = getGroqApiKey();
+  if (groqKey) return callGroq(prompt, jsonMode, groqKey);
+  return callGemini(prompt, jsonMode, getGeminiApiKey());
+}
+
+function callGroq(prompt, jsonMode, apiKey) {
+  const endpoint = "https://api.groq.com/openai/v1/chat/completions";
+  const model = PropertiesService.getScriptProperties().getProperty("GROQ_MODEL") || GROQ_MODEL_NAME;
+  const payload = {
+    model,
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.4
+  };
+  if (jsonMode) payload.response_format = { type: "json_object" };
+
+  const response = UrlFetchApp.fetch(endpoint, {
+    method: "post",
+    contentType: "application/json",
+    headers: { Authorization: `Bearer ${apiKey}` },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  });
+  const json = JSON.parse(response.getContentText());
+  const content = json.choices?.[0]?.message?.content;
+  if (!content) throw new Error("Groq returned no content: " + response.getContentText());
+  return content;
+}
+
+function callGemini(prompt, jsonMode, apiKey) {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_NAME}:generateContent?key=${apiKey}`;
+  const payload = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { response_mime_type: jsonMode ? "application/json" : "text/plain" },
+    safetySettings: [
+      { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_LOW_AND_ABOVE" },
+      { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_LOW_AND_ABOVE" },
+      { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_LOW_AND_ABOVE" },
+      { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_LOW_AND_ABOVE" }
+    ]
+  };
+  const response = UrlFetchApp.fetch(endpoint, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  });
+  const json = JSON.parse(response.getContentText());
+  if (json.promptFeedback?.blockReason) {
+    throw new Error("Gemini blocked prompt: " + json.promptFeedback.blockReason);
+  }
+  const content = json.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!content) throw new Error("Gemini returned no content: " + response.getContentText());
+  return content;
+}
+
+function getGroqApiKey() {
+  return PropertiesService.getScriptProperties().getProperty("GROQ_API_KEY");
+}
+
+function getGeminiApiKey() {
   const key = PropertiesService.getScriptProperties().getProperty("GEMINI_API_KEY");
   if (!key) throw new Error("GEMINI_API_KEY is not set in Script Properties.");
   return key;
