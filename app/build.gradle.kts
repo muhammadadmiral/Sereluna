@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,6 +7,21 @@ plugins {
     id("kotlin-parcelize")
 
 }
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use(::load)
+    }
+}
+
+fun String.asBuildConfigString(): String =
+    "\"${replace("\\", "\\\\").replace("\"", "\\\"")}\""
+
+val guardianApiKey: String =
+    localProperties.getProperty("GUARDIAN_API_KEY")
+        ?: System.getenv("GUARDIAN_API_KEY")
+        ?: "test"
 
 android {
     namespace = "com.android.capstone.sereluna"
@@ -18,6 +35,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "GUARDIAN_API_KEY", guardianApiKey.asBuildConfigString())
     }
 
     buildTypes {
@@ -40,6 +58,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
 }

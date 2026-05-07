@@ -2,7 +2,6 @@ package com.android.capstone.sereluna.ui.article
 
 import android.os.Build
 import android.os.Bundle
-import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import com.android.capstone.sereluna.data.model.Article
 import com.android.capstone.sereluna.databinding.ActivityArticleDetailBinding
@@ -41,9 +40,7 @@ class ArticleDetailActivity : AppCompatActivity() {
             Picasso.get().load(article.imageUrl).into(binding.ivDetailImage)
         }
 
-        // Load content in WebView for better formatting
-        binding.webView.webViewClient = WebViewClient()
-        binding.webView.loadDataWithBaseURL(null, article.content, "text/html", "UTF-8", null)
+        binding.tvDetailContent.text = article.content
     }
 
     companion object {
