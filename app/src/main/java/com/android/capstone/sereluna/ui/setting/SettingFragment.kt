@@ -11,6 +11,7 @@ import com.android.capstone.sereluna.databinding.FragmentSettingBinding
 import com.android.capstone.sereluna.ui.profile.ProfileActivity
 import com.android.capstone.sereluna.ui.viewmodel.UiState
 import com.android.capstone.sereluna.ui.viewmodel.UserViewModel
+import com.android.capstone.sereluna.util.DarkModePrefUtil
 import com.squareup.picasso.Picasso
 
 class SettingFragment : Fragment() {
@@ -44,7 +45,20 @@ class SettingFragment : Fragment() {
             startActivity(intent)
         }
 
-        // TODO: Implement other settings navigation (Logout, Dark Mode Switch, etc.)
+        // Dark Mode Toggle
+        binding.switchDarkMode.isChecked = DarkModePrefUtil.isDarkMode(requireContext())
+        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            DarkModePrefUtil.setDarkMode(requireContext(), isChecked)
+        }
+
+        // Logout
+        binding.btnLogout.setOnClickListener {
+            com.android.capstone.sereluna.util.AuthSessionManager.clear(requireContext())
+            val intent = Intent(requireActivity(), com.android.capstone.sereluna.ui.auth.LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            requireActivity().finish()
+        }
     }
 
     private fun setupObservers() {

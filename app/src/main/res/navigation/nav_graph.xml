@@ -26,11 +26,6 @@
             android:id="@+id/action_mainFragment_to_sleepTrackingFragment"
             app:destination="@id/SleepTrackingFragment" />
 
-        <!-- Action to navigate to NotificationFragment -->
-        <action
-            android:id="@+id/action_mainFragment_to_notificationFragment"
-            app:destination="@id/NotificationFragment" />
-
         <!-- Action to navigate to SettingFragment -->
         <action
             android:id="@+id/action_mainFragment_to_settingFragment"
@@ -56,13 +51,6 @@
         android:name="com.android.capstone.sereluna.ui.sleeptracking.SleepTrackingFragment"
         android:label="Sleep Tracking"
         tools:layout="@layout/fragment_sleep_tracking">
-    </fragment>
-
-    <fragment
-        android:id="@+id/NotificationFragment"
-        android:name="com.android.capstone.sereluna.ui.notification.NotificationFragment"
-        android:label="Notification"
-        tools:layout="@layout/fragment_notification">
     </fragment>
 
     <fragment

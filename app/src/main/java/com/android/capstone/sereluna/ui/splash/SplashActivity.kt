@@ -9,6 +9,7 @@ import com.android.capstone.sereluna.MainActivity
 import com.android.capstone.sereluna.ui.auth.LoginActivity
 import com.android.capstone.sereluna.ui.auth.SignupActivity
 import com.android.capstone.sereluna.util.AuthSessionManager
+import com.android.capstone.sereluna.util.DarkModePrefUtil
 import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("CustomSplashScreen")
@@ -18,6 +19,10 @@ class SplashActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Apply dark mode based on saved preference
+        DarkModePrefUtil.applySavedMode(this)
+
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
