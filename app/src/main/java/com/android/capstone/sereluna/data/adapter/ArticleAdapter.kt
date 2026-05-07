@@ -1,56 +1,47 @@
-package com.android.capstone.sereluna.ui.article
+package com.android.capstone.sereluna.data.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.android.capstone.sereluna.R
-import com.android.capstone.sereluna.data.model.GuardianArticle
+import com.android.capstone.sereluna.data.model.Article
+import com.android.capstone.sereluna.databinding.ItemArticleBinding
 import com.squareup.picasso.Picasso
 
-class ArticleAdapter(
-    private val articles: List<GuardianArticle>,
-    private val onArticleClick: (GuardianArticle) -> Unit
-) : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() {
+class ArticleAdapter(private val onClick: (Article) -> Unit) : ListAdapter<Article, ArticleAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_article, parent, false)
-        return ArticleViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemArticleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
-        val article = articles[position]
-        holder.bind(article, onArticleClick)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val article = getItem(position)
+        holder.bind(article)
     }
 
-    override fun getItemCount(): Int = articles.size
+    inner class ViewHolder(private val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(article: Article) {
+            binding.tvArticleTitle.text = article.title
+            binding.tvArticleAuthor.text = article.author
+            if (article.imageUrl.isNotEmpty()) {
+                Picasso.get().load(article.imageUrl).into(binding.ivArticleImage)
+            }
+            itemView.setOnClickListener {
+                onClick(article)
+            }
+        }
+    }
 
-    class ArticleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val ivArticleImage: ImageView = itemView.findViewById(R.id.ivArticleImage)
-        private val tvArticleTitle: TextView = itemView.findViewById(R.id.tvArticleTitle)
-        private val tvArticleDate: TextView = itemView.findViewById(R.id.tvArticleDate)
-        private val tvArticleDescription: TextView = itemView.findViewById(R.id.tvArticleDescription)
-        private val tvShowMore: TextView = itemView.findViewById(R.id.tvShowMore)
-
-        fun bind(article: GuardianArticle, onArticleClick: (GuardianArticle) -> Unit) {
-            tvArticleTitle.text = article.webTitle
-            tvArticleDate.text = article.webPublicationDate
-
-            // Gunakan safe call atau cek null untuk properti dalam `Fields`
-            tvArticleDescription.text = article.fields?.trailText ?: "No Description Available"
-            val thumbnailUrl = article.fields?.thumbnail ?: ""
-
-            if (thumbnailUrl.isNotEmpty()) {
-                Picasso.get().load(thumbnailUrl).into(ivArticleImage)
-            } else {
-                ivArticleImage.setImageResource(R.drawable.placeholder_image) // Gambar placeholder jika thumbnail kosong
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Article>() {
+            override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+                return oldItem.id == newItem.id
             }
 
-            // Atur listener untuk tombol "Show More"
-            tvShowMore.setOnClickListener {
-                onArticleClick(article)
+            override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+                return oldItem == newItem
             }
         }
     }

@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="👋🏻 Hi User!"
+            android:text="Hi, User!"
             android:textSize="24sp"
             android:textColor="?attr/colorOnBackground"
             app:layout_constraintStart_toStartOf="parent"
@@ -60,8 +60,7 @@
             app:cardBackgroundColor="?attr/colorSurface"
             app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
             app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@+id/circleImageView"
-            android:onClick="openDiaryActivity">
+            app:layout_constraintTop_toBottomOf="@+id/circleImageView">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -96,6 +95,52 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- CardView untuk Skrining Harian -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvScreening"
+            android:layout_width="0dp"
+            android:layout_height="106dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:layout_constraintTop_toBottomOf="@+id/cvDiary">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imageViewScreening"
+                    android:layout_width="136dp"
+                    android:layout_height="100dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/hand" />
+
+                <TextView
+                    android:id="@+id/textViewScreening"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="44dp"
+                    android:layout_marginBottom="43dp"
+                    android:text="@string/daily_screening"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
         <!-- CardView untuk Artikel -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cvArticle"
@@ -107,8 +152,7 @@
             app:cardBackgroundColor="?attr/colorSurface"
             app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
             app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@+id/cvDiary"
-            android:onClick="openArticleFragment">
+            app:layout_constraintTop_toBottomOf="@+id/cvScreening">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -154,8 +198,7 @@
             app:cardBackgroundColor="?attr/colorSurface"
             app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
             app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@+id/cvArticle"
-            android:onClick="openDoctorFragment">
+            app:layout_constraintTop_toBottomOf="@+id/cvArticle">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -201,8 +244,7 @@
             app:cardBackgroundColor="?attr/colorSurface"
             app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
             app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/cvDoctor"
-            android:onClick="openCalendarActivity">
+            app:layout_constraintTop_toBottomOf="@id/cvDoctor">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -248,8 +290,7 @@
             app:cardBackgroundColor="?attr/colorSurface"
             app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
             app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/cvCalendar"
-            android:onClick="openSleepTrackingFragment">
+            app:layout_constraintTop_toBottomOf="@id/cvCalendar">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -286,3 +327,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
+

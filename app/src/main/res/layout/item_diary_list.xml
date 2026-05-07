@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="10dp"
     app:cardElevation="2dp"
-    android:backgroundTint="@color/white"
+    android:backgroundTint="?attr/colorSurface"
     app:cardMaxElevation="4dp"
     app:cardUseCompatPadding="true">
 

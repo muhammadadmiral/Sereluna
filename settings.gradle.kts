@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Sereluna"
 include(":app")
+include(":backend")
  

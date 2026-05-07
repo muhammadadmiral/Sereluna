@@ -7,8 +7,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.model.Chat
+import com.android.capstone.sereluna.ui.diary.TypingIndicatorDrawable
 
-class ChatAdapter(private val chatList: List<Chat>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(private var chatList: List<Chat>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val MESSAGE_TYPE_USER = 0
     private val MESSAGE_TYPE_BOT = 1
@@ -30,7 +31,15 @@ class ChatAdapter(private val chatList: List<Chat>) : RecyclerView.Adapter<Recyc
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val chat = chatList[position]
         if (holder is BotViewHolder) {
-            holder.txtMessage.text = chat.message
+            if (chat.message == "Typing...") {
+                holder.txtMessage.text = ""
+                holder.txtMessage.setCompoundDrawablesWithIntrinsicBounds(
+                    TypingIndicatorDrawable(holder.txtMessage.currentTextColor), null, null, null
+                )
+            } else {
+                holder.txtMessage.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+                holder.txtMessage.text = chat.message
+            }
         } else if (holder is UserViewHolder) {
             holder.txtMessage.text = chat.message
         }
@@ -43,6 +52,12 @@ class ChatAdapter(private val chatList: List<Chat>) : RecyclerView.Adapter<Recyc
         } else {
             MESSAGE_TYPE_USER
         }
+    }
+
+    // Function to update the entire list and notify the adapter
+    fun updateMessages(newMessages: List<Chat>) {
+        this.chatList = newMessages
+        notifyDataSetChanged() // This is simple, but for more complex apps DiffUtil is recommended
     }
 
     class BotViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -1,33 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <!-- Brand Colors -->
+    <color name="brand_purple_dark">#3A006B</color>
+    <color name="brand_purple_primary">#6A1B9A</color>
+    <color name="brand_purple_light">#9C4DCC</color>
+    <color name="brand_purple_pastel">#E1BEE7</color>
+
+    <!-- Light Theme Surface Colors -->
+    <color name="light_background">#F7F2FA</color> <!-- Off-white with a hint of purple -->
+    <color name="light_surface">#FFFFFF</color>
+
+    <!-- Dark Theme Surface Colors -->
+    <color name="dark_background">#121212</color>
+    <color name="dark_surface">#1E1E1E</color> <!-- Slightly lighter than background -->
+
+    <!-- Text Colors -->
+    <color name="text_primary_dark">#DE000000</color> <!-- 87% black -->
+    <color name="text_secondary_dark">#8A000000</color> <!-- 54% black -->
+    <color name="text_primary_light">#FFFFFFFF</color> <!-- 100% white -->
+    <color name="text_secondary_light">#B3FFFFFF</color> <!-- 70% white -->
+
+    <!-- Common Colors -->
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
 
-    <color name="blue_200">#64B5F6</color>
-    <color name="blue_500">#2196F3</color>
-    <color name="blue_700">#1976D2</color>
-    <color name="red_200">#F06292</color>
-    <color name="red_700">#AD1457</color>
-    <color name="navi">#2D3D4F</color>
-    <color name="gray">#EDECF4</color>
-    <color name="tosca">#359D97</color>
-    <color name="green_main">#48bf53</color>
-    <color name="gray_200">#a8a7a7</color>
-
-    <color name="purple">#432C81</color>
-
-    <color name="notif_purple">#432C81</color>
-    <color name="notif_yellow">#FEC62F</color>
-    <color name="notif_blue">#29C9FB</color>
-
-    <color name="red_error">#d11b27</color>
-    <color name="background">#FF1C1B1F</color>
-    <color name="light_blue">#7FB7E1</color>
+    <!-- =============================================================== -->
+    <!-- Legacy & Compatibility Colors (To fix build errors)         -->
+    <!-- =============================================================== -->
+    <color name="purple">@color/brand_purple_primary</color>
+    <color name="light_purple">@color/brand_purple_light</color>
     <color name="red_400">#EF5350</color>
-    <color name="white_transparent">#2AFFFFFF</color>
-    <color name="light_purple">#9F94C0</color>
-    <color name="purple_200">#BB86FC</color>
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#3700B3</color>
+    <color name="red_error">#D32F2F</color>
+    <color name="white_transparent">#80FFFFFF</color>
+    <color name="light_blue">@color/brand_purple_light</color> <!-- Remapped -->
+    <color name="gray">#BDBDBD</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="blue_700">@color/brand_purple_primary</color> <!-- Remapped -->
+    <color name="blue_500">@color/brand_purple_light</color> <!-- Remapped -->
+
+    <!-- Notification Status Colors -->
+    <color name="notif_purple">@color/brand_purple_primary</color>
+    <color name="notif_blue">#42A5F5</color>
+    <color name="notif_yellow">#FFCA28</color>
 
 </resources>

@@ -31,11 +31,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Apply dark mode based on saved preference
-        val isDarkMode = DarkModePrefUtil.isDarkMode(this)
-        AppCompatDelegate.setDefaultNightMode(
-            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
-            else AppCompatDelegate.MODE_NIGHT_NO
-        )
+        DarkModePrefUtil.applySavedMode(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

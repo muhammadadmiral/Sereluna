@@ -1,86 +1,45 @@
 package com.android.capstone.sereluna.data.adapter
 
-import android.annotation.SuppressLint
-import android.graphics.drawable.ColorDrawable
+import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.model.Notification
-import com.android.capstone.sereluna.data.model.NotificationStatus
-import com.android.capstone.sereluna.data.model.getNotifStatus
 import com.android.capstone.sereluna.databinding.NotificationItemListBinding
 
-class NotificationAdapter: ListAdapter<Notification, NotificationAdapter.ViewHolder>(DiffCallback){
+class NotificationAdapter : ListAdapter<Notification, NotificationAdapter.ViewHolder>(Notification.DIFF_CALLBACK) {
 
-
-    class ViewHolder(private val binding: NotificationItemListBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(notification: Notification) {
-            // Set the title & description text
-            binding.tvNotifTitle.text = notification.title
-            binding.tvNotifDescription.text = notification.body
-
-            val resources = itemView.resources
-
-            val colorDrawable = when (getNotifStatus(notification.notifStatus)) {
-                is  NotificationStatus.Ordered -> {
-                    ColorDrawable(resources.getColor(R.color.notif_purple))
-                }
-                is  NotificationStatus.Confirmed -> {
-                    ColorDrawable(resources.getColor(R.color.notif_purple))
-                }
-                is  NotificationStatus.Delivered -> {
-                    ColorDrawable(resources.getColor(R.color.notif_blue))
-                }
-                is  NotificationStatus.Shipped -> {
-                    ColorDrawable(resources.getColor(R.color.notif_blue))
-                }
-                is  NotificationStatus.Canceled -> {
-                    ColorDrawable(resources.getColor(R.color.notif_yellow))
-                }
-                is  NotificationStatus.Returned -> {
-                    ColorDrawable(resources.getColor(R.color.notif_yellow))
-                }
-            }
-
-            binding.ivNotifImage.setImageDrawable(colorDrawable)
-
-            binding.root.setOnClickListener {
-                // Uncomment the code below and implement the intent to navigate to DetailAcneActivity
-                // val intent = Intent(binding.root.context, DetailAcneActivity::class.java).apply {
-                //     putExtra(DetailAcneActivity.EXTRA_STORY_ITEM, history)
-                // }
-                // binding.root.context.startActivity(intent)
-            }
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int
-    ): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = NotificationItemListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val notification = getItem(position)
+        holder.bind(notification)
     }
 
-    companion object {
-        val DiffCallback: DiffUtil.ItemCallback<Notification> =
-            object : DiffUtil.ItemCallback<Notification>() {
+    inner class ViewHolder(private val binding: NotificationItemListBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(notification: Notification) {
+            binding.tvNotifTitle.text = notification.title
+            binding.tvNotifDescription.text = notification.body
 
-
-                override fun areItemsTheSame(oldItem: Notification, storyItem: Notification): Boolean {
-                    return oldItem.id == storyItem.id
-                }
-
-
-                @SuppressLint("DiffUtilEquals")
-                override fun areContentsTheSame(oldItem: Notification, storyItem: Notification): Boolean {
-                    return oldItem == storyItem
-                }
+            val context = itemView.context
+            val (colorRes, iconRes) = when (notification.notifStatus) {
+                "Ordered" -> R.color.notif_purple to R.drawable.ic_ordered
+                "Canceled" -> R.color.notif_purple to R.drawable.ic_cancel
+                "Delivered" -> R.color.notif_blue to R.drawable.ic_delivered
+                "Shipped" -> R.color.notif_blue to R.drawable.ic_shipped
+                "Confirmed" -> R.color.notif_yellow to R.drawable.ic_confirmed
+                "Returned" -> R.color.notif_yellow to R.drawable.ic_return
+                else -> R.color.gray to R.drawable.ic_ordered
             }
+            val color = ContextCompat.getColor(context, colorRes)
+            binding.ivNotifImage.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+            binding.ivNotifImage.setImageResource(iconRes)
+        }
     }
 }

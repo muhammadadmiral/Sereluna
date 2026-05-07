@@ -1,14 +1,32 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.Sereluna" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/light_purple</item>
-        <item name="colorPrimaryVariant">@color/notif_purple</item>
-        <item name="colorOnPrimary">@color/navi</item>
-        <item name="colorSecondary">@color/purple_200</item>
-        <item name="colorSecondaryVariant">@color/purple_700</item>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme for Light Mode. -->
+    <style name="Base.Theme.Sereluna" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/brand_purple_primary</item>
+        <item name="colorPrimaryVariant">@color/brand_purple_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/brand_purple_light</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="backgroundColor">@color/white</item>
-        <item name="colorSurface">@color/gray</item>
-        <item name="colorOnBackground">@color/purple_500</item>
-        <item name="colorOnSurface">@color/navi</item>
+        
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        
+        <!-- Background and surface colors -->
+        <item name="android:colorBackground">@color/light_background</item>
+        <item name="colorSurface">@color/light_surface</item>
+        <item name="colorOnBackground">@color/text_primary_dark</item>
+        <item name="colorOnSurface">@color/text_primary_dark</item>
+        
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+
+        <!-- Custom Attributes for compatibility -->
+        <item name="backgroundColor">@color/light_background</item>
     </style>
+
+    <style name="Theme.Sereluna" parent="Base.Theme.Sereluna" />
 </resources>

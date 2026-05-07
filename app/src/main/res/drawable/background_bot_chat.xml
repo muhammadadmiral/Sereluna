@@ -1,5 +1,6 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#E0E0E0"/> <!-- Warna abu-abu terang atau warna lain sesuai kebutuhan -->
-    <corners android:radius="16dp"/> <!-- Sudut membulat untuk estetika -->
-    <padding android:left="8dp" android:right="8dp" android:top="4dp" android:bottom="4dp"/> <!-- Padding di sekitar teks -->
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#424242" />
+    <corners android:radius="16dp" />
 </shape>

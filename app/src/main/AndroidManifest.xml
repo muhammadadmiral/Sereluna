@@ -15,63 +15,56 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.Sereluna"
+        android:usesCleartextTraffic="true" 
         tools:targetApi="31">
+
+        <!-- Activities -->
         <activity
             android:name=".ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".MainActivity"
+        <activity android:name=".MainActivity" android:exported="false" />
+        <activity
+            android:name=".ui.auth.LoginActivity"
             android:exported="false"
-            />
-
-        <activity android:name=".ui.auth.LoginActivity"
-            android:exported="false"
-            />
-
-        <activity android:name=".ui.auth.SignupActivity"
-            android:exported="false"
-            />
-
-        <activity android:name=".ui.diary.DiaryActivity"
-            android:exported="false"
-            />
-
-        <activity android:name=".ui.onboarding.OnboardingActivity"
-            android:exported="false"
-            />
-
-        <activity android:name=".ui.chatbot.ChatbotActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".ui.profile.ProfileActivity"
-            android:exported="false"
-            />
-
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".ui.auth.SignupActivity" android:exported="false" />
+        <activity android:name=".ui.diary.DiaryActivity" android:exported="false" />
+        <activity android:name=".ui.onboarding.OnboardingActivity" android:exported="false" />
+        <activity android:name=".ui.diary.ChatbotActivity" android:exported="true" />
+        <activity android:name=".ui.profile.ProfileActivity" android:exported="false" />
         <activity android:name=".ui.diary.DiaryEmptyActivity" />
+        <activity android:name=".ui.article.ArticleDetailActivity" />
+        <activity android:name=".ui.CalendarActivity" />
+        <activity android:name=".ui.diary.ScreeningActivity" android:exported="false" />
+        <activity android:name=".ui.main.DoctorFragment" />
+
+        <!-- Firebase Cloud Messaging Service -->
+        <service
+            android:name=".service.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification" />
+        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/brand_purple_primary" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
-        <activity android:name=".ui.article.ArticleDetailActivity" />
-        <activity android:name=".ui.calendar.CalendarActivity" />
-        <activity android:name=".ui.main.DoctorFragment" />
-
-
-
-
-
 
     </application>
 
