@@ -1,9 +1,12 @@
 package com.android.capstone.sereluna.data.model
 
-import java.util.Date
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentId
 
 data class ChatMessage(
-    val role: String = "user", // "user" or "assistant"
+    @DocumentId
+    val messageId: String = "",
+    val senderRole: String = "", // "user" or "bot"
     val text: String = "",
-    val createdAt: Date? = null
+    val timestamp: Timestamp = Timestamp.now()
 )

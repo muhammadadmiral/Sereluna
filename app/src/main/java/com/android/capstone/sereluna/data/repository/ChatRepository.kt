@@ -1,150 +1,107 @@
 package com.android.capstone.sereluna.data.repository
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
+import android.util.Log
+import com.android.capstone.sereluna.data.model.ChatMessage
+import com.android.capstone.sereluna.data.model.ChatRoom
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
-data class ChatMessage(val role: String, val text: String, val createdAt: Date)
+class ChatRepository(private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()) {
 
-class ChatRepository(
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val notificationRepository: NotificationRepository = NotificationRepository(auth, firestore)
-) {
+    companion object {
+        private const val TAG = "ChatRepository"
+        private const val USERS_COLLECTION = "users"
+        private const val ROOMS_COLLECTION = "rooms"
+        private const val MESSAGES_COLLECTION = "messages"
+    }
 
-    private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    suspend fun createOrGetRoom(userId: String, roomId: String): Result<ChatRoom> {
+        return try {
+            val roomRef = firestore.collection(USERS_COLLECTION)
+                .document(userId)
+                .collection(ROOMS_COLLECTION)
+                .document(roomId)
 
-    private fun getUserId(): String? = auth.currentUser?.uid
-
-    suspend fun getOrCreateDiaryForDate(date: String): String {
-        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
-        val diaryRef = firestore.collection("users").document(userId).collection("diaries")
-        val querySnapshot = diaryRef.whereEqualTo("date", date).get().await()
-
-        return if (querySnapshot.isEmpty) {
-            val newDiary = hashMapOf("date" to date, "createdAt" to FieldValue.serverTimestamp())
-            val documentReference = diaryRef.add(newDiary).await()
-            documentReference.id
-        } else {
-            querySnapshot.documents.first().id
+            val snapshot = roomRef.get().await()
+            if (!snapshot.exists()) {
+                val newRoom = ChatRoom(roomId = roomId)
+                roomRef.set(newRoom).await()
+                Result.success(newRoom)
+            } else {
+                val existingRoom = snapshot.toObject(ChatRoom::class.java)
+                if (existingRoom != null) {
+                    Result.success(existingRoom)
+                } else {
+                    Result.failure(Exception("Failed to parse existing room"))
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in createOrGetRoom", e)
+            Result.failure(e)
         }
     }
 
-    suspend fun startChatSession(diaryId: String, modelName: String): String {
-        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
-        val sessionRef = firestore.collection("users").document(userId)
-            .collection("diaries").document(diaryId)
-            .collection("sessions")
+    suspend fun sendMessageToFirestore(userId: String, roomId: String, message: ChatMessage): Result<Unit> {
+        return try {
+            val roomRef = firestore.collection(USERS_COLLECTION)
+                .document(userId)
+                .collection(ROOMS_COLLECTION)
+                .document(roomId)
 
-        val newSession = hashMapOf(
-            "model" to modelName,
-            "startTime" to FieldValue.serverTimestamp()
-        )
-        val documentReference = sessionRef.add(newSession).await()
-        return documentReference.id
+            val messagesRef = roomRef.collection(MESSAGES_COLLECTION)
+
+            firestore.runBatch { batch ->
+                // Generate a new ID if messageId is empty, else use the provided one
+                val docRef = if (message.messageId.isEmpty()) {
+                    messagesRef.document()
+                } else {
+                    messagesRef.document(message.messageId)
+                }
+                
+                // Add message to sub-collection
+                batch.set(docRef, message)
+
+                // Update room's last message and timestamp
+                batch.update(roomRef, "lastMessage", message.text)
+                batch.update(roomRef, "timestamp", message.timestamp)
+            }.await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in sendMessageToFirestore", e)
+            Result.failure(e)
+        }
     }
 
-    suspend fun addMessageToHistory(diaryId: String, sessionId: String, message: ChatMessage) {
-        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
-        val messagesRef = firestore.collection("users").document(userId)
-            .collection("diaries").document(diaryId)
-            .collection("sessions").document(sessionId)
-            .collection("messages")
+    fun getMessages(userId: String, roomId: String): Flow<List<ChatMessage>> = callbackFlow {
+        val messagesRef = firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .collection(ROOMS_COLLECTION)
+            .document(roomId)
+            .collection(MESSAGES_COLLECTION)
+            .orderBy("timestamp", Query.Direction.ASCENDING)
 
-        val messageData = hashMapOf(
-            "role" to message.role,
-            "text" to message.text,
-            "createdAt" to message.createdAt
-        )
-        messagesRef.add(messageData).await()
-    }
+        val listenerRegistration = messagesRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.e(TAG, "Error fetching messages", error)
+                close(error)
+                return@addSnapshotListener
+            }
 
-    suspend fun saveSessionSummary(diaryId: String, sessionId: String, summary: String) {
-        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
-        val sessionRef = firestore.collection("users").document(userId)
-            .collection("diaries").document(diaryId)
-            .collection("sessions").document(sessionId)
+            if (snapshot != null) {
+                val messages = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(ChatMessage::class.java)
+                }
+                trySend(messages)
+            }
+        }
 
-        val data = hashMapOf(
-            "summary" to summary,
-            "endTime" to FieldValue.serverTimestamp()
-        )
-        sessionRef.set(data, com.google.firebase.firestore.SetOptions.merge()).await()
-
-        // also store summary to diary root for listing
-        val diaryRef = firestore.collection("users").document(userId)
-            .collection("diaries").document(diaryId)
-        diaryRef.set(mapOf("chatSummary" to summary), com.google.firebase.firestore.SetOptions.merge()).await()
-        savePersonalContext(summary)
-        notificationRepository.addNotification(
-            title = "Diary AI tersimpan",
-            body = "Curhatanmu sudah diringkas dan disimpan sebagai konteks personal.",
-            type = "diary"
-        )
-    }
-
-    suspend fun updateRollingSummary(diaryId: String, sessionId: String, summary: String) {
-        if (summary.isBlank()) return
-        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
-        val sessionRef = firestore.collection("users").document(userId)
-            .collection("diaries").document(diaryId)
-            .collection("sessions").document(sessionId)
-
-        val data = mapOf(
-            "summary" to summary,
-            "updatedAt" to FieldValue.serverTimestamp()
-        )
-        sessionRef.set(data, SetOptions.merge()).await()
-
-        val diaryRef = firestore.collection("users").document(userId)
-            .collection("diaries").document(diaryId)
-        diaryRef.set(
-            mapOf(
-                "chatSummary" to summary,
-                "updatedAt" to FieldValue.serverTimestamp()
-            ),
-            SetOptions.merge()
-        ).await()
-        savePersonalContext(summary)
-    }
-
-    suspend fun getLatestSessionSummary(diaryId: String): String? {
-        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
-        val sessions = firestore.collection("users").document(userId)
-            .collection("diaries").document(diaryId)
-            .collection("sessions")
-            .orderBy("endTime", com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .limit(1)
-            .get()
-            .await()
-        val doc = sessions.documents.firstOrNull() ?: return null
-        return doc.getString("summary")
-    }
-
-    private suspend fun savePersonalContext(summary: String) {
-        if (summary.isBlank()) return
-        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
-        val userRef = firestore.collection("users").document(userId)
-        val data = mapOf(
-            "latestDiarySummary" to summary,
-            "personalContext" to summary,
-            "personalContextUpdatedAt" to FieldValue.serverTimestamp()
-        )
-        userRef.set(data, SetOptions.merge()).await()
-
-        userRef.collection("personalContexts")
-            .add(
-                mapOf(
-                    "type" to "diary_summary",
-                    "summary" to summary,
-                    "createdAt" to FieldValue.serverTimestamp()
-                )
-            )
-            .await()
+        awaitClose {
+            listenerRegistration.remove()
+        }
     }
 }
