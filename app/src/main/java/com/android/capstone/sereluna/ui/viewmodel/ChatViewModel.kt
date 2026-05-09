@@ -13,6 +13,7 @@ import com.android.capstone.sereluna.data.repository.ScreeningRepository
 import com.android.capstone.sereluna.data.repository.UserRepository
 import com.android.capstone.sereluna.data.ml.SentimentAnalyzer
 import com.android.capstone.sereluna.data.ml.RiskNaiveBayes
+import com.android.capstone.sereluna.BuildConfig
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -135,7 +136,8 @@ class ChatViewModel : ViewModel() {
                 risk_level = nbRisk,
                 mood_signal = mood,
                 user_name = userName,
-                profile_context = profileContext
+                profile_context = profileContext,
+                groq_api_key = BuildConfig.GROQ_API_KEY
             )
         )
             .enqueue(object : Callback<com.android.capstone.sereluna.data.api.ChatResponse> {
@@ -214,7 +216,8 @@ class ChatViewModel : ViewModel() {
                         mode = "summary",
                         session_raw = raw,
                         user_name = userName,
-                        profile_context = profileContext
+                        profile_context = profileContext,
+                        groq_api_key = BuildConfig.GROQ_API_KEY
                     )
                 ).execute()
                 if (response.isSuccessful) {

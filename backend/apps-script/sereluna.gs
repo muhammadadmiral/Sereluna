@@ -71,12 +71,13 @@ function doPost(e) {
     const userName         = body.user_name || "Teman";
     const roomId           = body.room_id || userName || "default-room";
     const mode             = body.mode || "chat";
+    const groqApiKey       = body.groq_api_key || "";
 
     if (!userMessage && mode !== "summary") throw new Error("Field 'text' is missing.");
 
     // MODE SUMMARY: Digunakan untuk merangkum diary/sesi (Algoritma TextRank + AI)
     if (mode === "summary") {
-      const summaryResult = handleSummarization(body.session_raw, userName);
+      const summaryResult = handleSummarization(body.session_raw, userName, groqApiKey);
       return createJsonResponse({ reply: summaryResult });
     }
 
@@ -108,7 +109,8 @@ function doPost(e) {
       moodSignal,
       riskLevel,
       historyText,
-      isNewUser
+      isNewUser,
+      apiKey: groqApiKey
     });
 
     // 4. Update Memory & Summarization (Algoritma TextRank)
@@ -146,7 +148,7 @@ function doPost(e) {
  * CONSOLIDATED AI GENERATION (Llama 3.3 via Groq)
  */
 function generateChatAndAnalysis(params) {
-  const apiKey = "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";
+  const apiKey = params.apiKey;
   const counselorNames = COUNSELORS.map(c => c.name).join(", ");
 
   const systemPrompt = `
@@ -221,13 +223,12 @@ OUTPUT MUST BE VALID JSON:
 /**
  * HANDLE SUMMARIZATION (TextRank-based Summary)
  */
-function handleSummarization(rawText, userName) {
+function handleSummarization(rawText, userName, apiKey) {
   if (!rawText) return "Tidak ada data untuk dirangkum.";
   
   // Thesis Argument: "Saya menggunakan pendekatan Hybrid, meringkas secara algoritmik dulu baru dipoles LLM"
   const algorithmicSummary = textRankSummary(rawText.split(/\n+/));
   
-  const apiKey = "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";
   const prompt = `Sebagai asisten kesehatan mental Sereluna, buatlah rangkuman sesi percakapan hari ini untuk user bernama ${userName}. 
 Buatlah rangkuman yang hangat, empati, dan menyentuh sisi emosional mereka. Sebutkan progres atau perasaan utama yang muncul. 
 Gunakan bahasa yang bersahabat (aku/kamu). 

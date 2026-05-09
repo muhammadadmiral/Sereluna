@@ -23,7 +23,8 @@ data class ChatRequest(
     val mode: String? = null,
     val session_raw: String? = null,
     val user_name: String? = null,
-    val profile_context: String? = null
+    val profile_context: String? = null,
+    val groq_api_key: String? = null
 )
 
 /**
