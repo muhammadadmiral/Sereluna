@@ -1,10 +1,12 @@
 package com.android.capstone.sereluna.ui.setting
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.android.capstone.sereluna.databinding.FragmentSettingBinding
@@ -20,6 +22,12 @@ class SettingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
+
+    private val profileLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            userViewModel.loadUserData(forceRefresh = true)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +50,7 @@ class SettingFragment : Fragment() {
     private fun setupClickListeners() {
         binding.cvAccount.setOnClickListener {
             val intent = Intent(requireActivity(), ProfileActivity::class.java)
-            startActivity(intent)
+            profileLauncher.launch(intent)
         }
 
         // Dark Mode Toggle
