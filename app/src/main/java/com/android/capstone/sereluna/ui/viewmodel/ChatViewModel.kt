@@ -12,7 +12,6 @@ import com.android.capstone.sereluna.data.repository.DiaryRepository
 import com.android.capstone.sereluna.data.repository.ScreeningRepository
 import com.android.capstone.sereluna.data.repository.UserRepository
 import com.android.capstone.sereluna.data.ml.SentimentAnalyzer
-import com.android.capstone.sereluna.BuildConfig
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +49,7 @@ class ChatViewModel : ViewModel() {
     private val modelName = "llama-3.3-70b-thesis-v1" // Update model name to match backend
     private var latestScreeningSummary: String? = null
     private var previousSessionSummary: String? = null
+    private var pastDiarySummaries: List<String> = emptyList()
     private var userName: String? = null
     private var userMessageCount: Int = 0
     private val maxMessagesPerSession = 15 // Tingkatkan limit biar asik ngobrolnya
@@ -66,6 +66,7 @@ class ChatViewModel : ViewModel() {
                 val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                 diaryId = diaryRepository.getOrCreateDiaryForDate(today)
                 previousSessionSummary = diaryRepository.getLatestSessionSummary(diaryId!!)
+                pastDiarySummaries = diaryRepository.getPastDiarySummaries()
                 _previousSummary.value = previousSessionSummary
                 sessionId = diaryRepository.startChatSession(diaryId!!, modelName)
                 userMessageCount = 0
@@ -125,7 +126,7 @@ class ChatViewModel : ViewModel() {
 
         // Make API call
         apiService.sendMessage(
-            ChatbotApiService.GOOGLE_SCRIPT_URL,
+            ChatbotApiService.CHAT_URL,
             ChatRequest(
                 text = userMessage,
                 room_id = diaryId,
@@ -135,7 +136,7 @@ class ChatViewModel : ViewModel() {
                 mood_signal = mood,
                 user_name = userName,
                 profile_context = profileContext,
-                groq_api_key = BuildConfig.GROQ_API_KEY
+                past_diaries = pastDiarySummaries
             )
         )
             .enqueue(object : Callback<com.android.capstone.sereluna.data.api.ChatResponse> {
@@ -158,8 +159,7 @@ class ChatViewModel : ViewModel() {
                                 persistRollingSummary(rollingSummary)
                             }
                         } else {
-                            val errorDetails = body?.details ?: "Maaf, Sereluna sedang kehilangan fokus. Coba lagi ya."
-                            _errorState.value = errorDetails
+                            _errorState.value = "Maaf, Sereluna sedang kehilangan fokus. Coba lagi ya."
                         }
                     } else {
                         val errorBody = response.errorBody()?.string() ?: "Unknown error"
@@ -176,16 +176,14 @@ class ChatViewModel : ViewModel() {
 
     fun finishSession() {
         sessionClosedFlag = true
-        _sessionClosed.value = true
         viewModelScope.launch {
             try {
                 val raw = buildSessionRaw()
+                val summaryText = requestSummaryFromLlm(raw)
                 val finalSummary = when {
+                    summaryText.isNotBlank() -> summaryText
                     !previousSessionSummary.isNullOrBlank() -> previousSessionSummary!!
-                    else -> {
-                        val summaryText = requestSummaryFromLlm(raw)
-                        if (summaryText.isNotBlank()) summaryText else buildSessionSummary()
-                    }
+                    else -> buildSessionSummary()
                 }
                 if (diaryId != null && sessionId != null && finalSummary.isNotBlank()) {
                     diaryRepository.saveSessionSummary(diaryId!!, sessionId!!, finalSummary)
@@ -203,7 +201,7 @@ class ChatViewModel : ViewModel() {
         return try {
             withContext(Dispatchers.IO) {
                 val response = apiService.sendMessage(
-                    ChatbotApiService.GOOGLE_SCRIPT_URL,
+                    ChatbotApiService.CHAT_URL,
                     ChatRequest(
                         text = raw,
                         room_id = diaryId,
@@ -215,7 +213,7 @@ class ChatViewModel : ViewModel() {
                         session_raw = raw,
                         user_name = userName,
                         profile_context = profileContext,
-                        groq_api_key = BuildConfig.GROQ_API_KEY
+                        past_diaries = pastDiarySummaries
                     )
                 ).execute()
                 if (response.isSuccessful) {

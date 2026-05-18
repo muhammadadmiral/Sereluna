@@ -23,11 +23,6 @@ val guardianApiKey: String =
         ?: System.getenv("GUARDIAN_API_KEY")
         ?: "test"
 
-val groqApiKey: String =
-    localProperties.getProperty("GROQ_API_KEY")
-        ?: System.getenv("GROQ_API_KEY")
-        ?: "test"
-
 android {
     namespace = "com.android.capstone.sereluna"
     compileSdk = 34
@@ -41,7 +36,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "GUARDIAN_API_KEY", guardianApiKey.asBuildConfigString())
-        buildConfigField("String", "GROQ_API_KEY", groqApiKey.asBuildConfigString())
     }
 
     buildTypes {

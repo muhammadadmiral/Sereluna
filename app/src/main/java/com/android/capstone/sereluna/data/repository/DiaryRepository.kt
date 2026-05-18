@@ -120,6 +120,20 @@ class DiaryRepository(
         return doc.getString("summary")
     }
 
+    suspend fun getPastDiarySummaries(limit: Long = 5): List<String> {
+        val userId = getUserId() ?: throw IllegalStateException("User not logged in")
+        val diaries = firestore.collection("users").document(userId)
+            .collection("diaries")
+            .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .limit(limit)
+            .get()
+            .await()
+
+        return diaries.documents.mapNotNull { doc ->
+            doc.getString("chatSummary")?.takeIf { it.isNotBlank() }
+        }
+    }
+
     private suspend fun savePersonalContext(summary: String) {
         if (summary.isBlank()) return
         val userId = getUserId() ?: throw IllegalStateException("User not logged in")
