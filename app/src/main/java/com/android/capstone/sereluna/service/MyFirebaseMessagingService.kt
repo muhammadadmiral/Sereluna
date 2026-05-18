@@ -10,10 +10,13 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.android.capstone.sereluna.MainActivity
 import com.android.capstone.sereluna.R
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -36,13 +39,25 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private fun sendRegistrationToServer(token: String?) {
         if (token == null) return
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId != null) {
-            val db = FirebaseFirestore.getInstance()
-            val userRef = db.collection("users").document(userId)
-            userRef.update("fcmToken", token)
-                .addOnSuccessListener { Log.d(TAG, "FCM token updated for user: $userId") }
-                .addOnFailureListener { e -> Log.w(TAG, "Error updating FCM token", e) }
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            getSharedPreferences("fcm_token", MODE_PRIVATE)
+                .edit()
+                .putString("pending_token", token)
+                .apply()
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                SerelunaRepository().submitDeviceToken(token)
+                Log.d(TAG, "FCM token submitted to backend")
+            } catch (e: Exception) {
+                getSharedPreferences("fcm_token", MODE_PRIVATE)
+                    .edit()
+                    .putString("pending_token", token)
+                    .apply()
+                Log.w(TAG, "Error submitting FCM token", e)
+            }
         }
     }
 

@@ -4,18 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.android.capstone.sereluna.data.model.UserProfile
+import androidx.lifecycle.lifecycleScope
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.ActivityLoginBinding
 import com.android.capstone.sereluna.ui.onboarding.OnboardingActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var firestore: FirebaseFirestore
+    private val serelunaRepository = SerelunaRepository()
     private var rememberMe: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +25,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
 
         binding.apply {
             cbRememberMe.setOnCheckedChangeListener { _, isChecked ->
@@ -74,19 +74,14 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun ensureUserDocument(user: FirebaseUser, onComplete: () -> Unit) {
-        val userRef = firestore.collection("users").document(user.uid)
-        userRef.get()
-            .addOnSuccessListener { snapshot ->
-                if (snapshot.exists()) {
-                    onComplete()
-                } else {
-                    createUserDocument(user, onComplete)
-                }
-            }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to load account data: ${exception.message}", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            try {
+                serelunaRepository.getProfile()
                 onComplete()
+            } catch (_: Exception) {
+                createUserDocument(user, onComplete)
             }
+        }
     }
 
     private fun createUserDocument(user: FirebaseUser, onComplete: () -> Unit) {
@@ -96,20 +91,15 @@ class LoginActivity : AppCompatActivity() {
             else -> "New User"
         }
 
-        val userProfile = UserProfile(
-            name = safeName,
-            email = user.email.orEmpty(),
-            photoUrl = "",
-            provider = "password"
-        )
-
-        firestore.collection("users").document(user.uid)
-            .set(userProfile)
-            .addOnSuccessListener { onComplete() }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to save account: ${exception.message}", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            try {
+                serelunaRepository.updateProfile(safeName, null)
+            } catch (e: Exception) {
+                Toast.makeText(this@LoginActivity, "Failed to save account: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
                 onComplete()
             }
+        }
     }
 
     private fun navigateToOnboarding() {

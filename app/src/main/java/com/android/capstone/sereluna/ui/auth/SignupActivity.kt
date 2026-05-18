@@ -4,19 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.android.capstone.sereluna.data.model.UserProfile
+import androidx.lifecycle.lifecycleScope
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.ActivitySignupBinding
 import com.android.capstone.sereluna.ui.onboarding.OnboardingActivity
 import com.android.capstone.sereluna.util.AuthSessionManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignupBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var firestore: FirebaseFirestore
+    private val serelunaRepository = SerelunaRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +25,6 @@ class SignupActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
 
         binding.apply {
             btnRegister.setOnClickListener {
@@ -67,7 +67,7 @@ class SignupActivity : AppCompatActivity() {
 
                         user.updateProfile(profileUpdates)
                             .addOnCompleteListener {
-                                createUserDocument(user.uid, name, email)
+                                createUserDocument(name)
                             }
                     } else {
                         setLoading(false)
@@ -84,26 +84,19 @@ class SignupActivity : AppCompatActivity() {
             }
     }
 
-    private fun createUserDocument(userId: String, name: String, email: String) {
-        val userProfile = UserProfile(
-            name = name,
-            email = email,
-            photoUrl = "",
-            provider = "password"
-        )
-
-        firestore.collection("users").document(userId)
-            .set(userProfile)
-            .addOnSuccessListener {
-                AuthSessionManager.startSession(this, rememberMe = false)
+    private fun createUserDocument(name: String) {
+        lifecycleScope.launch {
+            try {
+                serelunaRepository.updateProfile(name, null)
+                AuthSessionManager.startSession(this@SignupActivity, rememberMe = false)
                 val intent = Intent(this@SignupActivity, OnboardingActivity::class.java)
                 startActivity(intent)
                 finish()
-            }
-            .addOnFailureListener { exception ->
+            } catch (e: Exception) {
                 setLoading(false)
-                Toast.makeText(this@SignupActivity, "Failed to save profile: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SignupActivity, "Failed to save profile: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 
     private fun setLoading(isLoading: Boolean) {

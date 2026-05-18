@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.capstone.sereluna.databinding.FragmentSleepTrackingBinding
-import com.android.capstone.sereluna.data.repository.DiaryRepository
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -20,9 +20,7 @@ class SleepTrackingFragment : Fragment() {
 
     private var _binding: FragmentSleepTrackingBinding? = null
     private val binding get() = _binding!!
-    private lateinit var firestore: FirebaseFirestore
-    private lateinit var auth: FirebaseAuth
-    private lateinit var diaryRepository: DiaryRepository
+    private val repository = SerelunaRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,10 +32,6 @@ class SleepTrackingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        firestore = FirebaseFirestore.getInstance()
-        auth = FirebaseAuth.getInstance()
-        diaryRepository = DiaryRepository(auth, firestore)
 
         binding.saveSleepDataButton.setOnClickListener {
             saveSleepData()
@@ -74,52 +68,39 @@ class SleepTrackingFragment : Fragment() {
             else -> "Excellent"
         }
 
-        val user = auth.currentUser
-        if (user != null) {
-            val sleepData = hashMapOf(
-                "bedtime" to bedtime.time,
-                "wakeup" to wakeup.time,
-                "sleepDuration" to sleepDuration,
-                "sleepQuality" to sleepQuality,
-                "timestamp" to Calendar.getInstance().time,
-                "date" to SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(bedtime.time)
-            )
+        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(bedtime.time)
 
-            firestore.collection("users")
-                .document(user.uid)
-                .collection("sleepData")
-                .add(sleepData)
-                .addOnSuccessListener {
-                    Toast.makeText(requireContext(), "Sleep data saved successfully", Toast.LENGTH_SHORT).show()
-                    binding.sleepQualityResult.text = "Sleep Quality: $sleepQuality"
-                    diaryRepository.appendSleepDailyMetric(user.uid, sleepData["date"] as String, sleepQuality, sleepDuration)
-                    loadSleepHistory()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(requireContext(), "Failed to save sleep data: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                repository.submitSleepDaily(
+                    date = date,
+                    sleepQuality = sleepQuality,
+                    totalSleepHours = sleepDuration
+                )
+                Toast.makeText(requireContext(), "Sleep data saved successfully", Toast.LENGTH_SHORT).show()
+                binding.sleepQualityResult.text = "Sleep Quality: $sleepQuality"
+                loadSleepHistory()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Failed to save sleep data: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     private fun loadSleepHistory() {
-        val user = auth.currentUser
-        if (user != null) {
-            val sleepHistory = mutableListOf<SleepData>()
-            firestore.collection("users")
-                .document(user.uid)
-                .collection("sleepData")
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        val sleepData = document.toObject(SleepData::class.java)
-                        sleepHistory.add(sleepData)
-                    }
-                    binding.sleepHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-                    binding.sleepHistoryRecyclerView.adapter = SleepHistoryAdapter(sleepHistory)
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val sleepHistory = repository.getSleepDaily().map { item ->
+                    SleepData(
+                        date = item.date,
+                        sleepDuration = item.total_sleep_hours,
+                        sleepQuality = item.sleep_quality
+                    )
                 }
-                .addOnFailureListener { e ->
-                    Toast.makeText(requireContext(), "Failed to load sleep history: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
+                binding.sleepHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                binding.sleepHistoryRecyclerView.adapter = SleepHistoryAdapter(sleepHistory)
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Failed to load sleep history: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -130,6 +111,7 @@ class SleepTrackingFragment : Fragment() {
 }
 
 data class SleepData(
+    val date: String = "",
     val bedtime: Date? = null,
     val wakeup: Date? = null,
     val sleepDuration: Long = 0,

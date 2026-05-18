@@ -4,28 +4,24 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.android.capstone.sereluna.data.adapter.DiaryAdapter
 import com.android.capstone.sereluna.data.model.Diary
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.ActivityDiaryBinding
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import kotlinx.coroutines.launch
 
 class DiaryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDiaryBinding
-    private lateinit var auth: FirebaseAuth
-    private lateinit var firestore: FirebaseFirestore
+    private val repository = SerelunaRepository()
     private lateinit var diaryAdapter: DiaryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDiaryBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        auth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
 
         setupRecyclerView()
         setupListeners()
@@ -50,27 +46,20 @@ class DiaryActivity : AppCompatActivity() {
     }
 
     private fun loadDiaries() {
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            Toast.makeText(this, "Please login first.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        firestore.collection("users").document(userId).collection("diaries")
-            .orderBy("date", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (documents != null) {
-                    val diaryList = documents.map { doc ->
-                        val d = doc.toObject(Diary::class.java)
-                        d.id = doc.id
-                        d
-                    }
-                    diaryAdapter.submitList(diaryList)
+        lifecycleScope.launch {
+            try {
+                val diaryList = repository.getDiaries().map { item ->
+                    Diary(
+                        id = item.id,
+                        date = item.date,
+                        chatSummary = item.chat_summary,
+                        content = item.chat_summary
+                    )
                 }
+                diaryAdapter.submitList(diaryList)
+            } catch (e: Exception) {
+                Toast.makeText(this@DiaryActivity, "Failed to load diaries: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-            .addOnFailureListener { exception ->
-                Toast.makeText(this, "Failed to load diaries: ${exception.message}", Toast.LENGTH_SHORT).show()
-            }
+        }
     }
 }

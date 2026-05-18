@@ -30,7 +30,7 @@ class SleepHistoryAdapter(private val sleepHistory: List<SleepData>) :
         private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
         fun bind(sleepData: SleepData) {
-            binding.sleepDateTextView.text = sleepData.bedtime?.let { dateFormat.format(it) }
+            binding.sleepDateTextView.text = sleepData.bedtime?.let { dateFormat.format(it) } ?: sleepData.date
             binding.bedtimeTextView.text = sleepData.bedtime?.let { timeFormat.format(it) }
             binding.wakeupTextView.text = sleepData.wakeup?.let { timeFormat.format(it) }
             binding.sleepDurationTextView.text = "${sleepData.sleepDuration} hours"

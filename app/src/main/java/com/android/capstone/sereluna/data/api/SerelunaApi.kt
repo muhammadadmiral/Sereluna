@@ -3,7 +3,11 @@ package com.android.capstone.sereluna.data.api
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
+import retrofit2.http.Path
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Query
 
 interface SerelunaApi {
     @POST("api/v1/chat/")
@@ -28,4 +32,64 @@ interface SerelunaApi {
     suspend fun getContext(
         @Header("Authorization") authorization: String
     ): UserContextResponseDto
+
+    @GET("api/v1/me/profile/")
+    suspend fun getProfile(
+        @Header("Authorization") authorization: String
+    ): UserProfileResponseDto
+
+    @PUT("api/v1/me/profile/")
+    suspend fun updateProfile(
+        @Header("Authorization") authorization: String,
+        @Body request: UserProfileUpdateRequestDto
+    ): UserProfileResponseDto
+
+    @GET("api/v1/diaries/")
+    suspend fun getDiaries(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit: Int = 30
+    ): DiaryListResponseDto
+
+    @GET("api/v1/diaries/{diary_id}/")
+    suspend fun getDiaryDetail(
+        @Header("Authorization") authorization: String,
+        @Path("diary_id") diaryId: String
+    ): DiaryDetailDto
+
+    @GET("api/v1/diaries/{diary_id}/sessions/{session_id}/messages/")
+    suspend fun getDiaryMessages(
+        @Header("Authorization") authorization: String,
+        @Path("diary_id") diaryId: String,
+        @Path("session_id") sessionId: String
+    ): DiaryMessagesResponseDto
+
+    @GET("api/v1/notifications/")
+    suspend fun getNotifications(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit: Int = 30
+    ): NotificationsResponseDto
+
+    @PATCH("api/v1/notifications/{notification_id}/read/")
+    suspend fun markNotificationRead(
+        @Header("Authorization") authorization: String,
+        @Path("notification_id") notificationId: String
+    ): SuccessResponseDto
+
+    @POST("api/v1/device-token/")
+    suspend fun submitDeviceToken(
+        @Header("Authorization") authorization: String,
+        @Body request: DeviceTokenRequestDto
+    ): SuccessResponseDto
+
+    @POST("api/v1/sleep/daily/")
+    suspend fun submitSleepDaily(
+        @Header("Authorization") authorization: String,
+        @Body request: SleepDailyRequestDto
+    ): SleepDailyResponseDto
+
+    @GET("api/v1/sleep/daily/")
+    suspend fun getSleepDaily(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit: Int = 14
+    ): SleepDailyHistoryResponseDto
 }

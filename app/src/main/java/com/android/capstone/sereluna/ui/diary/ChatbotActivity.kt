@@ -4,22 +4,22 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.capstone.sereluna.data.adapter.ChatAdapter
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.ActivityChatbotBinding
 import com.android.capstone.sereluna.ui.viewmodel.ChatViewModel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.launch
 
 class ChatbotActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatbotBinding
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var viewModel: ChatViewModel
-    private lateinit var auth: FirebaseAuth
-    private lateinit var firestore: FirebaseFirestore
+    private val repository = SerelunaRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +27,6 @@ class ChatbotActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this).get(ChatViewModel::class.java)
-        auth = FirebaseAuth.getInstance()
-        firestore = FirebaseFirestore.getInstance()
 
         setupRecyclerView()
         setupListeners()
@@ -93,16 +91,13 @@ class ChatbotActivity : AppCompatActivity() {
     }
 
     private fun loadProfileData() {
-        val user = auth.currentUser
-        if (user != null) {
-            val userRef = firestore.collection("users").document(user.uid)
-            userRef.get().addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    val photoUrl = document.getString("photoUrl") ?: ""
-                    if (photoUrl.isNotEmpty()) {
-                        Picasso.get().load(photoUrl).into(binding.profileImageDiary)
-                    }
+        lifecycleScope.launch {
+            try {
+                val photoUrl = repository.getProfile().photo_url
+                if (photoUrl.isNotEmpty()) {
+                    Picasso.get().load(photoUrl).into(binding.profileImageDiary)
                 }
+            } catch (_: Exception) {
             }
         }
     }

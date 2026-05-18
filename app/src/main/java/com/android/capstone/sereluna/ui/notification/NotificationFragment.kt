@@ -6,19 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.capstone.sereluna.data.adapter.NotificationAdapter
-import com.android.capstone.sereluna.data.repository.NotificationRepository
+import com.android.capstone.sereluna.data.model.Notification
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.FragmentNotificationBinding
-import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.launch
 
 class NotificationFragment: Fragment() {
 
     private var _binding: FragmentNotificationBinding? = null
     private val binding get() = _binding!!
     private val notificationAdapter = NotificationAdapter()
-    private val notificationRepository = NotificationRepository()
-    private var listenerRegistration: ListenerRegistration? = null
+    private val repository = SerelunaRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,19 +39,33 @@ class NotificationFragment: Fragment() {
             adapter = notificationAdapter
         }
 
-        listenerRegistration = notificationRepository.observeNotifications(
-            onChanged = { notifications ->
+        loadNotifications()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadNotifications()
+    }
+
+    private fun loadNotifications() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val notifications = repository.getNotifications().map { item ->
+                    Notification(
+                        id = item.id,
+                        title = item.title,
+                        body = item.body,
+                        notifStatus = item.type
+                    )
+                }
                 notificationAdapter.submitList(notifications)
-            },
-            onError = { error ->
-                Toast.makeText(requireContext(), "Gagal memuat notifikasi: ${error.message}", Toast.LENGTH_LONG).show()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Gagal memuat notifikasi: ${e.message}", Toast.LENGTH_LONG).show()
             }
-        )
+        }
     }
 
     override fun onDestroyView() {
-        listenerRegistration?.remove()
-        listenerRegistration = null
         _binding = null
         super.onDestroyView()
     }

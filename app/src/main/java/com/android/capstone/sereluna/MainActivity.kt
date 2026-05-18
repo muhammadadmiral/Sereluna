@@ -21,20 +21,21 @@ import com.google.firebase.FirebaseApp
 
 import android.view.LayoutInflater
 import android.widget.PopupWindow
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.capstone.sereluna.data.adapter.NotificationAdapter
-import com.android.capstone.sereluna.data.repository.NotificationRepository
+import com.android.capstone.sereluna.data.model.Notification
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.DropdownNotificationsBinding
-import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
 
-    private val notificationRepository = NotificationRepository()
+    private val serelunaRepository = SerelunaRepository()
     private val notificationAdapter = NotificationAdapter()
-    private var notificationListener: ListenerRegistration? = null
     private var notificationPopup: PopupWindow? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,23 +71,36 @@ class MainActivity : AppCompatActivity() {
 
         requestNotificationPermissionIfNeeded()
         ScreeningReminderScheduler.scheduleNext(this)
+        submitPendingDeviceToken()
     }
 
     private fun setupNotificationDropdown() {
         binding.btnNotificationDropdown.setOnClickListener {
+            loadNotifications()
             showNotificationDropdown()
         }
 
-        notificationListener = notificationRepository.observeNotifications(
-            onChanged = { notifications ->
-                // Filter out background notifications like diary summary
-                val filteredNotifications = notifications.filter { 
-                    it.notifStatus != "diary" && it.notifStatus != "diary_summary" 
+        loadNotifications()
+    }
+
+    private fun loadNotifications() {
+        lifecycleScope.launch {
+            try {
+                val notifications = serelunaRepository.getNotifications().map { item ->
+                    Notification(
+                        id = item.id,
+                        title = item.title,
+                        body = item.body,
+                        notifStatus = item.type
+                    )
+                }
+                val filteredNotifications = notifications.filter {
+                    it.notifStatus != "diary" && it.notifStatus != "diary_summary"
                 }
                 notificationAdapter.submitList(filteredNotifications)
-            },
-            onError = { /* Handle error */ }
-        )
+            } catch (_: Exception) {
+            }
+        }
     }
 
     private fun showNotificationDropdown() {
@@ -114,11 +128,6 @@ class MainActivity : AppCompatActivity() {
             elevation = 10f
             showAsDropDown(binding.btnNotificationDropdown, 0, 0)
         }
-    }
-
-    override fun onDestroy() {
-        notificationListener?.remove()
-        super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -151,6 +160,18 @@ class MainActivity : AppCompatActivity() {
             arrayOf(Manifest.permission.POST_NOTIFICATIONS),
             REQUEST_POST_NOTIFICATIONS
         )
+    }
+
+    private fun submitPendingDeviceToken() {
+        val prefs = getSharedPreferences("fcm_token", MODE_PRIVATE)
+        val token = prefs.getString("pending_token", null) ?: return
+        lifecycleScope.launch {
+            try {
+                serelunaRepository.submitDeviceToken(token)
+                prefs.edit().remove("pending_token").apply()
+            } catch (_: Exception) {
+            }
+        }
     }
 
     companion object {

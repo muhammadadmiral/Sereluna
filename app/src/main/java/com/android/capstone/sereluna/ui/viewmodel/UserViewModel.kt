@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.capstone.sereluna.data.repository.UserRepository
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import kotlinx.coroutines.launch
 
 // A sealed class to represent the state of a UI operation
@@ -17,7 +17,7 @@ sealed class UiState<out T> {
 
 class UserViewModel : ViewModel() {
 
-    private val repository = UserRepository()
+    private val repository = SerelunaRepository()
 
     private val _userData = MutableLiveData<UiState<Map<String, Any>>>()
     val userData: LiveData<UiState<Map<String, Any>>> = _userData
@@ -28,16 +28,10 @@ class UserViewModel : ViewModel() {
     fun loadUserData() {
         viewModelScope.launch {
             _userData.value = UiState.Loading
-            val userId = repository.getCurrentUserId()
-            if (userId == null) {
-                _userData.value = UiState.Error("User not logged in.")
-                return@launch
-            }
-            val data = repository.getUserData(userId)
-            if (data != null) {
-                _userData.value = UiState.Success(data)
-            } else {
-                _userData.value = UiState.Error("Failed to load user data.")
+            try {
+                _userData.value = UiState.Success(repository.getProfileAsMap())
+            } catch (e: Exception) {
+                _userData.value = UiState.Error(e.message ?: "Failed to load user data.")
             }
         }
     }
@@ -45,16 +39,11 @@ class UserViewModel : ViewModel() {
     fun saveUserProfile(name: String, newImageUri: Uri?) {
         viewModelScope.launch {
             _updateState.value = UiState.Loading
-            val userId = repository.getCurrentUserId()
-            if (userId == null) {
-                _updateState.value = UiState.Error("User not logged in.")
-                return@launch
-            }
-            val result = repository.updateProfile(userId, name, newImageUri)
-            result.onSuccess {
+            try {
+                repository.updateProfile(name, newImageUri)
                 _updateState.value = UiState.Success(Unit)
-            }.onFailure {
-                _updateState.value = UiState.Error(it.message ?: "Unknown error during profile update.")
+            } catch (e: Exception) {
+                _updateState.value = UiState.Error(e.message ?: "Unknown error during profile update.")
             }
         }
     }
