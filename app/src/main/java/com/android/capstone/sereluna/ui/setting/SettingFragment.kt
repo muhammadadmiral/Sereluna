@@ -54,9 +54,16 @@ class SettingFragment : Fragment() {
         }
 
         // Dark Mode Toggle
-        binding.switchDarkMode.isChecked = DarkModePrefUtil.isDarkMode(requireContext())
+        val isDarkModeEnabled = DarkModePrefUtil.isDarkMode(requireContext())
+        binding.switchDarkMode.setOnCheckedChangeListener(null) // Remove listener to avoid loop during setup
+        binding.switchDarkMode.isChecked = isDarkModeEnabled
+        
         binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            DarkModePrefUtil.setDarkMode(requireContext(), isChecked)
+            if (isChecked != isDarkModeEnabled) {
+                // Temporarily disable activity animations to prevent flickering during recreation
+                requireActivity().overridePendingTransition(0, 0)
+                DarkModePrefUtil.setDarkMode(requireContext(), isChecked)
+            }
         }
 
         // Logout
