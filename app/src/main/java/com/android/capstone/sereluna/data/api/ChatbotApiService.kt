@@ -40,14 +40,19 @@ data class ChatResponse(
 
 interface ChatbotApiService {
     /**
-     * We use @Url for dynamic URLs which is required for Google Apps Script.
-     * The base URL will be ignored, and the full URL provided here will be used.
+     * Send message to the backend (FastAPI or Google Apps Script).
+     * Uses @Url to allow switching between environments (Dev/Prod).
      */
     @POST
     fun sendMessage(@Url url: String, @Body request: ChatRequest): Call<ChatResponse>
 
     companion object {
-        const val FULL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdTdXAz0jFNtMpYXpUOMd7leNFBLQpcAcvWJKHUflX1UAmZLadegnSZnsL9TuqADnn/exec"
+        // Current Google Apps Script URL (Legacy)
+        const val GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzdTdXAz0jFNtMpYXpUOMd7leNFBLQpcAcvWJKHUflX1UAmZLadegnSZnsL9TuqADnn/exec"
+        
+        // Placeholder for FastAPI URL (Update this when hosted)
+        // const val FASTAPI_URL = "https://your-fastapi-instance.com/chat"
+        // const val LOCAL_DEV_URL = "http://10.0.2.2:8000/chat" // Use this for Android Emulator
 
         fun create(): ChatbotApiService {
             val logging = HttpLoggingInterceptor()
@@ -58,7 +63,7 @@ interface ChatbotApiService {
                 .build()
 
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://script.google.com/") // Generic base URL
+                .baseUrl("https://sereluna.ai/") // Generic base URL
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()

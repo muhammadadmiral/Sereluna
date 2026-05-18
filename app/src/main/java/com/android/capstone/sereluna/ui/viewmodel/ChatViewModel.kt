@@ -12,8 +12,8 @@ import com.android.capstone.sereluna.data.repository.DiaryRepository
 import com.android.capstone.sereluna.data.repository.ScreeningRepository
 import com.android.capstone.sereluna.data.repository.UserRepository
 import com.android.capstone.sereluna.data.ml.SentimentAnalyzer
-import com.android.capstone.sereluna.data.ml.RiskNaiveBayes
 import com.android.capstone.sereluna.BuildConfig
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,7 +31,6 @@ class ChatViewModel : ViewModel() {
     private val userRepository = UserRepository()
     private val apiService = ChatbotApiService.create()
     private val sentimentAnalyzer = SentimentAnalyzer()
-    private val riskNaiveBayes = RiskNaiveBayes()
 
     private val _chatMessages = MutableLiveData<MutableList<Chat>>(mutableListOf())
     val chatMessages: LiveData<MutableList<Chat>> = _chatMessages
@@ -123,17 +122,16 @@ class ChatViewModel : ViewModel() {
         addMessageToList(Chat("Sedang berpikir...", "bot", true))
 
         val mood = sentimentAnalyzer.analyze(userMessage).first
-        val nbRisk = riskNaiveBayes.classify(userMessage)
 
         // Make API call
         apiService.sendMessage(
-            ChatbotApiService.FULL_SCRIPT_URL,
+            ChatbotApiService.GOOGLE_SCRIPT_URL,
             ChatRequest(
                 text = userMessage,
                 room_id = diaryId,
                 screening_context = latestScreeningSummary,
                 session_summary = previousSessionSummary,
-                risk_level = nbRisk,
+                risk_level = null,
                 mood_signal = mood,
                 user_name = userName,
                 profile_context = profileContext,
@@ -205,7 +203,7 @@ class ChatViewModel : ViewModel() {
         return try {
             withContext(Dispatchers.IO) {
                 val response = apiService.sendMessage(
-                    ChatbotApiService.FULL_SCRIPT_URL,
+                    ChatbotApiService.GOOGLE_SCRIPT_URL,
                     ChatRequest(
                         text = raw,
                         room_id = diaryId,
@@ -249,7 +247,7 @@ class ChatViewModel : ViewModel() {
         if (diaryId == null || sessionId == null) return
         viewModelScope.launch {
             try {
-                val chatMessage = ChatMessage(role = role, text = text, createdAt = Date())
+                val chatMessage = ChatMessage(senderRole = role, text = text, timestamp = Timestamp.now())
                 diaryRepository.addMessageToHistory(diaryId!!, sessionId!!, chatMessage)
             } catch (e: Exception) {
                 // Optionally handle persistence error, though UI is already updated

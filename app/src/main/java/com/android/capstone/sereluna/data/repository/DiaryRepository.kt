@@ -55,12 +55,7 @@ class DiaryRepository(
             .collection("sessions").document(sessionId)
             .collection("messages")
 
-        val messageData = hashMapOf(
-            "role" to message.role,
-            "text" to message.text,
-            "createdAt" to (message.createdAt ?: Date())
-        )
-        messagesRef.add(messageData).await()
+        messagesRef.add(message).await()
     }
 
     suspend fun saveSessionSummary(diaryId: String, sessionId: String, summary: String) {
