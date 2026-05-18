@@ -26,6 +26,11 @@ val guardianApiKey: String =
         ?: System.getenv("GUARDIAN_API_KEY")
         ?: "test"
 
+val serelunaBaseUrl: String =
+    localProperties.getProperty("SERELUNA_BASE_URL")
+        ?: System.getenv("SERELUNA_BASE_URL")
+        ?: error("SERELUNA_BASE_URL must be set in local.properties or environment variables")
+
 android {
     namespace = "com.android.capstone.sereluna"
     compileSdk = 34
@@ -39,6 +44,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "GUARDIAN_API_KEY", guardianApiKey.asBuildConfigString())
+        buildConfigField("String", "SERELUNA_BASE_URL", serelunaBaseUrl.asBuildConfigString())
     }
 
     buildTypes {
