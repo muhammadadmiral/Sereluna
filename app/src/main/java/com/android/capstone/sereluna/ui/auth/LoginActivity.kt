@@ -2,6 +2,8 @@ package com.android.capstone.sereluna.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val serelunaRepository = SerelunaRepository()
     private var rememberMe: Boolean = false
+    private var isPasswordVisible: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +54,8 @@ class LoginActivity : AppCompatActivity() {
             btnOpenSignup.setOnClickListener { openSignup() }
             createAccountContainer.setOnClickListener { openSignup() }
             tvToRegister.setOnClickListener { openSignup() }
+            tvForgotPassword.setOnClickListener { openForgotPassword() }
+            btnTogglePassword.setOnClickListener { togglePasswordVisibility() }
         }
     }
 
@@ -117,5 +122,38 @@ class LoginActivity : AppCompatActivity() {
         val intent = Intent(this@LoginActivity, OnboardingActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun openForgotPassword() {
+        val email = binding.emailEditText.text.toString().trim()
+        if (email.isBlank()) {
+            Toast.makeText(this, "Isi email dulu di field atas.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        binding.btnLogin.isEnabled = false
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                binding.btnLogin.isEnabled = true
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Link reset password sudah dikirim ke email.", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "Gagal kirim reset password: ${task.exception?.message ?: "Unknown error"}", Toast.LENGTH_LONG).show()
+                }
+            }
+    }
+
+    private fun togglePasswordVisibility() {
+        isPasswordVisible = !isPasswordVisible
+        val start = binding.passwordEditText.selectionStart
+        val end = binding.passwordEditText.selectionEnd
+        if (isPasswordVisible) {
+            binding.passwordEditText.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            binding.btnTogglePassword.setImageResource(com.android.capstone.sereluna.R.drawable.ic_hide_password)
+        } else {
+            binding.passwordEditText.transformationMethod = PasswordTransformationMethod.getInstance()
+            binding.btnTogglePassword.setImageResource(com.android.capstone.sereluna.R.drawable.ic_show_password)
+        }
+        binding.passwordEditText.setSelection(start.coerceAtLeast(0), end.coerceAtLeast(0))
     }
 }

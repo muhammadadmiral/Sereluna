@@ -39,9 +39,9 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="203dp"
-            android:layout_height="210dp"
-            android:layout_marginTop="32dp"
+            android:layout_width="184dp"
+            android:layout_height="190dp"
+            android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textView"
@@ -75,30 +75,58 @@
             android:drawablePadding="8dp"
             android:hint="Password"
             android:inputType="textPassword"
-            android:paddingHorizontal="16dp"
+            android:paddingEnd="56dp"
+            android:paddingStart="16dp"
             android:paddingVertical="8dp"
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/emailEditText" />
 
+        <ImageButton
+            android:id="@+id/btnTogglePassword"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Toggle password visibility"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_show_password"
+            app:layout_constraintBottom_toBottomOf="@id/passwordEditText"
+            app:layout_constraintEnd_toEndOf="@id/passwordEditText"
+            app:layout_constraintTop_toTopOf="@id/passwordEditText" />
+
         <CheckBox
             android:id="@+id/cbRememberMe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             android:text="Remember me (30 days)"
             android:textColor="@color/purple"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/passwordEditText" />
+
+        <TextView
+            android:id="@+id/tvForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:paddingVertical="4dp"
+            android:text="Forgot password?"
+            android:textColor="@color/blue_700"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="@id/cbRememberMe"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cbRememberMe" />
 
         <Button
             android:id="@+id/btnLogin"
             android:layout_width="0dp"
             android:layout_height="55dp"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="32dp"
             android:backgroundTint="@color/purple"
             android:text="Login"
@@ -112,7 +140,7 @@
             android:layout_width="0dp"
             android:layout_height="55dp"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="32dp"
             android:background="@drawable/button_border"
             android:text="Create Account"
@@ -132,7 +160,7 @@
             android:focusable="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="8dp"
+            android:padding="6dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btnOpenSignup">
