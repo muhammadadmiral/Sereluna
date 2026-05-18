@@ -9,6 +9,8 @@ import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.ActivityLoginBinding
 import com.android.capstone.sereluna.ui.onboarding.OnboardingActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.launch
 
@@ -32,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             btnLogin.setOnClickListener {
-                val email = emailEditText.text.toString()
+                val email = emailEditText.text.toString().trim()
                 val password = passwordEditText.text.toString()
 
                 if (email.isNotEmpty() && password.isNotEmpty()) {
@@ -53,6 +55,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser(email: String, password: String) {
+        binding.btnLogin.isEnabled = false
+        binding.btnLogin.text = "Signing in..."
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
@@ -63,11 +67,18 @@ class LoginActivity : AppCompatActivity() {
                             navigateToOnboarding()
                         }
                     } else {
+                        binding.btnLogin.isEnabled = true
+                        binding.btnLogin.text = "Login"
                         Toast.makeText(this@LoginActivity, "Login succeeded but user is unavailable", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Handle login gagal
-                    val errorMessage = "Authentication failed: ${task.exception?.message}"
+                    binding.btnLogin.isEnabled = true
+                    binding.btnLogin.text = "Login"
+                    val errorMessage = when (task.exception) {
+                        is FirebaseAuthInvalidCredentialsException -> "Email atau password salah."
+                        is FirebaseAuthInvalidUserException -> "Akun tidak ditemukan di Firebase project ini."
+                        else -> "Login gagal: ${task.exception?.message ?: "Unknown error"}"
+                    }
                     Toast.makeText(this@LoginActivity, errorMessage, Toast.LENGTH_SHORT).show()
                 }
             }

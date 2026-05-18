@@ -10,7 +10,9 @@ import com.android.capstone.sereluna.ui.auth.LoginActivity
 import com.android.capstone.sereluna.ui.auth.SignupActivity
 import com.android.capstone.sereluna.util.AuthSessionManager
 import com.android.capstone.sereluna.util.DarkModePrefUtil
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import android.widget.Toast
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity: AppCompatActivity() {
@@ -26,7 +28,17 @@ class SplashActivity: AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val auth = FirebaseAuth.getInstance()
+        val firebaseApp = FirebaseApp.initializeApp(this)
+        if (firebaseApp == null) {
+            Toast.makeText(
+                this,
+                "Firebase config belum tersedia. Tambahkan app/google-services.json lokal.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
+        val auth = FirebaseAuth.getInstance(firebaseApp)
         if (auth.currentUser != null && AuthSessionManager.isSessionValid(this)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
