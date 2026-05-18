@@ -4,31 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.capstone.sereluna.data.api.ChatRequest
-import com.android.capstone.sereluna.data.api.ChatbotApiService
 import com.android.capstone.sereluna.data.model.Chat
-import com.android.capstone.sereluna.data.model.ChatMessage
-import com.android.capstone.sereluna.data.repository.DiaryRepository
-import com.android.capstone.sereluna.data.repository.ScreeningRepository
-import com.android.capstone.sereluna.data.repository.UserRepository
 import com.android.capstone.sereluna.data.ml.SentimentAnalyzer
-import com.google.firebase.Timestamp
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class ChatViewModel : ViewModel() {
 
-    private val diaryRepository = DiaryRepository()
-    private val screeningRepository = ScreeningRepository()
-    private val userRepository = UserRepository()
-    private val apiService = ChatbotApiService.create()
+    private val repository = SerelunaRepository()
     private val sentimentAnalyzer = SentimentAnalyzer()
 
     private val _chatMessages = MutableLiveData<MutableList<Chat>>(mutableListOf())
@@ -42,67 +25,26 @@ class ChatViewModel : ViewModel() {
 
     private val _previousSummary = MutableLiveData<String?>()
     val previousSummary: LiveData<String?> = _previousSummary
-    private var profileContext: String? = null
 
-    private var diaryId: String? = null
-    private var sessionId: String? = null
-    private val modelName = "llama-3.3-70b-thesis-v1" // Update model name to match backend
-    private var latestScreeningSummary: String? = null
+    private var activeRoomId: String? = null
+    private var activeSessionId: String? = null
     private var previousSessionSummary: String? = null
-    private var pastDiarySummaries: List<String> = emptyList()
-    private var userName: String? = null
     private var userMessageCount: Int = 0
-    private val maxMessagesPerSession = 15 // Tingkatkan limit biar asik ngobrolnya
+    private val maxMessagesPerSession = 15
     private var sessionClosedFlag: Boolean = false
 
     init {
         startNewChatSession()
-        fetchScreeningContext()
     }
 
     private fun startNewChatSession() {
-        viewModelScope.launch {
-            try {
-                val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-                diaryId = diaryRepository.getOrCreateDiaryForDate(today)
-                previousSessionSummary = diaryRepository.getLatestSessionSummary(diaryId!!)
-                pastDiarySummaries = diaryRepository.getPastDiarySummaries()
-                _previousSummary.value = previousSessionSummary
-                sessionId = diaryRepository.startChatSession(diaryId!!, modelName)
-                userMessageCount = 0
-                sessionClosedFlag = false
-                _sessionClosed.value = false
-                fetchUserName()
-            } catch (e: Exception) {
-                _errorState.value = "Error starting session: ${e.message}"
-            }
-        }
-    }
-
-    private fun fetchUserName() {
-        viewModelScope.launch {
-            try {
-                val uid = userRepository.getCurrentUserId()
-                if (uid != null) {
-                    val data = userRepository.getUserData(uid)
-                    userName = data?.get("name") as? String
-                    profileContext = userRepository.getProfileContext(uid)
-                }
-            } catch (_: Exception) {
-            }
-        }
-    }
-
-    private fun fetchScreeningContext() {
-        viewModelScope.launch {
-            try {
-                latestScreeningSummary =
-                    screeningRepository.getScreeningHabitContext()
-                        ?: screeningRepository.getLatestScreeningSummary()
-            } catch (e: Exception) {
-                // ignore, context is optional
-            }
-        }
+        activeRoomId = null
+        activeSessionId = null
+        previousSessionSummary = null
+        _previousSummary.value = null
+        userMessageCount = 0
+        sessionClosedFlag = false
+        _sessionClosed.value = false
     }
 
     fun sendMessage(userMessage: String) {
@@ -114,151 +56,60 @@ class ChatViewModel : ViewModel() {
             _errorState.value = "Batas percakapan tercapai. Silakan selesaikan sesi ini."
             return
         }
-        // Add user message to UI immediately
         addMessageToList(Chat(userMessage, "user", false))
-        persistMessage("user", userMessage)
         userMessageCount++
 
-        // Show typing indicator
         addMessageToList(Chat("Sedang berpikir...", "bot", true))
 
         val mood = sentimentAnalyzer.analyze(userMessage).first
 
-        // Make API call
-        apiService.sendMessage(
-            ChatbotApiService.CHAT_URL,
-            ChatRequest(
-                text = userMessage,
-                room_id = diaryId,
-                screening_context = latestScreeningSummary,
-                session_summary = previousSessionSummary,
-                risk_level = null,
-                mood_signal = mood,
-                user_name = userName,
-                profile_context = profileContext,
-                past_diaries = pastDiarySummaries
-            )
-        )
-            .enqueue(object : Callback<com.android.capstone.sereluna.data.api.ChatResponse> {
-                override fun onResponse(
-                    call: Call<com.android.capstone.sereluna.data.api.ChatResponse>,
-                    response: Response<com.android.capstone.sereluna.data.api.ChatResponse>
-                ) {
-                    // Remove typing indicator
-                    removeTypingIndicator()
+        viewModelScope.launch {
+            try {
+                val response = repository.sendChat(
+                    text = userMessage,
+                    roomId = activeRoomId,
+                    sessionId = activeSessionId,
+                    moodSignal = mood
+                )
+                removeTypingIndicator()
+                activeRoomId = response.room_id ?: activeRoomId
+                activeSessionId = response.session_id ?: activeSessionId
+                previousSessionSummary = response.session_summary
+                _previousSummary.value = response.session_summary
 
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        val botReply = body?.reply
-                        if (!botReply.isNullOrEmpty()) {
-                            addMessageToList(Chat(botReply, "bot", true))
-                            persistMessage("assistant", botReply)
-                            val rollingSummary = body.session_summary
-                            if (!rollingSummary.isNullOrBlank()) {
-                                previousSessionSummary = rollingSummary
-                                persistRollingSummary(rollingSummary)
-                            }
-                        } else {
-                            _errorState.value = "Maaf, Sereluna sedang kehilangan fokus. Coba lagi ya."
-                        }
-                    } else {
-                        val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                        _errorState.value = "API Error ${response.code()}: $errorBody"
-                    }
+                if (response.reply.isNotBlank()) {
+                    addMessageToList(Chat(response.reply, "bot", true))
+                } else {
+                    _errorState.value = "Maaf, Sereluna sedang kehilangan fokus. Coba lagi ya."
                 }
-
-                override fun onFailure(call: Call<com.android.capstone.sereluna.data.api.ChatResponse>, t: Throwable) {
-                    removeTypingIndicator()
-                    _errorState.value = "Koneksi terganggu. Pastikan internetmu aktif ya."
-                }
-            })
+            } catch (e: Exception) {
+                removeTypingIndicator()
+                _errorState.value = "Koneksi terganggu. Pastikan backend Sereluna aktif."
+            }
+        }
     }
 
     fun finishSession() {
         sessionClosedFlag = true
         viewModelScope.launch {
             try {
-                val raw = buildSessionRaw()
-                val summaryText = requestSummaryFromLlm(raw)
-                val finalSummary = when {
-                    summaryText.isNotBlank() -> summaryText
-                    !previousSessionSummary.isNullOrBlank() -> previousSessionSummary!!
-                    else -> buildSessionSummary()
-                }
-                if (diaryId != null && sessionId != null && finalSummary.isNotBlank()) {
-                    diaryRepository.saveSessionSummary(diaryId!!, sessionId!!, finalSummary)
-                    previousSessionSummary = finalSummary
-                    addMessageToList(Chat(finalSummary, "bot", true))
+                val roomId = activeRoomId
+                val sessionId = activeSessionId
+                if (roomId.isNullOrBlank() || sessionId.isNullOrBlank()) {
                     _sessionClosed.value = true
+                    return@launch
                 }
-            } catch (_: Exception) {
-                // ignore summary failure
-            }
-        }
-    }
 
-    private suspend fun requestSummaryFromLlm(raw: String): String {
-        return try {
-            withContext(Dispatchers.IO) {
-                val response = apiService.sendMessage(
-                    ChatbotApiService.CHAT_URL,
-                    ChatRequest(
-                        text = raw,
-                        room_id = diaryId,
-                        screening_context = latestScreeningSummary,
-                        session_summary = previousSessionSummary,
-                        risk_level = null,
-                        mood_signal = null,
-                        mode = "summary",
-                        session_raw = raw,
-                        user_name = userName,
-                        profile_context = profileContext,
-                        past_diaries = pastDiarySummaries
-                    )
-                ).execute()
-                if (response.isSuccessful) {
-                    response.body()?.reply ?: ""
-                } else ""
-            }
-        } catch (e: Exception) {
-            ""
-        }
-    }
-
-    private fun buildSessionSummary(): String {
-        val messages = _chatMessages.value.orEmpty()
-        val userTexts = messages.filter { it.senderId == "user" }.takeLast(5).joinToString("; ") { it.message }
-        val botTexts = messages.filter { it.senderId == "bot" }.takeLast(3).joinToString("; ") { it.message }
-        val screen = latestScreeningSummary ?: ""
-        return "Screening: $screen | User: $userTexts | Bot: $botTexts"
-    }
-
-    private fun buildSessionRaw(): String {
-        val messages = _chatMessages.value.orEmpty()
-        return messages.joinToString("\n") { msg ->
-            val role = if (msg.senderId == "user") "User" else "Bot"
-            "$role: ${msg.message}"
-        }
-    }
-
-    private fun persistMessage(role: String, text: String) {
-        if (diaryId == null || sessionId == null) return
-        viewModelScope.launch {
-            try {
-                val chatMessage = ChatMessage(senderRole = role, text = text, timestamp = Timestamp.now())
-                diaryRepository.addMessageToHistory(diaryId!!, sessionId!!, chatMessage)
+                val response = repository.finishChat(roomId, sessionId)
+                previousSessionSummary = response.session_summary
+                _previousSummary.value = response.session_summary
+                if (response.session_summary.isNotBlank()) {
+                    addMessageToList(Chat(response.session_summary, "bot", true))
+                }
+                _sessionClosed.value = true
             } catch (e: Exception) {
-                // Optionally handle persistence error, though UI is already updated
-            }
-        }
-    }
-
-    private fun persistRollingSummary(summary: String) {
-        if (diaryId == null || sessionId == null) return
-        viewModelScope.launch {
-            try {
-                diaryRepository.updateRollingSummary(diaryId!!, sessionId!!, summary)
-            } catch (_: Exception) {
+                _errorState.value = "Gagal menutup sesi. Coba lagi saat koneksi stabil."
+                sessionClosedFlag = false
             }
         }
     }

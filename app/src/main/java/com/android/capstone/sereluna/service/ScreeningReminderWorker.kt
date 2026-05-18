@@ -14,7 +14,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.repository.NotificationRepository
-import com.android.capstone.sereluna.data.repository.ScreeningRepository
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.ui.diary.ScreeningActivity
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
@@ -26,7 +26,7 @@ class ScreeningReminderWorker(
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
 
-    private val screeningRepository = ScreeningRepository()
+    private val serelunaRepository = SerelunaRepository()
     private val notificationRepository = NotificationRepository()
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
@@ -37,7 +37,7 @@ class ScreeningReminderWorker(
             val today = dateFormatter.format(Date())
             if (wasReminderSentToday(today)) return Result.success()
 
-            val alreadyScreened = screeningRepository.hasTodayScreening()
+            val alreadyScreened = serelunaRepository.getContext().has_screening_today
             if (!alreadyScreened) {
                 notificationRepository.addNotification(
                     title = applicationContext.getString(R.string.screening_reminder_title),

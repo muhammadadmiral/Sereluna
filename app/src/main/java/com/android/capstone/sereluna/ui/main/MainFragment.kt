@@ -18,7 +18,7 @@ import com.android.capstone.sereluna.ui.viewmodel.UiState
 import com.android.capstone.sereluna.ui.viewmodel.UserViewModel
 import com.squareup.picasso.Picasso
 import com.android.capstone.sereluna.ui.CalendarActivity
-import com.android.capstone.sereluna.data.repository.ScreeningRepository
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import kotlinx.coroutines.launch
 
 class MainFragment : Fragment() {
@@ -28,7 +28,7 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
-    private val screeningRepository = ScreeningRepository()
+    private val serelunaRepository = SerelunaRepository()
     private var screeningDoneToday: Boolean = false
 
     override fun onCreateView(
@@ -82,7 +82,7 @@ class MainFragment : Fragment() {
     private fun checkScreeningStatus() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                screeningDoneToday = screeningRepository.hasTodayScreening()
+                screeningDoneToday = serelunaRepository.getContext().has_screening_today
                 binding.cvScreening.isEnabled = !screeningDoneToday
                 binding.cvScreening.alpha = if (screeningDoneToday) 0.5f else 1f
             } catch (_: Exception) {

@@ -6,15 +6,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.appcompat.app.AlertDialog
-import com.android.capstone.sereluna.data.repository.DassScore
-import com.android.capstone.sereluna.data.repository.ScreeningRepository
+import com.android.capstone.sereluna.data.api.ScreeningResponseDto
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.ActivityScreeningBinding
 import kotlinx.coroutines.launch
 
 class ScreeningActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityScreeningBinding
-    private val screeningRepository = ScreeningRepository()
+    private val repository = SerelunaRepository()
     private lateinit var adapter: DassAdapter
     private val answers = IntArray(21) { -1 }
     private val questions = listOf(
@@ -70,7 +70,7 @@ class ScreeningActivity : AppCompatActivity() {
     private fun checkToday() {
         lifecycleScope.launch {
             try {
-                if (screeningRepository.hasTodayScreening()) {
+                if (repository.getContext().has_screening_today) {
                     Toast.makeText(this@ScreeningActivity, "Skrining hari ini sudah dilakukan.", Toast.LENGTH_LONG).show()
                     finish()
                 }
@@ -87,67 +87,24 @@ class ScreeningActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             try {
-                val scores = calculateDassScores(answers.toList())
-                screeningRepository.saveDailyScreening(
+                val response = repository.submitScreening(
                     answers = answers.toList(),
-                    scores = scores,
                     note = null
                 )
-                showResultDialog(scores)
+                showResultDialog(response)
             } catch (e: Exception) {
                 Toast.makeText(this@ScreeningActivity, "Gagal simpan: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    private fun calculateDassScores(ans: List<Int>): DassScore {
-        val depressionIdx = listOf(3, 5, 10, 13, 16, 17, 21).map { it - 1 }
-        val anxietyIdx = listOf(2, 4, 7, 9, 15, 19, 20).map { it - 1 }
-        val stressIdx = listOf(1, 6, 8, 11, 12, 14, 18).map { it - 1 }
-
-        val dep = depressionIdx.sumOf { ans[it] } * 2
-        val anx = anxietyIdx.sumOf { ans[it] } * 2
-        val str = stressIdx.sumOf { ans[it] } * 2
-
-        return DassScore(
-            depression = dep,
-            anxiety = anx,
-            stress = str,
-            severityDepression = severityDepression(dep),
-            severityAnxiety = severityAnxiety(anx),
-            severityStress = severityStress(str)
-        )
-    }
-
-    private fun severityDepression(score: Int) = when {
-        score >= 28 -> "Ekstrem"
-        score >= 21 -> "Berat"
-        score >= 14 -> "Sedang"
-        score >= 10 -> "Ringan"
-        else -> "Normal"
-    }
-
-    private fun severityAnxiety(score: Int) = when {
-        score >= 20 -> "Ekstrem"
-        score >= 15 -> "Berat"
-        score >= 10 -> "Sedang"
-        score >= 8 -> "Ringan"
-        else -> "Normal"
-    }
-
-    private fun severityStress(score: Int) = when {
-        score >= 34 -> "Ekstrem"
-        score >= 26 -> "Berat"
-        score >= 19 -> "Sedang"
-        score >= 15 -> "Ringan"
-        else -> "Normal"
-    }
-
-    private fun showResultDialog(scores: DassScore) {
+    private fun showResultDialog(response: ScreeningResponseDto) {
+        val scores = response.scores
+        val severity = response.severity
         val msg = """
-            Depresi: ${scores.depression} (${scores.severityDepression})
-            Kecemasan: ${scores.anxiety} (${scores.severityAnxiety})
-            Stres: ${scores.stress} (${scores.severityStress})
+            Depresi: ${scores["depression"] ?: 0} (${severity["depression"] ?: "-"})
+            Kecemasan: ${scores["anxiety"] ?: 0} (${severity["anxiety"] ?: "-"})
+            Stres: ${scores["stress"] ?: 0} (${severity["stress"] ?: "-"})
         """.trimIndent()
         AlertDialog.Builder(this)
             .setTitle("Hasil Skrining")
