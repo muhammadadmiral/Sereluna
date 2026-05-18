@@ -33,6 +33,21 @@
             android:name=".ui.auth.LoginActivity"
             android:exported="false"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".ui.auth.ForgotPasswordActivity" android:exported="false" />
+        <activity
+            android:name=".ui.auth.ResetPasswordActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="sereluna2024.firebaseapp.com"
+                    android:pathPrefix="/__/auth/action"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.auth.SignupActivity" android:exported="false" />
         <activity android:name=".ui.diary.DiaryActivity" android:exported="false" />
         <activity android:name=".ui.onboarding.OnboardingActivity" android:exported="false" />

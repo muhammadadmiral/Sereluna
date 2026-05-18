@@ -125,22 +125,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun openForgotPassword() {
-        val email = binding.emailEditText.text.toString().trim()
-        if (email.isBlank()) {
-            Toast.makeText(this, "Isi email dulu di field atas.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        binding.btnLogin.isEnabled = false
-        auth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
-                binding.btnLogin.isEnabled = true
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Link reset password sudah dikirim ke email.", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "Gagal kirim reset password: ${task.exception?.message ?: "Unknown error"}", Toast.LENGTH_LONG).show()
-                }
-            }
+        val intent = Intent(this@LoginActivity, ForgotPasswordActivity::class.java)
+        startActivity(intent)
     }
 
     private fun togglePasswordVisibility() {
