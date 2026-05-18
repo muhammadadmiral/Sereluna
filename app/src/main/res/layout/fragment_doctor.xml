@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="?attr/backgroundColor"
-    tools:context=".ui.main.DoctorListFragment">
+    tools:context=".ui.main.DoctorFragment">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guidelineStart"
@@ -29,18 +30,19 @@
         android:layout_marginTop="16dp"
         android:text="👩‍⚕ Doctors List"
         android:textSize="24sp"
+        android:fontFamily="@font/raleway_bold"
         android:textColor="?attr/colorOnBackground"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guidelineStart"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- CardView for Doctor 1 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvDoctor1"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="24dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
@@ -55,11 +57,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Doctor 1"
                 android:textSize="20sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/raleway_bold"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +70,7 @@
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="36dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -78,16 +78,16 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/doctor_icon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- CardView for Doctor 2 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvDoctor2"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
@@ -102,11 +102,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Doctor 2"
                 android:textSize="20sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/raleway_bold"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -117,7 +115,7 @@
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="36dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -125,16 +123,16 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/doctor_icon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- CardView for Doctor 3 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvDoctor3"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
@@ -149,11 +147,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Doctor 3"
                 android:textSize="20sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/raleway_bold"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -164,7 +160,7 @@
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="36dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -172,16 +168,16 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/doctor_icon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- CardView for Doctor 4 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvDoctor4"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
@@ -196,11 +192,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Doctor 4"
                 android:textSize="20sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/raleway_bold"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -211,7 +205,7 @@
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="36dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -219,16 +213,16 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/doctor_icon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- CardView for Doctor 5 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvDoctor5"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
@@ -243,11 +237,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Doctor 5"
                 android:textSize="20sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/raleway_bold"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -258,7 +250,7 @@
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="36dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -266,16 +258,16 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/doctor_icon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- CardView for Doctor 6 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvDoctor6"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
@@ -290,11 +282,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Doctor 6"
                 android:textSize="20sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/raleway_bold"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -305,7 +295,7 @@
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="36dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -313,16 +303,16 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/doctor_icon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- CardView for Doctor 7 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvDoctor7"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
@@ -337,11 +327,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Doctor 7"
                 android:textSize="20sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/raleway_bold"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -352,7 +340,7 @@
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="36dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -360,20 +348,22 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/doctor_icon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- CardView for Doctor 8 -->
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvDoctor8"
         android:layout_width="0dp"
         android:layout_height="106dp"
         android:layout_marginTop="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
         app:layout_constraintStart_toStartOf="@id/guidelineStart"
-        app:layout_constraintTop_toBottomOf="@id/cvDoctor7">
+        app:layout_constraintTop_toBottomOf="@id/cvDoctor7"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -384,11 +374,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Doctor 8"
                 android:textSize="20sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/raleway_bold"
                 android:textColor="?attr/colorOnBackground"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -399,7 +387,7 @@
                 android:layout_width="113dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="3dp"
-                android:layout_marginEnd="36dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="3dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -407,6 +395,6 @@
                 app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@drawable/doctor_icon" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

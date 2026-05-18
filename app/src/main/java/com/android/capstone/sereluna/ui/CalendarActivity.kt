@@ -14,8 +14,7 @@ class CalendarActivity : AppCompatActivity() {
         // Setup your CalendarView and other UI elements here
     }
 
-    fun onBackButtonClicked(view: View) { // Renamed back to 'view' for clarity, warning is acceptable for now
-        // Handle back button click
-        onBackPressed()
+    fun onBackButtonClicked(view: View) {
+        onBackPressedDispatcher.onBackPressed()
     }
 }
