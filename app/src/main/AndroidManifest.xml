@@ -50,6 +50,7 @@
         </activity>
         <activity android:name=".ui.auth.SignupActivity" android:exported="false" />
         <activity android:name=".ui.diary.DiaryActivity" android:exported="false" />
+        <activity android:name=".ui.diary.DiaryDetailActivity" android:exported="false" />
         <activity android:name=".ui.onboarding.OnboardingActivity" android:exported="false" />
         <activity android:name=".ui.diary.ChatbotActivity" android:exported="true" />
         <activity android:name=".ui.profile.ProfileActivity" android:exported="false" />
