@@ -88,6 +88,24 @@ data class DiaryItemDto(
     val updated_at: String? = null
 )
 
+data class DiaryEntryListResponseDto(
+    val items: List<DiaryEntryItemDto> = emptyList()
+)
+
+data class DiaryEntryItemDto(
+    val id: String = "",
+    val diary_id: String = "",
+    val session_id: String = "",
+    val date: String = "",
+    val summary: String = "",
+    val preview: String = "",
+    val status: String = "",
+    val model: String = "",
+    val start_time: String? = null,
+    val end_time: String? = null,
+    val updated_at: String? = null
+)
+
 data class DiaryDetailDto(
     val id: String = "",
     val date: String = "",

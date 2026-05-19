@@ -7,6 +7,7 @@ import com.android.capstone.sereluna.data.api.ChatResponseDto
 import com.android.capstone.sereluna.data.api.DeviceTokenRequestDto
 import com.android.capstone.sereluna.data.api.DiaryDetailDto
 import com.android.capstone.sereluna.data.api.DiaryItemDto
+import com.android.capstone.sereluna.data.api.DiaryEntryItemDto
 import com.android.capstone.sereluna.data.api.DiaryMessagesResponseDto
 import com.android.capstone.sereluna.data.api.NotificationItemDto
 import com.android.capstone.sereluna.data.api.ScreeningRequestDto
@@ -114,6 +115,10 @@ class SerelunaRepository(
 
     suspend fun getDiaries(limit: Int = 30): List<DiaryItemDto> {
         return api.getDiaries(authHeader(), limit).items
+    }
+
+    suspend fun getDiaryEntries(limit: Int = 30): List<DiaryEntryItemDto> {
+        return api.getDiaryEntries(authHeader(), limit).items
     }
 
     suspend fun getDiaryDetail(diaryId: String): DiaryDetailDto {

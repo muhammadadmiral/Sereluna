@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme for Dark Mode. -->
-    <style name="Base.Theme.Sereluna" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Base.Theme.Sereluna" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/brand_purple_light</item>
-        <item name="colorPrimaryVariant">@color/brand_purple_primary</item>
         <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryContainer">@color/brand_purple_dark</item>
+        <item name="colorOnPrimaryContainer">@color/brand_purple_pastel</item>
         
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/brand_purple_pastel</item>
         <item name="colorOnSecondary">@color/black</item>
         
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
         
         <!-- Background and surface colors -->
         <item name="android:colorBackground">@color/dark_background</item>
@@ -23,6 +24,15 @@
         <!-- Text colors -->
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
+
+        <!-- Global Component Styling -->
+        <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+
+        <!-- Activity Transitions -->
+        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
+
         <!-- Custom Attributes for compatibility -->
         <item name="backgroundColor">@color/dark_background</item>
     </style>

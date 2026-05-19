@@ -20,6 +20,12 @@ object DarkModePrefUtil {
     }
 
     fun setDarkMode(context: Context, isEnabled: Boolean) {
+        val currentSaved = isDarkMode(context)
+        // Prevent redundant changes that cause flickering
+        if (getPreferences(context).contains(KEY_DARK_MODE) && currentSaved == isEnabled) {
+            return 
+        }
+
         getPreferences(context).edit().putBoolean(KEY_DARK_MODE, isEnabled).apply()
         val mode = if (isEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         AppCompatDelegate.setDefaultNightMode(mode)

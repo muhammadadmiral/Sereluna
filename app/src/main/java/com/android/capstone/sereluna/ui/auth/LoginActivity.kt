@@ -2,8 +2,6 @@ package com.android.capstone.sereluna.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.method.HideReturnsTransformationMethod
-import android.text.method.PasswordTransformationMethod
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +20,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val serelunaRepository = SerelunaRepository()
     private var rememberMe: Boolean = false
-    private var isPasswordVisible: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +52,6 @@ class LoginActivity : AppCompatActivity() {
             createAccountContainer.setOnClickListener { openSignup() }
             tvToRegister.setOnClickListener { openSignup() }
             tvForgotPassword.setOnClickListener { openForgotPassword() }
-            btnTogglePassword.setOnClickListener { togglePasswordVisibility() }
         }
     }
 
@@ -127,19 +123,5 @@ class LoginActivity : AppCompatActivity() {
     private fun openForgotPassword() {
         val intent = Intent(this@LoginActivity, ForgotPasswordActivity::class.java)
         startActivity(intent)
-    }
-
-    private fun togglePasswordVisibility() {
-        isPasswordVisible = !isPasswordVisible
-        val start = binding.passwordEditText.selectionStart
-        val end = binding.passwordEditText.selectionEnd
-        if (isPasswordVisible) {
-            binding.passwordEditText.transformationMethod = HideReturnsTransformationMethod.getInstance()
-            binding.btnTogglePassword.setImageResource(com.android.capstone.sereluna.R.drawable.ic_hide_password)
-        } else {
-            binding.passwordEditText.transformationMethod = PasswordTransformationMethod.getInstance()
-            binding.btnTogglePassword.setImageResource(com.android.capstone.sereluna.R.drawable.ic_show_password)
-        }
-        binding.passwordEditText.setSelection(start.coerceAtLeast(0), end.coerceAtLeast(0))
     }
 }

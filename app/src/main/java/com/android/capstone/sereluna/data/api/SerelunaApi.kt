@@ -50,6 +50,12 @@ interface SerelunaApi {
         @Query("limit") limit: Int = 30
     ): DiaryListResponseDto
 
+    @GET("api/v1/diaries/entries/")
+    suspend fun getDiaryEntries(
+        @Header("Authorization") authorization: String,
+        @Query("limit") limit: Int = 30
+    ): DiaryEntryListResponseDto
+
     @GET("api/v1/diaries/{diary_id}/")
     suspend fun getDiaryDetail(
         @Header("Authorization") authorization: String,

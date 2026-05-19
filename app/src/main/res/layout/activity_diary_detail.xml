@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/back_button_description"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/backButton">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:id="@+id/tvDetailDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/raleway_bold"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textSize="24sp"
+                        tools:text="19 Mei 2026" />
+
+                    <TextView
+                        android:id="@+id/tvDetailMeta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:fontFamily="@font/raleway_medium"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textSize="12sp"
+                        tools:text="Diary ID: ...\nSession ID: ...\nUpdated: ..." />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvDetailStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/button_border"
+                            android:fontFamily="@font/raleway_bold"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="?attr/colorPrimary"
+                            android:textSize="12sp"
+                            tools:text="done" />
+
+                        <TextView
+                            android:id="@+id/tvDetailModel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway_medium"
+                            android:gravity="end"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="12sp"
+                            tools:text="model name" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvDetailPreviewLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:fontFamily="@font/raleway_bold"
+                        android:text="Preview"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetailPreview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:fontFamily="@font/raleway_medium"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="15sp"
+                        tools:text="Preview dari diary sesi." />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="18dp"
+                        android:background="?attr/colorPrimaryContainer" />
+
+                    <TextView
+                        android:id="@+id/tvDetailSummaryLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/raleway_bold"
+                        android:text="Ringkasan lengkap"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tvDetailSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:fontFamily="@font/raleway_bold"
+                        android:lineSpacingExtra="5dp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="16sp"
+                        tools:text="Ringkasan lengkap diary sesi tampil di sini." />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,20 +1,20 @@
 package com.android.capstone.sereluna.data.model
 
-data class Diary(
+data class DiaryFeedItem(
     val id: String = "",
-    val title: String = "",
+    val diaryId: String = "",
+    val sessionId: String = "",
     val date: String = "",
-    val content: String = "",
-    val mood: String = "",
-    val tags: List<String> = emptyList(),
-    val chatSummary: String = "",
+    val summary: String = "",
     val preview: String = "",
     val status: String = "",
     val model: String = "",
-    val diaryId: String = "",
-    val sessionId: String = "",
     val startTime: String? = null,
     val endTime: String? = null,
-    val createdAt: String? = null,
     val updatedAt: String? = null
+)
+
+data class DiaryDayGroup(
+    val date: String,
+    val entries: List<DiaryFeedItem>
 )

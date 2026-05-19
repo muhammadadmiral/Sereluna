@@ -91,8 +91,9 @@ class ProfileActivity : AppCompatActivity() {
                 is UiState.Success -> {
                     binding.progressBar.visibility = View.GONE
                     showToast("Profile updated successfully!")
+                    setResult(Activity.RESULT_OK)
                     // Reload data to show the latest changes
-                    userViewModel.loadUserData()
+                    userViewModel.loadUserData(true)
                     selectedImageUri = null // Reset after successful upload
                 }
                 is UiState.Error -> {

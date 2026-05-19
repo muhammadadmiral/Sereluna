@@ -25,7 +25,11 @@ class UserViewModel : ViewModel() {
     private val _updateState = MutableLiveData<UiState<Unit>>()
     val updateState: LiveData<UiState<Unit>> = _updateState
 
-    fun loadUserData() {
+    fun loadUserData(forceRefresh: Boolean = false) {
+        if (!forceRefresh && _userData.value is UiState.Success) {
+            return // Use cached data
+        }
+        
         viewModelScope.launch {
             _userData.value = UiState.Loading
             try {
