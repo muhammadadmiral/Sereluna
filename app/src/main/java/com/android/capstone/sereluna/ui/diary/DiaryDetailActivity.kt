@@ -35,19 +35,11 @@ class DiaryDetailActivity : AppCompatActivity() {
         val preview = intent.getStringExtra(EXTRA_PREVIEW).orEmpty()
         val status = intent.getStringExtra(EXTRA_STATUS).orEmpty()
         val model = intent.getStringExtra(EXTRA_MODEL).orEmpty()
-        val startTime = intent.getStringExtra(EXTRA_START_TIME).orEmpty()
-        val endTime = intent.getStringExtra(EXTRA_END_TIME).orEmpty()
         val updatedAt = intent.getStringExtra(EXTRA_UPDATED_AT).orEmpty()
 
         binding.tvDetailDate.text = date.ifBlank { "Diary Detail" }
         binding.tvDetailStatus.text = status.ifBlank { "session" }
         binding.tvDetailModel.text = model.ifBlank { "model" }
-        binding.tvDetailTime.text = when {
-            startTime.isBlank() && endTime.isBlank() -> date
-            endTime.isBlank() -> startTime
-            startTime.isBlank() -> endTime
-            else -> "$startTime - $endTime"
-        }
         binding.tvDetailPreview.text = preview.ifBlank { "Tidak ada preview." }
         binding.tvDetailSummary.text = summary.ifBlank { "Tidak ada ringkasan." }
         binding.tvDetailMeta.text = buildString {
