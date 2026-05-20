@@ -8,6 +8,7 @@ import retrofit2.http.Path
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Query
+import com.google.gson.JsonElement
 
 interface SerelunaApi {
     @POST("api/v1/chat/")
@@ -98,4 +99,23 @@ interface SerelunaApi {
         @Header("Authorization") authorization: String,
         @Query("limit") limit: Int = 14
     ): SleepDailyHistoryResponseDto
+
+    @POST("api/v1/mood/")
+    suspend fun submitMood(
+        @Header("Authorization") authorization: String,
+        @Body request: MoodRequestDto
+    ): SuccessResponseDto
+
+    @GET("api/v1/calendar/summary/")
+    suspend fun getCalendarSummary(
+        @Header("Authorization") authorization: String,
+        @Query("year") year: Int,
+        @Query("month") month: Int
+    ): JsonElement
+
+    @GET("api/v1/calendar/detail/")
+    suspend fun getCalendarDetail(
+        @Header("Authorization") authorization: String,
+        @Query("date") date: String
+    ): JsonElement
 }

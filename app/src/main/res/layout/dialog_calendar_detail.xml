@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="22dp"
+        android:paddingTop="18dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="24dp">
+
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/bg_bottom_sheet_handle" />
+
+        <LinearLayout
+            android:id="@+id/detailHeaderRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/detailDateText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/raleway_bold"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="22sp"
+                tools:text="21 Mei 2026" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/wellbeingScoreChip"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Score --" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/wellbeingLevelText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/raleway_medium"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            tools:text="stable" />
+
+        <LinearLayout
+            style="@style/Widget.Sereluna.CalendarDetailSection"
+            android:layout_marginTop="22dp">
+
+            <LinearLayout style="@style/Widget.Sereluna.CalendarSectionTitleRow">
+
+                <TextView
+                    style="@style/Widget.Sereluna.CalendarSectionIcon"
+                    android:text="mood" />
+
+                <TextView
+                    style="@style/Widget.Sereluna.CalendarSectionLabel"
+                    android:text="Mood" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/detailMoodText"
+                style="@style/Widget.Sereluna.CalendarBodyText"
+                tools:text="Happy" />
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/Widget.Sereluna.CalendarDetailSection"
+            android:layout_marginTop="18dp">
+
+            <LinearLayout style="@style/Widget.Sereluna.CalendarSectionTitleRow">
+
+                <TextView
+                    style="@style/Widget.Sereluna.CalendarSectionIcon"
+                    android:text="bedtime" />
+
+                <TextView
+                    style="@style/Widget.Sereluna.CalendarSectionLabel"
+                    android:text="Sleep" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/detailBedtimeText"
+                style="@style/Widget.Sereluna.CalendarBodyText"
+                tools:text="Tidur: 23:30" />
+
+            <TextView
+                android:id="@+id/detailWakeupText"
+                style="@style/Widget.Sereluna.CalendarBodyText"
+                tools:text="Bangun: 06:00" />
+
+            <TextView
+                android:id="@+id/detailSleepTotalText"
+                style="@style/Widget.Sereluna.CalendarBodyText"
+                tools:text="Total: 6.5 jam" />
+
+            <TextView
+                android:id="@+id/detailSleepQualityText"
+                style="@style/Widget.Sereluna.CalendarBodyText"
+                tools:text="Kualitas: Good" />
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/Widget.Sereluna.CalendarDetailSection"
+            android:layout_marginTop="18dp">
+
+            <LinearLayout style="@style/Widget.Sereluna.CalendarSectionTitleRow">
+
+                <TextView
+                    style="@style/Widget.Sereluna.CalendarSectionIcon"
+                    android:text="edit_note" />
+
+                <TextView
+                    style="@style/Widget.Sereluna.CalendarSectionLabel"
+                    android:text="Diary" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/detailDiaryText"
+                style="@style/Widget.Sereluna.CalendarBodyText"
+                tools:text="Hari ini terasa lebih ringan setelah journaling." />
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/Widget.Sereluna.CalendarDetailSection"
+            android:layout_marginTop="18dp">
+
+            <LinearLayout style="@style/Widget.Sereluna.CalendarSectionTitleRow">
+
+                <TextView
+                    style="@style/Widget.Sereluna.CalendarSectionIcon"
+                    android:text="tips_and_updates" />
+
+                <TextView
+                    style="@style/Widget.Sereluna.CalendarSectionLabel"
+                    android:text="Insight" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/detailRecommendationText"
+                style="@style/Widget.Sereluna.CalendarBodyText"
+                tools:text="Pertahankan rutinitas tidur dan journaling ringan." />
+
+            <LinearLayout
+                android:id="@+id/signalsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

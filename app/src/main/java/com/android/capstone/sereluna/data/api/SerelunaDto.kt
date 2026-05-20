@@ -151,8 +151,10 @@ data class DeviceTokenRequestDto(
 
 data class SleepDailyRequestDto(
     val date: String,
-    val sleep_quality: String,
-    val total_sleep_hours: Long
+    val bedtime: String,
+    val wakeup: String,
+    val total_sleep_hours: Double,
+    val sleep_quality: String
 )
 
 data class SleepDailyResponseDto(
@@ -165,9 +167,50 @@ data class SleepDailyHistoryResponseDto(
 
 data class SleepDailyItemDto(
     val date: String = "",
+    val bedtime: String? = null,
+    val wakeup: String? = null,
     val sleep_quality: String = "",
-    val total_sleep_hours: Long = 0,
+    val total_sleep_hours: Double = 0.0,
     val updated_at: String? = null
+)
+
+data class MoodRequestDto(
+    val date: String,
+    val mood: String
+)
+
+data class CalendarSummaryItemDto(
+    val date: String = "",
+    val has_sleep_data: Boolean = false,
+    val mood: String? = null,
+    val has_diary: Boolean = false,
+    val wellbeing_score: Int? = null,
+    val wellbeing_level: String? = null,
+    val indicator: String? = null
+)
+
+data class CalendarSleepDetailDto(
+    val bedtime: String? = null,
+    val wakeup: String? = null,
+    val total_sleep_hours: Double? = null,
+    val sleep_quality: String? = null
+)
+
+data class CalendarWellbeingDto(
+    val score: Int? = null,
+    val level: String? = null,
+    val signals: List<String> = emptyList(),
+    val recommendation: String? = null
+)
+
+data class CalendarDetailDto(
+    val date: String = "",
+    val mood: String? = null,
+    val has_sleep_data: Boolean = false,
+    val has_diary: Boolean = false,
+    val diary_snippet: String? = null,
+    val sleep: CalendarSleepDetailDto = CalendarSleepDetailDto(),
+    val wellbeing: CalendarWellbeingDto = CalendarWellbeingDto()
 )
 
 data class SuccessResponseDto(

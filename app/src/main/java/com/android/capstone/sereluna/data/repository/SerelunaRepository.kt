@@ -9,6 +9,11 @@ import com.android.capstone.sereluna.data.api.DiaryDetailDto
 import com.android.capstone.sereluna.data.api.DiaryItemDto
 import com.android.capstone.sereluna.data.api.DiaryEntryItemDto
 import com.android.capstone.sereluna.data.api.DiaryMessagesResponseDto
+import com.android.capstone.sereluna.data.api.CalendarDetailDto
+import com.android.capstone.sereluna.data.api.CalendarSleepDetailDto
+import com.android.capstone.sereluna.data.api.CalendarSummaryItemDto
+import com.android.capstone.sereluna.data.api.CalendarWellbeingDto
+import com.android.capstone.sereluna.data.api.MoodRequestDto
 import com.android.capstone.sereluna.data.api.NotificationItemDto
 import com.android.capstone.sereluna.data.api.ScreeningRequestDto
 import com.android.capstone.sereluna.data.api.ScreeningResponseDto
@@ -22,6 +27,8 @@ import com.android.capstone.sereluna.data.api.UserProfileResponseDto
 import com.android.capstone.sereluna.data.api.UserProfileUpdateRequestDto
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -146,15 +153,19 @@ class SerelunaRepository(
 
     suspend fun submitSleepDaily(
         date: String,
+        bedtime: String,
+        wakeup: String,
+        totalSleepHours: Double,
         sleepQuality: String,
-        totalSleepHours: Long
     ) {
         api.submitSleepDaily(
             authorization = authHeader(),
             request = SleepDailyRequestDto(
                 date = date,
-                sleep_quality = sleepQuality,
-                total_sleep_hours = totalSleepHours
+                bedtime = bedtime,
+                wakeup = wakeup,
+                total_sleep_hours = totalSleepHours,
+                sleep_quality = sleepQuality
             )
         )
     }
@@ -163,11 +174,111 @@ class SerelunaRepository(
         return api.getSleepDaily(authHeader(), limit).items
     }
 
+    suspend fun submitMood(date: String, mood: String): SuccessResponseDto {
+        return api.submitMood(
+            authorization = authHeader(),
+            request = MoodRequestDto(
+                date = date,
+                mood = mood
+            )
+        )
+    }
+
+    suspend fun getCalendarSummary(year: Int, month: Int): List<CalendarSummaryItemDto> {
+        val raw = api.getCalendarSummary(authHeader(), year, month)
+        return raw.itemArray().mapNotNull { element ->
+            val item = element.asObjectOrNull() ?: return@mapNotNull null
+            CalendarSummaryItemDto(
+                date = item.stringOrNull("date").orEmpty(),
+                has_sleep_data = item.booleanOrFalse("has_sleep_data"),
+                mood = item.stringOrNull("mood"),
+                has_diary = item.booleanOrFalse("has_diary"),
+                wellbeing_score = item.intOrNull("wellbeing_score"),
+                wellbeing_level = item.stringOrNull("wellbeing_level"),
+                indicator = item.stringOrNull("indicator")
+            )
+        }.filter { it.date.isNotBlank() }
+    }
+
+    suspend fun getCalendarDetail(date: String): CalendarDetailDto {
+        val raw = api.getCalendarDetail(authHeader(), date)
+        val root = raw.asObjectOrNull() ?: return CalendarDetailDto(date = date)
+        val sleep = root.get("sleep").asObjectOrNull()
+        val wellbeing = root.get("wellbeing").asObjectOrNull()
+        val diarySnippet = root.stringOrNull("diary_snippet")
+            ?: root.stringOrNull("diary_summary")
+            ?: root.stringOrNull("preview")
+
+        return CalendarDetailDto(
+            date = root.stringOrNull("date") ?: date,
+            mood = root.stringOrNull("mood"),
+            has_sleep_data = root.booleanOrFalse("has_sleep_data") || sleep != null,
+            has_diary = root.booleanOrFalse("has_diary") || !diarySnippet.isNullOrBlank(),
+            diary_snippet = diarySnippet,
+            sleep = CalendarSleepDetailDto(
+                bedtime = sleep?.stringOrNull("bedtime") ?: root.stringOrNull("bedtime"),
+                wakeup = sleep?.stringOrNull("wakeup") ?: root.stringOrNull("wakeup"),
+                total_sleep_hours = sleep?.doubleOrNull("total_sleep_hours")
+                    ?: root.doubleOrNull("total_sleep_hours"),
+                sleep_quality = sleep?.stringOrNull("sleep_quality")
+                    ?: root.stringOrNull("sleep_quality")
+            ),
+            wellbeing = CalendarWellbeingDto(
+                score = wellbeing?.intOrNull("score") ?: root.intOrNull("wellbeing_score"),
+                level = wellbeing?.stringOrNull("level") ?: root.stringOrNull("wellbeing_level"),
+                signals = wellbeing?.stringList("signals") ?: root.stringList("signals"),
+                recommendation = wellbeing?.stringOrNull("recommendation")
+                    ?: root.stringOrNull("recommendation")
+            )
+        )
+    }
+
     private suspend fun uploadProfileImage(imageUri: Uri): String {
         val userId = getCurrentUserId() ?: error("User belum login")
         val storageRef = storage.reference.child("profile_images/$userId")
         storageRef.putFile(imageUri).await()
         return storageRef.downloadUrl.await().toString()
+    }
+
+    private fun JsonElement.itemArray(): List<JsonElement> {
+        if (isJsonArray) return asJsonArray.map { it }
+        val root = asObjectOrNull() ?: return emptyList()
+        val candidates = listOf("items", "days", "summary", "data")
+        val array = candidates.asSequence()
+            .mapNotNull { key -> root.get(key)?.takeIf { it.isJsonArray }?.asJsonArray }
+            .firstOrNull()
+            ?: return emptyList()
+        return array.map { it }
+    }
+
+    private fun JsonElement?.asObjectOrNull(): JsonObject? {
+        return if (this != null && !isJsonNull && isJsonObject) asJsonObject else null
+    }
+
+    private fun JsonObject.stringOrNull(key: String): String? {
+        return runCatching { get(key)?.takeIf { !it.isJsonNull }?.asString }.getOrNull()
+            ?.takeIf { it.isNotBlank() }
+    }
+
+    private fun JsonObject.booleanOrFalse(key: String): Boolean {
+        return runCatching { get(key)?.takeIf { !it.isJsonNull }?.asBoolean }.getOrNull() ?: false
+    }
+
+    private fun JsonObject.intOrNull(key: String): Int? {
+        return runCatching { get(key)?.takeIf { !it.isJsonNull }?.asInt }.getOrNull()
+    }
+
+    private fun JsonObject.doubleOrNull(key: String): Double? {
+        return runCatching { get(key)?.takeIf { !it.isJsonNull }?.asDouble }.getOrNull()
+    }
+
+    private fun JsonObject.stringList(key: String): List<String> {
+        val array = runCatching { get(key)?.takeIf { it.isJsonArray }?.asJsonArray }.getOrNull()
+            ?: return emptyList()
+        return array.mapNotNull { element ->
+            runCatching { element.takeIf { !it.isJsonNull }?.asString }.getOrNull()
+                ?.takeIf { it.isNotBlank() }
+        }
     }
 
     companion object {

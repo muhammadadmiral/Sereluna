@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.Sereluna.CalendarWeekday">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:fontFamily">@font/raleway_bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Widget.Sereluna.CalendarDetailSection">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="Widget.Sereluna.CalendarSectionTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/raleway_bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Widget.Sereluna.CalendarSectionTitleRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="Widget.Sereluna.CalendarSectionIcon">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:fontFamily">@font/material_symbols</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/brand_purple_primary</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Widget.Sereluna.CalendarSectionLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:fontFamily">@font/raleway_bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Widget.Sereluna.CalendarBodyText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:fontFamily">@font/raleway_medium</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+</resources>

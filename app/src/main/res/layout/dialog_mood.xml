@@ -1,13 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="22dp"
+    android:paddingTop="18dp"
+    android:paddingEnd="22dp"
+    android:paddingBottom="22dp">
 
-    <EditText
-        android:id="@+id/moodEditText"
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_bottom_sheet_handle" />
+
+    <TextView
+        android:id="@+id/moodTitleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your mood"
-        android:inputType="text"/>
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/raleway_bold"
+        android:text="Catat mood"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/moodDateText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/raleway_medium"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="14sp" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/moodChipGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        app:checkedChip="@id/chipHappy"
+        app:chipSpacingHorizontal="8dp"
+        app:chipSpacingVertical="8dp"
+        app:singleSelection="true">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipHappy"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="happy"
+            android:text="Happy" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipCalm"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="calm"
+            android:text="Calm" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSad"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="sad"
+            android:text="Sad" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAnxious"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="anxious"
+            android:text="Anxious" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipAngry"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="angry"
+            android:text="Angry" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipTired"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="tired"
+            android:text="Tired" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/saveMoodButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/raleway_bold"
+        android:text="Simpan mood"
+        app:icon="@drawable/baseline_add_24"
+        app:iconGravity="textStart" />
 </LinearLayout>

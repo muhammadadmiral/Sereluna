@@ -43,4 +43,11 @@
     <color name="notif_blue">#42A5F5</color>
     <color name="notif_yellow">#FFCA28</color>
 
+    <!-- Calendar Indicators -->
+    <color name="calendar_green">#2E7D32</color>
+    <color name="calendar_yellow">#F9A825</color>
+    <color name="calendar_orange">#EF6C00</color>
+    <color name="calendar_red">#C62828</color>
+    <color name="calendar_blue">#1565C0</color>
+
 </resources>
