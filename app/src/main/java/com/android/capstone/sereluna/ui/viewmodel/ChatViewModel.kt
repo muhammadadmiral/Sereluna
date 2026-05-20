@@ -59,7 +59,7 @@ class ChatViewModel : ViewModel() {
         addMessageToList(Chat(userMessage, "user", false))
         userMessageCount++
 
-        addMessageToList(Chat("Sedang berpikir...", "bot", true))
+        addMessageToList(Chat("Typing...", "bot", true))
 
         val mood = sentimentAnalyzer.analyze(userMessage).first
 
@@ -103,9 +103,6 @@ class ChatViewModel : ViewModel() {
                 val response = repository.finishChat(roomId, sessionId)
                 previousSessionSummary = response.session_summary
                 _previousSummary.value = response.session_summary
-                if (response.session_summary.isNotBlank()) {
-                    addMessageToList(Chat(response.session_summary, "bot", true))
-                }
                 _sessionClosed.value = true
             } catch (e: Exception) {
                 _errorState.value = "Gagal menutup sesi. Coba lagi saat koneksi stabil."
