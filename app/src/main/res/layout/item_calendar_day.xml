@@ -62,7 +62,7 @@
                 <TextView
                     android:id="@+id/moodIconText"
                     android:layout_width="wrap_content"
-                    android:layout_height="18dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/material_symbols"
                     android:gravity="center"
                     android:singleLine="true"
@@ -75,7 +75,7 @@
                 <TextView
                     android:id="@+id/sleepIconText"
                     android:layout_width="wrap_content"
-                    android:layout_height="18dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/material_symbols"
                     android:gravity="center"
                     android:singleLine="true"
@@ -88,7 +88,7 @@
                 <TextView
                     android:id="@+id/diaryIconText"
                     android:layout_width="wrap_content"
-                    android:layout_height="18dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/material_symbols"
                     android:gravity="center"
                     android:singleLine="true"
