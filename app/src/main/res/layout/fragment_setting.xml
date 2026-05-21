@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="?attr/backgroundColor">
+    android:background="@drawable/bg_luxury_app">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,19 +13,97 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="6dp"
+            app:strokeColor="#33FFFFFF"
+            app:strokeWidth="1dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_luxury_header"
+                android:minHeight="168dp"
+                android:padding="20dp">
+
+                <FrameLayout
+                    android:id="@+id/logoPlate"
+                    android:layout_width="76dp"
+                    android:layout_height="76dp"
+                    android:background="@drawable/bg_luxury_logo_plate"
+                    android:padding="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/ivSerelunaLogo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="@string/app_name"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/splash" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvSettingEyebrow"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/raleway_bold"
+                    android:text="Sereluna"
+                    android:textColor="@color/brand_blush"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/logoPlate"
+                    app:layout_constraintTop_toTopOf="@id/logoPlate" />
+
+                <TextView
+                    android:id="@+id/tvSettingsTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/raleway_bold"
+                    android:text="Pengaturan"
+                    android:textColor="@color/white"
+                    android:textSize="28sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/logoPlate"
+                    app:layout_constraintTop_toBottomOf="@id/tvSettingEyebrow" />
+
+                <TextView
+                    android:id="@+id/tvSettingsSubtitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:fontFamily="@font/raleway_medium"
+                    android:lineSpacingExtra="2dp"
+                    android:text="Ruang personal yang tenang untuk akun, privasi, dan tema."
+                    android:textColor="#EDE3F4"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/logoPlate" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="24dp"
             android:fontFamily="@font/raleway_bold"
-            android:text="Pengaturan"
-            android:textColor="@color/brand_purple_primary"
-            android:textSize="28sp" />
+            android:text="Profil"
+            android:textColor="@color/brand_purple_dark"
+            android:textSize="16sp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="12dp"
             android:layout_marginBottom="24dp">
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -106,7 +184,7 @@
         <!-- Preferensi Section -->
         <TextView
             style="@style/SettingsSectionHeader"
-            android:text="Preferensi" />
+            android:text="Tampilan &amp; Tema" />
 
         <com.google.android.material.card.MaterialCardView
             style="@style/SettingsCard">
@@ -114,23 +192,54 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
+                android:orientation="vertical"
+                android:padding="8dp">
 
-                <TextView
-                    android:layout_width="0dp"
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/themeToggleGroup"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/raleway_medium"
-                    android:text="Mode Gelap"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="16sp" />
+                    android:gravity="center"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
 
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switchDarkMode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnThemeDefault"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sistem"
+                        android:textSize="12sp"
+                        app:icon="@drawable/ic_theme_auto_24"
+                        app:iconGravity="top"
+                        app:iconPadding="4dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnThemeLight"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Terang"
+                        android:textSize="12sp"
+                        app:icon="@drawable/ic_theme_light_24"
+                        app:iconGravity="top"
+                        app:iconPadding="4dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnThemeDark"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Gelap"
+                        android:textSize="12sp"
+                        app:icon="@drawable/ic_theme_dark_24"
+                        app:iconGravity="top"
+                        app:iconPadding="4dp" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -169,8 +278,8 @@
             android:fontFamily="@font/raleway_bold"
             android:text="Keluar dari Akun"
             android:textColor="@color/white"
-            app:backgroundTint="@color/brand_purple_primary"
-            app:cornerRadius="16dp" />
+            app:backgroundTint="@color/brand_plum_800"
+            app:cornerRadius="18dp" />
 
     </LinearLayout>
 </ScrollView>

@@ -9,11 +9,15 @@
         <item name="colorOnPrimaryContainer">@color/brand_purple_dark</item>
         
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/brand_purple_light</item>
+        <item name="colorSecondary">@color/brand_rose_gold</item>
         <item name="colorOnSecondary">@color/white</item>
+        <item name="colorTertiary">@color/brand_sage</item>
+        <item name="colorOnTertiary">@color/white</item>
         
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:statusBarColor">@color/brand_plum_900</item>
+        <item name="android:navigationBarColor">@color/brand_pearl</item>
+        <item name="android:windowLightStatusBar">false</item>
         
         <!-- Background and surface colors -->
         <item name="android:colorBackground">@color/light_background</item>
@@ -62,12 +66,15 @@
         <item name="android:paddingTop">14dp</item>
         <item name="android:paddingBottom">14dp</item>
         <item name="android:fontFamily">@font/raleway_bold</item>
+        <item name="backgroundTint">@color/brand_purple_primary</item>
     </style>
 
     <style name="Widget.App.CardView" parent="Widget.Material3.CardView.Elevated">
-        <item name="cardCornerRadius">16dp</item>
-        <item name="cardElevation">2dp</item>
+        <item name="cardCornerRadius">18dp</item>
+        <item name="cardElevation">4dp</item>
         <item name="cardBackgroundColor">?attr/colorSurface</item>
+        <item name="strokeColor">@color/brand_purple_pastel</item>
+        <item name="strokeWidth">1dp</item>
     </style>
 
     <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">

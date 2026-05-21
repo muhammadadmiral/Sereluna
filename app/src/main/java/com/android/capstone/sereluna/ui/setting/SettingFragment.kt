@@ -121,15 +121,26 @@ class SettingFragment : Fragment() {
             showPolicyDialog("Kebijakan Privasi", getString(R.string.privacy_content))
         }
 
-        // Dark Mode Toggle
-        val isDarkModeEnabled = DarkModePrefUtil.isDarkMode(requireContext())
-        binding.switchDarkMode.setOnCheckedChangeListener(null)
-        binding.switchDarkMode.isChecked = isDarkModeEnabled
-        
-        binding.switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked != isDarkModeEnabled) {
-                requireActivity().overridePendingTransition(0, 0)
-                DarkModePrefUtil.setDarkMode(requireContext(), isChecked)
+        // Theme Toggle
+        val currentTheme = DarkModePrefUtil.getThemeMode(requireContext())
+        when (currentTheme) {
+            0 -> binding.themeToggleGroup.check(R.id.btnThemeDefault)
+            1 -> binding.themeToggleGroup.check(R.id.btnThemeLight)
+            2 -> binding.themeToggleGroup.check(R.id.btnThemeDark)
+        }
+
+        binding.themeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                val newMode = when (checkedId) {
+                    R.id.btnThemeDefault -> 0
+                    R.id.btnThemeLight -> 1
+                    R.id.btnThemeDark -> 2
+                    else -> 0
+                }
+                if (newMode != currentTheme) {
+                    DarkModePrefUtil.setThemeMode(requireContext(), newMode)
+                    requireActivity().recreate()
+                }
             }
         }
 

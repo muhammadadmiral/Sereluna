@@ -9,15 +9,20 @@
         <item name="colorOnPrimaryContainer">@color/brand_purple_pastel</item>
         
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/brand_purple_pastel</item>
+        <item name="colorSecondary">@color/brand_rose_gold</item>
         <item name="colorOnSecondary">@color/black</item>
+        <item name="colorTertiary">@color/brand_sage</item>
+        <item name="colorOnTertiary">@color/black</item>
         
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">@color/brand_plum_900</item>
+        <item name="android:navigationBarColor">@color/dark_background</item>
+        <item name="android:windowLightStatusBar">false</item>
         
         <!-- Background and surface colors -->
         <item name="android:colorBackground">@color/dark_background</item>
         <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorSurfaceVariant">@color/dark_card</item>
         <item name="colorOnBackground">@color/text_primary_light</item>
         <item name="colorOnSurface">@color/text_primary_light</item>
         

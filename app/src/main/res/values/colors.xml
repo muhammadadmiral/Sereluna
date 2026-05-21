@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand Colors -->
-    <color name="brand_purple_dark">#3A006B</color>
-    <color name="brand_purple_primary">#6A1B9A</color>
-    <color name="brand_purple_light">#9C4DCC</color>
-    <color name="brand_purple_pastel">#E1BEE7</color>
-    <color name="light_purple_bg">#F3E5F5</color>
+    <!-- Brand Colors: refined for a warmer, premium mental-wellness feel. -->
+    <color name="brand_purple_dark">#31124A</color>
+    <color name="brand_purple_primary">#6F3FA0</color>
+    <color name="brand_purple_light">#A979C8</color>
+    <color name="brand_purple_pastel">#E9DDF2</color>
+    <color name="brand_plum_900">#21102F</color>
+    <color name="brand_plum_800">#341946</color>
+    <color name="brand_rose_gold">#C8957B</color>
+    <color name="brand_blush">#F7CBD7</color>
+    <color name="brand_sage">#8FAF9A</color>
+    <color name="brand_mist">#EEF6F2</color>
+    <color name="brand_pearl">#FBF8FC</color>
+    <color name="light_purple_bg">#F3ECF7</color>
 
     <!-- Light Theme Surface Colors -->
-    <color name="light_background">#F7F2FA</color> <!-- Off-white with a hint of purple -->
+    <color name="light_background">#FBF7FC</color>
     <color name="light_surface">#FFFFFF</color>
+    
+    <!-- True Light Colors (High Contrast) -->
+    <color name="true_light_background">#FFFFFF</color>
+    <color name="true_light_surface">#F5F5F5</color>
 
     <!-- Dark Theme Surface Colors -->
-    <color name="dark_background">#121212</color>
-    <color name="dark_surface">#1E1E1E</color> <!-- Slightly lighter than background -->
+    <color name="dark_background">#120B18</color>
+    <color name="dark_surface">#1D1128</color>
+    <color name="dark_card">#281837</color>
 
     <!-- Text Colors -->
     <color name="text_primary_dark">#DE000000</color> <!-- 87% black -->

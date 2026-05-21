@@ -6,35 +6,40 @@ import androidx.appcompat.app.AppCompatDelegate
 
 object DarkModePrefUtil {
     private const val PREFERENCE_NAME = "dark_mode_pref"
-    private const val KEY_DARK_MODE = "is_dark_mode"
+    private const val KEY_THEME_MODE = "theme_mode" // 0: Default, 1: Light, 2: Dark
 
     private fun getPreferences(context: Context) =
         context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
 
-    fun isDarkMode(context: Context): Boolean {
-        val prefs = getPreferences(context)
-        if (prefs.contains(KEY_DARK_MODE)) {
-            return prefs.getBoolean(KEY_DARK_MODE, false)
-        }
-        return isSystemDarkMode(context)
+    fun getThemeMode(context: Context): Int {
+        return getPreferences(context).getInt(KEY_THEME_MODE, 0)
     }
 
-    fun setDarkMode(context: Context, isEnabled: Boolean) {
-        val currentSaved = isDarkMode(context)
-        // Prevent redundant changes that cause flickering
-        if (getPreferences(context).contains(KEY_DARK_MODE) && currentSaved == isEnabled) {
-            return 
-        }
-
-        getPreferences(context).edit().putBoolean(KEY_DARK_MODE, isEnabled).apply()
-        val mode = if (isEnabled) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        AppCompatDelegate.setDefaultNightMode(mode)
+    fun setThemeMode(context: Context, mode: Int) {
+        getPreferences(context).edit().putInt(KEY_THEME_MODE, mode).apply()
+        applyTheme(mode)
     }
 
     fun applySavedMode(context: Context) {
-        val isDarkMode = isDarkMode(context)
-        val mode = if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        AppCompatDelegate.setDefaultNightMode(mode)
+        val mode = getThemeMode(context)
+        applyTheme(mode)
+    }
+
+    private fun applyTheme(mode: Int) {
+        val appCompatMode = when (mode) {
+            1 -> AppCompatDelegate.MODE_NIGHT_NO
+            2 -> AppCompatDelegate.MODE_NIGHT_YES
+            else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+        AppCompatDelegate.setDefaultNightMode(appCompatMode)
+    }
+
+    // Keep for compatibility if needed, but preferred to use getThemeMode
+    fun isDarkMode(context: Context): Boolean {
+        val mode = getThemeMode(context)
+        if (mode == 2) return true
+        if (mode == 1) return false
+        return isSystemDarkMode(context)
     }
 
     private fun isSystemDarkMode(context: Context): Boolean {
