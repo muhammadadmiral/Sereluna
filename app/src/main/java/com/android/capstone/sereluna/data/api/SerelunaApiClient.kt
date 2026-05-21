@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object SerelunaApiClient {
     private val logging = HttpLoggingInterceptor().apply {
@@ -13,6 +14,9 @@ object SerelunaApiClient {
 
     private val okHttp = OkHttpClient.Builder()
         .addInterceptor(logging)
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
         .build()
 
     val api: SerelunaApi = Retrofit.Builder()

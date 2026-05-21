@@ -8,6 +8,8 @@ data class Notification(
     val title: String,
     val body: String,
     val notifStatus: String = "",
+    val isRead: Boolean = false,
+    val actionLink: String? = null,
     val createdAt: Date? = null
 ) {
     companion object {

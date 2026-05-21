@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet_handle"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Handle Bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        android:background="@color/gray_200" />
+
+    <!-- Date Header -->
+    <TextView
+        android:id="@+id/tvDetailDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/raleway_bold"
+        android:textColor="@color/brand_purple_primary"
+        android:textSize="20sp"
+        tools:text="Kamis, 21 Mei 2026" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:alpha="0.1"
+        android:background="@color/black" />
+
+    <!-- Mood Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvMoodIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:fontFamily="@font/material_symbols"
+            android:gravity="center"
+            android:textColor="@color/brand_purple_primary"
+            android:textSize="28sp"
+            tools:text="&#xe7f2;" />
+
+        <TextView
+            android:id="@+id/tvMoodLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="@font/raleway_bold"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            tools:text="Sangat Bahagia" />
+    </LinearLayout>
+
+    <!-- Sleep Info Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvSleepDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/gray_200"
+        app:strokeWidth="1dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/material_symbols"
+                    android:text="&#xef76;"
+                    android:textColor="@color/calendar_blue"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="@font/raleway_bold"
+                    android:text="Kualitas Tidur"
+                    android:textColor="?attr/colorOnSurface" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvSleepDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/raleway_medium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="7.5 Jam (Puas)" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Diary Snippet Section -->
+    <TextView
+        android:id="@+id/tvDiaryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/raleway_bold"
+        android:text="Cerita Kamu"
+        android:textColor="?attr/colorOnSurface"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tvDiarySnippet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:alpha="0.8"
+        android:fontFamily="@font/raleway_medium"
+        android:lineSpacingExtra="4dp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone"
+        tools:text="Hari ini aku merasa cukup lelah tapi senang karena bisa menyelesaikan tugas tepat waktu..."
+        tools:visibility="visible" />
+
+    <!-- AI Insight Badge (Bonus) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvAiInsight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/light_purple_bg"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/chatbot" />
+
+            <TextView
+                android:id="@+id/tvAiInsightText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/raleway_medium"
+                android:textColor="@color/brand_purple_dark"
+                android:textSize="13sp"
+                tools:text="Kamu terlihat stabil hari ini. Tidur yang cukup sangat membantu mood kamu tetap positif!" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCloseSheet"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/raleway_bold"
+        android:text="Tutup"
+        app:cornerRadius="16dp" />
+
+</LinearLayout>

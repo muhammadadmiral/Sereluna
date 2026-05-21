@@ -142,6 +142,7 @@ data class NotificationItemDto(
     val body: String = "",
     val type: String = "",
     val is_read: Boolean = false,
+    val action_link: String? = null,
     val created_at: String? = null
 )
 
@@ -151,8 +152,10 @@ data class DeviceTokenRequestDto(
 
 data class SleepDailyRequestDto(
     val date: String,
-    val sleep_quality: String,
-    val total_sleep_hours: Long
+    val bedtime: String,
+    val wakeup: String,
+    val total_sleep_hours: Double,
+    val sleep_quality: String
 )
 
 data class SleepDailyResponseDto(
@@ -165,11 +168,94 @@ data class SleepDailyHistoryResponseDto(
 
 data class SleepDailyItemDto(
     val date: String = "",
+    val bedtime: String? = null,
+    val wakeup: String? = null,
     val sleep_quality: String = "",
-    val total_sleep_hours: Long = 0,
+    val total_sleep_hours: Double = 0.0,
     val updated_at: String? = null
+)
+
+data class MoodRequestDto(
+    val date: String,
+    val mood: String
+)
+
+data class CalendarSummaryItemDto(
+    val date: String = "",
+    val has_sleep_data: Boolean = false,
+    val mood: String? = null,
+    val has_diary: Boolean = false,
+    val wellbeing_score: Int? = null,
+    val wellbeing_level: String? = null,
+    val indicator: String? = null
+)
+
+data class CalendarSleepDetailDto(
+    val bedtime: String? = null,
+    val wakeup: String? = null,
+    val total_sleep_hours: Double? = null,
+    val sleep_quality: String? = null
+)
+
+data class CalendarWellbeingDto(
+    val score: Int? = null,
+    val level: String? = null,
+    val signals: List<String> = emptyList(),
+    val recommendation: String? = null
+)
+
+data class CalendarDetailDto(
+    val date: String = "",
+    val mood: String? = null,
+    val has_sleep_data: Boolean = false,
+    val has_diary: Boolean = false,
+    val diary_snippet: String? = null,
+    val sleep: CalendarSleepDetailDto = CalendarSleepDetailDto(),
+    val wellbeing: CalendarWellbeingDto = CalendarWellbeingDto()
 )
 
 data class SuccessResponseDto(
     val success: Boolean = false
+)
+
+data class MessageResponseDto(
+    val message: String = ""
+)
+
+data class ForgotPasswordRequestDto(
+    val email: String,
+    val continue_url: String? = null
+)
+
+data class ForgotPasswordResponseDto(
+    val message: String = "",
+    val reset_link: String? = null
+)
+
+data class ChangePasswordRequestDto(
+    val old_password: String,
+    val new_password: String
+)
+
+data class MoodDistributionResponseDto(
+    val period_days: Int = 0,
+    val data: List<MoodCountDto> = emptyList(),
+    val dominant_mood: String? = null,
+    val insight: String? = null
+)
+
+data class MoodCountDto(
+    val mood: String = "",
+    val count: Int = 0
+)
+
+data class SleepTrendsResponseDto(
+    val average_hours: Double = 0.0,
+    val items: List<SleepTrendItemDto> = emptyList(),
+    val insight: String? = null
+)
+
+data class SleepTrendItemDto(
+    val date: String = "",
+    val hours: Double = 0.0
 )

@@ -3,6 +3,7 @@ package com.android.capstone.sereluna.ui.diary
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +12,7 @@ import com.android.capstone.sereluna.data.adapter.ChatAdapter
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.ActivityChatbotBinding
 import com.android.capstone.sereluna.ui.viewmodel.ChatViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 
@@ -32,6 +34,12 @@ class ChatbotActivity : AppCompatActivity() {
         setupListeners()
         setupObservers()
         loadProfileData()
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitConfirmationDialog()
+            }
+        })
     }
 
     private fun setupRecyclerView() {
@@ -55,23 +63,36 @@ class ChatbotActivity : AppCompatActivity() {
         }
 
         binding.backButton.setOnClickListener {
-            viewModel.finishSession()
-            finish()
+            showExitConfirmationDialog()
         }
 
-        // TODO: Re-implement finish and summarize logic
         binding.btnFinish.setOnClickListener {
-            viewModel.finishSession()
-            Toast.makeText(this, "Meringkas sesi dan menyimpan ke diary...", Toast.LENGTH_SHORT).show()
-            // jangan langsung finish untuk memberi waktu summary tersimpan
+            showExitConfirmationDialog()
         }
         binding.btnSummarize.visibility = View.GONE
+    }
+
+    private fun showExitConfirmationDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Akhiri Sesi Percakapan?")
+            .setMessage("Apakah kamu yakin ingin keluar? Sesi ini akan ditutup secara permanen dan dirangkum ke dalam Jurnal. Sesi yang sudah ditutup tidak dapat dilanjutkan kembali.")
+            .setPositiveButton("Akhiri & Simpan") { dialog, _ ->
+                Toast.makeText(this, "Menyimpan dan meringkas sesi...", Toast.LENGTH_SHORT).show()
+                viewModel.finishSession()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Batal") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun setupObservers() {
         viewModel.chatMessages.observe(this) { messages ->
             chatAdapter.updateMessages(messages)
-            binding.recyclerView.scrollToPosition(messages.size - 1)
+            if (messages.isNotEmpty()) {
+                binding.recyclerView.smoothScrollToPosition(messages.size - 1)
+            }
         }
 
         viewModel.errorState.observe(this) { errorMessage ->
@@ -82,9 +103,8 @@ class ChatbotActivity : AppCompatActivity() {
 
         viewModel.sessionClosed.observe(this) { closed ->
             if (closed) {
-                binding.diaryEditText.isEnabled = false
-                binding.submitFab.isEnabled = false
-                Toast.makeText(this, "Sesi ditutup dan diringkas ke diary.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Sesi berhasil disimpan ke jurnal.", Toast.LENGTH_LONG).show()
+                finish() // Exit activity when done
             }
         }
 
