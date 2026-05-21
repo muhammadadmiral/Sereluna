@@ -25,7 +25,7 @@ class UserViewModel : ViewModel() {
     private val _updateState = MutableLiveData<UiState<Unit>>()
     val updateState: LiveData<UiState<Unit>> = _updateState
 
-    private val _screeningStatus = MutableLiveData<com.android.capstone.sereluna.data.api.ScreeningStatusDto?>()
+    private val _screeningStatus = MutableLiveData<com.android.capstone.sereluna.data.api.ScreeningStatusDto?>(null)
     val screeningStatus: LiveData<com.android.capstone.sereluna.data.api.ScreeningStatusDto?> = _screeningStatus
 
     fun loadUserData(forceRefresh: Boolean = false) {

@@ -54,6 +54,19 @@ class HomeFragment : Fragment() {
         // TODO: Add OnClickListeners for cvArticle, cvDoctor, cvCalendar, etc.
     }
 
+    private var isUserLoaded = false
+    private var isScreeningLoaded = false
+
+    private fun updateVisibility() {
+        if (isUserLoaded && isScreeningLoaded) {
+            binding.homeProgressBar.visibility = View.GONE
+            binding.homeContent.visibility = View.VISIBLE
+        } else {
+            binding.homeProgressBar.visibility = View.VISIBLE
+            binding.homeContent.visibility = View.INVISIBLE
+        }
+    }
+
     private fun setupObservers() {
         userViewModel.userData.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -64,13 +77,17 @@ class HomeFragment : Fragment() {
                     if (!photoUrl.isNullOrEmpty()) {
                         Picasso.get().load(photoUrl).into(binding.circleImageView)
                     }
+                    isUserLoaded = true
+                    updateVisibility()
                 }
                 is UiState.Loading -> {
-                    // You can show a placeholder/shimmer here
+                    isUserLoaded = false
+                    updateVisibility()
                     binding.tvUserName.text = "Loading..."
                 }
                 is UiState.Error -> {
-                    // Handle error state
+                    isUserLoaded = true // Show error state
+                    updateVisibility()
                     binding.tvUserName.text = "Error loading data"
                 }
             }
@@ -78,19 +95,21 @@ class HomeFragment : Fragment() {
 
         userViewModel.screeningStatus.observe(viewLifecycleOwner) { status ->
             if (status != null) {
-                binding.cvScreening.visibility = if (status.is_due) View.VISIBLE else View.GONE
+                binding.cvScreening.visibility = View.VISIBLE 
                 binding.textViewScreening.text = if (status.is_due) {
                     "Skrining DASS-21"
                 } else {
                     "Baseline aktif"
                 }
+                isScreeningLoaded = true
+                updateVisibility()
             } else {
-                // Default to visible if error or not yet loaded to be safe
-                binding.cvScreening.visibility = View.VISIBLE
-                binding.textViewScreening.text = "Skrining DASS-21"
+                // If we're using a cached/shared VM, status might be null initially
+                // or after a reset. loadScreeningStatus will eventually trigger a non-null.
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

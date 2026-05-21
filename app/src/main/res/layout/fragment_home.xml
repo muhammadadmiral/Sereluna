@@ -8,322 +8,337 @@
     android:animateLayoutChanges="true"
     android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/backgroundColor"
-        tools:context=".ui.main.HomeFragment">
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineStart"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/homeContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/backgroundColor"
+            android:visibility="invisible"
+            tools:context=".ui.main.HomeFragment">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="16dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="16dp" />
+
+            <!-- TextView untuk menyambut pengguna -->
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:text="Hi, User!"
+                android:textSize="24sp"
+                android:fontFamily="@font/raleway_bold"
+                android:textColor="?attr/colorOnBackground"
+                android:maxLines="2"
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="14sp"
+                app:autoSizeMaxTextSize="24sp"
+                app:autoSizeStepGranularity="1sp"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintEnd_toStartOf="@id/circleImageView"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- ImageView untuk foto profil pengguna -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/circleImageView"
+                android:layout_width="58dp"
+                android:layout_height="58dp"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/profile_image"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- CardView untuk Diary -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvDiary"
+                android:layout_width="0dp"
+                android:layout_height="106dp"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@+id/circleImageView">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="136dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/diary" />
+
+                    <TextView
+                        android:id="@+id/textView11"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="Your daily diary"
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/raleway_bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- CardView untuk Skrining Harian -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvScreening"
+                android:layout_width="0dp"
+                android:layout_height="106dp"
+                android:layout_marginTop="16dp"
+                android:visibility="visible"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@+id/cvDiary">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageViewScreening"
+                        android:layout_width="136dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/hand" />
+
+                    <TextView
+                        android:id="@+id/textViewScreening"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="@string/daily_screening"
+                        android:textColor="?attr/colorOnBackground"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/raleway_bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- CardView untuk Artikel -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvArticle"
+                android:layout_width="0dp"
+                android:layout_height="106dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@+id/cvScreening">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="Article"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/raleway_bold"
+                        android:textColor="?attr/colorOnBackground"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/imageView6"
+                        android:layout_width="136dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/article" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- CardView untuk Dokter -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvDoctor"
+                android:layout_width="0dp"
+                android:layout_height="106dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@+id/cvArticle">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageView9"
+                        android:layout_width="136dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/doctor_icon" />
+
+                    <TextView
+                        android:id="@+id/textView15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="Doctor List"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/raleway_bold"
+                        android:textColor="?attr/colorOnBackground"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- CardView untuk Kalender -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvCalendar"
+                android:layout_width="0dp"
+                android:layout_height="106dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/cvDoctor">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageView7"
+                        android:layout_width="136dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_calendar" />
+
+                    <TextView
+                        android:id="@+id/textView13"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="Calendar"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/raleway_bold"
+                        android:textColor="?attr/colorOnBackground"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- CardView untuk Sleep Tracking -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvSleeptracking"
+                android:layout_width="0dp"
+                android:layout_height="106dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+                app:layout_constraintStart_toStartOf="@id/guidelineStart"
+                app:layout_constraintTop_toBottomOf="@id/cvCalendar"
+                android:layout_marginBottom="24dp"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageView8"
+                        android:layout_width="136dp"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/moon_icon" />
+
+                    <TextView
+                        android:id="@+id/textView14"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:text="Sleep Tracking"
+                        android:textSize="20sp"
+                        android:fontFamily="@font/raleway_bold"
+                        android:textColor="?attr/colorOnBackground"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:id="@+id/homeProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="16dp" />
+            android:layout_gravity="center"
+            android:visibility="visible" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guidelineEnd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="16dp" />
-
-        <!-- TextView untuk menyambut pengguna -->
-        <TextView
-            android:id="@+id/tvUserName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginEnd="16dp"
-            android:text="Hi, User!"
-            android:textSize="24sp"
-            android:fontFamily="@font/raleway_bold"
-            android:textColor="?attr/colorOnBackground"
-            android:maxLines="2"
-            app:autoSizeTextType="uniform"
-            app:autoSizeMinTextSize="14sp"
-            app:autoSizeMaxTextSize="24sp"
-            app:autoSizeStepGranularity="1sp"
-            app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintEnd_toStartOf="@id/circleImageView"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- ImageView untuk foto profil pengguna -->
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/circleImageView"
-            android:layout_width="58dp"
-            android:layout_height="58dp"
-            android:layout_marginTop="24dp"
-            android:src="@drawable/profile_image"
-            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- CardView untuk Diary -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvDiary"
-            android:layout_width="0dp"
-            android:layout_height="106dp"
-            android:layout_marginTop="24dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@+id/circleImageView">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/imageView5"
-                    android:layout_width="136dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/diary" />
-
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="Your daily diary"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/raleway_bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- CardView untuk Skrining Harian -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvScreening"
-            android:layout_width="0dp"
-            android:layout_height="106dp"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@+id/cvDiary">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/imageViewScreening"
-                    android:layout_width="136dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/hand" />
-
-                <TextView
-                    android:id="@+id/textViewScreening"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="@string/daily_screening"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/raleway_bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- CardView untuk Artikel -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvArticle"
-            android:layout_width="0dp"
-            android:layout_height="106dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@+id/cvScreening">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="Article"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/raleway_bold"
-                    android:textColor="?attr/colorOnBackground"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/imageView6"
-                    android:layout_width="136dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/article" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- CardView untuk Dokter -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvDoctor"
-            android:layout_width="0dp"
-            android:layout_height="106dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@+id/cvArticle">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/imageView9"
-                    android:layout_width="136dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/doctor_icon" />
-
-                <TextView
-                    android:id="@+id/textView15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="Doctor List"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/raleway_bold"
-                    android:textColor="?attr/colorOnBackground"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- CardView untuk Kalender -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvCalendar"
-            android:layout_width="0dp"
-            android:layout_height="106dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/cvDoctor">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/imageView7"
-                    android:layout_width="136dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_calendar" />
-
-                <TextView
-                    android:id="@+id/textView13"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="Calendar"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/raleway_bold"
-                    android:textColor="?attr/colorOnBackground"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- CardView untuk Sleep Tracking -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cvSleeptracking"
-            android:layout_width="0dp"
-            android:layout_height="106dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-            app:layout_constraintStart_toStartOf="@id/guidelineStart"
-            app:layout_constraintTop_toBottomOf="@id/cvCalendar"
-            android:layout_marginBottom="24dp"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/imageView8"
-                    android:layout_width="136dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/moon_icon" />
-
-                <TextView
-                    android:id="@+id/textView14"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:text="Sleep Tracking"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/raleway_bold"
-                    android:textColor="?attr/colorOnBackground"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 </ScrollView>

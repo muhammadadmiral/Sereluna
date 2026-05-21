@@ -30,6 +30,8 @@ class StatisticViewModel : ViewModel() {
     private val sleepCache = mutableMapOf<Int, SleepTrendsResponseDto>()
     private val wellbeingCache = mutableMapOf<Int, WellbeingStatisticsResponseDto>()
 
+    private var selectedPeriod: Int = 7
+
     fun fetchAll() {
         if (wellbeingCache.isNotEmpty()) return
         
@@ -50,14 +52,14 @@ class StatisticViewModel : ViewModel() {
                         val sleep = repository.getSleepTrends(days)
                         sleepCache[days] = sleep
                         
-                        // Set initial data to 7 days if it's the first one to finish or specifically 7
-                        if (days == 7) {
+                        // Only update UI if this is the currently selected period
+                        if (days == selectedPeriod) {
                             _wellbeingData.postValue(UiState.Success(wellbeing))
                             _moodData.postValue(UiState.Success(mood))
                             _sleepData.postValue(UiState.Success(sleep))
                         }
                     } catch (e: Exception) {
-                        if (days == 7) {
+                        if (days == selectedPeriod) {
                             _wellbeingData.postValue(UiState.Error(e.message ?: "Gagal memuat statistik."))
                         }
                     }
@@ -69,6 +71,7 @@ class StatisticViewModel : ViewModel() {
     }
 
     fun switchPeriod(days: Int) {
+        selectedPeriod = days
         wellbeingCache[days]?.let { _wellbeingData.value = UiState.Success(it) }
         moodCache[days]?.let { _moodData.value = UiState.Success(it) }
         sleepCache[days]?.let { _sleepData.value = UiState.Success(it) }
