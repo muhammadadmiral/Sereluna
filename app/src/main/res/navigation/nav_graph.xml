@@ -54,6 +54,20 @@
     </fragment>
 
     <fragment
+        android:id="@+id/StatisticFragment"
+        android:name="com.android.capstone.sereluna.ui.main.StatisticFragment"
+        android:label="Statistic"
+        tools:layout="@layout/fragment_statistic">
+    </fragment>
+
+    <fragment
+        android:id="@+id/NotificationFragment"
+        android:name="com.android.capstone.sereluna.ui.notification.NotificationFragment"
+        android:label="Notification"
+        tools:layout="@layout/fragment_notification">
+    </fragment>
+
+    <fragment
         android:id="@+id/SettingFragment"
         android:name="com.android.capstone.sereluna.ui.setting.SettingFragment"
         android:label="Setting"

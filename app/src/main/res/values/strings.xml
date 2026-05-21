@@ -38,4 +38,6 @@
     <string name="dass_option_1">1</string>
     <string name="dass_option_2">2</string>
     <string name="dass_option_3">3</string>
+    <string name="title_statistic">Statistic Kesehatan Mental</string>
+    <string name="stats_placeholder">Statistik akan tampil di sini...</string>
 </resources>

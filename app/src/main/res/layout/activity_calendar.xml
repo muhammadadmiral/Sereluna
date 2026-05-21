@@ -1,76 +1,230 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/topBar"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/calendarToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentTop="true"
         android:background="?attr/colorSurface"
-        android:elevation="4dp">
+        app:navigationContentDescription="@string/back_button_description"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="Kalender"
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+        app:titleTextColor="@color/brand_purple_primary" />
 
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back"
-            android:onClick="onBackButtonClicked"
-            android:src="@drawable/ic_back"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/raleway_bold"
-            android:text="Kalender"
-            android:textColor="@color/purple"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <CalendarView
-        android:id="@+id/calendarView"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/topBar"
-        android:layout_marginTop="16dp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-    <Button
-        android:id="@+id/addMoodButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/calendarView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="Add Mood" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="18dp"
+            android:paddingTop="18dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="24dp">
 
-    <TextView
-        android:id="@+id/selectedDateText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/addMoodButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="Selected Date: "
-        android:textSize="16sp" />
+            <TextView
+                android:id="@+id/monthTitleText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/raleway_bold"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="26sp"
+                app:layout_constraintEnd_toStartOf="@id/monthActionRow"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Mei 2026" />
 
-    <TextView
-        android:id="@+id/moodText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/selectedDateText"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:text="Mood: "
-        android:textSize="16sp" />
-</RelativeLayout>
+            <LinearLayout
+                android:id="@+id/monthActionRow"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/previousMonthButton"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Bulan sebelumnya"
+                    android:fontFamily="@font/material_symbols"
+                    android:gravity="center"
+                    android:text="chevron_left"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/nextMonthButton"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Bulan berikutnya"
+                    android:fontFamily="@font/material_symbols"
+                    android:gravity="center"
+                    android:text="chevron_right"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="28sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/selectedDateText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/raleway_medium"
+                android:textColor="@color/text_secondary_dark"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/monthTitleText"
+                tools:text="Dipilih: 21 Mei 2026" />
+
+            <LinearLayout
+                android:id="@+id/legendRow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/selectedDateText">
+
+                <TextView
+                    android:id="@+id/legendStable"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/raleway_medium"
+                    android:text="green  Stabil"
+                    android:textColor="@color/calendar_green"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/legendWatch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/raleway_medium"
+                    android:text="yellow  Pantau"
+                    android:textColor="@color/calendar_yellow"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/legendAttention"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/raleway_medium"
+                    android:text="orange  Perhatian"
+                    android:textColor="@color/calendar_orange"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/legendHigh"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/raleway_medium"
+                    android:text="red  Tinggi"
+                    android:textColor="@color/calendar_red"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/weekdayRow"
+                android:layout_width="0dp"
+                android:layout_height="34dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/legendRow">
+
+                <TextView style="@style/Widget.Sereluna.CalendarWeekday" android:text="Sen" />
+                <TextView style="@style/Widget.Sereluna.CalendarWeekday" android:text="Sel" />
+                <TextView style="@style/Widget.Sereluna.CalendarWeekday" android:text="Rab" />
+                <TextView style="@style/Widget.Sereluna.CalendarWeekday" android:text="Kam" />
+                <TextView style="@style/Widget.Sereluna.CalendarWeekday" android:text="Jum" />
+                <TextView style="@style/Widget.Sereluna.CalendarWeekday" android:text="Sab" />
+                <TextView style="@style/Widget.Sereluna.CalendarWeekday" android:text="Min" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/calendarDaysRecyclerView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/weekdayRow"
+                tools:itemCount="35"
+                tools:listitem="@layout/item_calendar_day" />
+
+            <ProgressBar
+                android:id="@+id/loadingIndicator"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginTop="22dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/calendarDaysRecyclerView" />
+
+            <TextView
+                android:id="@+id/errorText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/raleway_medium"
+                android:gravity="center"
+                android:textColor="@color/red_error"
+                android:textSize="14sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/calendarDaysRecyclerView"
+                tools:text="Gagal memuat kalender" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/retryButton"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginTop="4dp"
+                android:text="Coba lagi"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/errorText" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addMoodButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="22dp"
+                android:fontFamily="@font/raleway_bold"
+                android:text="Catat mood tanggal ini"
+                app:icon="@drawable/baseline_add_24"
+                app:iconGravity="textStart"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/calendarDaysRecyclerView" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

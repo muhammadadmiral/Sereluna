@@ -115,6 +115,7 @@ dependencies {
 
     // Other
     implementation("com.loopj.android:android-async-http:1.4.9")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     // Testing
     testImplementation(libs.junit)

@@ -1,14 +1,14 @@
-package com.android.capstone.sereluna.ui.sleeptracking
+package com.android.capstone.sereluna.data.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.capstone.sereluna.databinding.ItemSleepHistoryBinding
+import com.android.capstone.sereluna.ui.sleeptracking.SleepTrackingFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SleepHistoryAdapter(private val sleepHistory: List<SleepData>) :
+class SleepHistoryAdapter(private val sleepHistory: List<SleepTrackingFragment.SleepData>) :
     RecyclerView.Adapter<SleepHistoryAdapter.SleepHistoryViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SleepHistoryViewHolder {
@@ -29,12 +29,17 @@ class SleepHistoryAdapter(private val sleepHistory: List<SleepData>) :
         private val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
         private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
-        fun bind(sleepData: SleepData) {
+        fun bind(sleepData: SleepTrackingFragment.SleepData) {
             binding.sleepDateTextView.text = sleepData.bedtime?.let { dateFormat.format(it) } ?: sleepData.date
-            binding.bedtimeTextView.text = sleepData.bedtime?.let { timeFormat.format(it) }
-            binding.wakeupTextView.text = sleepData.wakeup?.let { timeFormat.format(it) }
-            binding.sleepDurationTextView.text = "${sleepData.sleepDuration} hours"
+            binding.bedtimeTextView.text = "Bedtime: ${sleepData.bedtime?.let { timeFormat.format(it) } ?: "--"}"
+            binding.wakeupTextView.text = "Wakeup: ${sleepData.wakeup?.let { timeFormat.format(it) } ?: "--"}"
+            binding.sleepDurationTextView.text = "Duration: ${formatHours(sleepData.sleepDuration)}"
             binding.sleepQualityTextView.text = sleepData.sleepQuality
+        }
+
+        private fun formatHours(value: Double): String {
+            val formatted = if (value % 1.0 == 0.0) value.toInt().toString() else String.format(Locale.US, "%.1f", value)
+            return "$formatted hours"
         }
     }
 }
