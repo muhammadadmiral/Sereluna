@@ -56,15 +56,28 @@ class ChatAdapter(private var chatList: List<Chat>) : RecyclerView.Adapter<Recyc
 
     // Function to update the entire list and notify the adapter
     fun updateMessages(newMessages: List<Chat>) {
+        val oldSize = this.chatList.size
+        val newSize = newMessages.size
         this.chatList = newMessages
-        notifyDataSetChanged() // This is simple, but for more complex apps DiffUtil is recommended
+        
+        if (newSize > oldSize) {
+            notifyItemRangeInserted(oldSize, newSize - oldSize)
+        } else {
+            notifyDataSetChanged()
+        }
     }
 
     class BotViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtMessage: TextView = view.findViewById(R.id.tvMessage)
+        init {
+            view.animation = android.view.animation.AnimationUtils.loadAnimation(view.context, R.anim.item_animation_fall_down)
+        }
     }
 
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtMessage: TextView = view.findViewById(R.id.tvMessage)
+        init {
+            view.animation = android.view.animation.AnimationUtils.loadAnimation(view.context, R.anim.item_animation_fall_down)
+        }
     }
 }

@@ -90,7 +90,9 @@ class ChatbotActivity : AppCompatActivity() {
     private fun setupObservers() {
         viewModel.chatMessages.observe(this) { messages ->
             chatAdapter.updateMessages(messages)
-            binding.recyclerView.scrollToPosition(messages.size - 1)
+            if (messages.isNotEmpty()) {
+                binding.recyclerView.smoothScrollToPosition(messages.size - 1)
+            }
         }
 
         viewModel.errorState.observe(this) { errorMessage ->

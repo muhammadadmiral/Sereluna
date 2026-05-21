@@ -47,6 +47,13 @@ class ChatViewModel : ViewModel() {
         _sessionClosed.value = false
     }
 
+    private val thinkingStates = listOf(
+        "Sedang berpikir...",
+        "Mengambil konteks jurnal...",
+        "Menganalisis suasana hati...",
+        "Mempersiapkan saran terbaik..."
+    )
+
     fun sendMessage(userMessage: String) {
         if (sessionClosedFlag) {
             _errorState.value = "Sesi ini sudah ditutup. Mari mulai sesi baru."
@@ -59,11 +66,22 @@ class ChatViewModel : ViewModel() {
         addMessageToList(Chat(userMessage, "user", false))
         userMessageCount++
 
-        addMessageToList(Chat("Typing...", "bot", true))
+        val typingChat = Chat(thinkingStates[0], "bot", true)
+        addMessageToList(typingChat)
 
         val mood = sentimentAnalyzer.analyze(userMessage).first
 
         viewModelScope.launch {
+            // Background loop to rotate thinking messages if it takes a long time
+            val typingJob = launch {
+                var stateIndex = 0
+                while (true) {
+                    kotlinx.coroutines.delay(3000)
+                    stateIndex = (stateIndex + 1) % thinkingStates.size
+                    updateLastMessage(thinkingStates[stateIndex])
+                }
+            }
+
             try {
                 val response = repository.sendChat(
                     text = userMessage,
@@ -71,6 +89,7 @@ class ChatViewModel : ViewModel() {
                     sessionId = activeSessionId,
                     moodSignal = mood
                 )
+                typingJob.cancel()
                 removeTypingIndicator()
                 activeRoomId = response.room_id ?: activeRoomId
                 activeSessionId = response.session_id ?: activeSessionId
@@ -83,6 +102,7 @@ class ChatViewModel : ViewModel() {
                     _errorState.value = "Maaf, Sereluna sedang kehilangan fokus. Coba lagi ya."
                 }
             } catch (e: Exception) {
+                typingJob.cancel()
                 removeTypingIndicator()
                 _errorState.value = "Koneksi terganggu. Pastikan backend Sereluna aktif."
             }
@@ -117,9 +137,17 @@ class ChatViewModel : ViewModel() {
         _chatMessages.value = list
     }
 
+    private fun updateLastMessage(newMessage: String) {
+        val list = _chatMessages.value ?: mutableListOf()
+        if (list.isNotEmpty() && list.last().isBot) {
+            list[list.size - 1] = list.last().copy(message = newMessage)
+            _chatMessages.value = list
+        }
+    }
+
     private fun removeTypingIndicator() {
         val list = _chatMessages.value ?: mutableListOf()
-        if (list.isNotEmpty() && list.last().isBot && (list.last().message == "Typing..." || list.last().message == "Sedang berpikir...")) {
+        if (list.isNotEmpty() && list.last().isBot && thinkingStates.any { it == list.last().message || list.last().message == "Typing..." }) {
             list.removeAt(list.size - 1)
             _chatMessages.value = list
         }
