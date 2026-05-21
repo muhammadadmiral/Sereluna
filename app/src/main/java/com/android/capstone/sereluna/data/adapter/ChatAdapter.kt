@@ -11,11 +11,20 @@ import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.model.Chat
 import com.android.capstone.sereluna.ui.diary.TypingIndicatorDrawable
 
-class ChatAdapter(private var chatList: List<Chat>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(
+    private var chatList: List<Chat>,
+    private val onRenderingStateChanged: (Boolean) -> Unit = {}
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val MESSAGE_TYPE_USER = 0
     private val MESSAGE_TYPE_BOT = 1
     private val animatedMessages = mutableSetOf<Int>()
+    private var renderingCount = 0
+
+    private fun setRendering(isRendering: Boolean) {
+        if (isRendering) renderingCount++ else renderingCount--
+        onRenderingStateChanged(renderingCount > 0)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == MESSAGE_TYPE_BOT) {
@@ -43,26 +52,12 @@ class ChatAdapter(private var chatList: List<Chat>) : RecyclerView.Adapter<Recyc
                     TypingIndicatorDrawable(holder.txtMessage.currentTextColor), null, null, null
                 )
                 
-                // Show thinking status if available
                 if (!statusText.isNullOrBlank()) {
-                    if (holder.txtStatus.text != statusText) {
-                        if (holder.txtStatus.visibility == View.VISIBLE) {
-                            // Smooth transition between different status messages
-                            holder.txtStatus.animate().alpha(0f).setDuration(200).withEndAction {
-                                holder.txtStatus.text = statusText
-                                holder.txtStatus.animate().alpha(1f).setDuration(200).start()
-                            }.start()
-                        } else {
-                            // First time showing status
-                            holder.txtStatus.text = statusText
-                            holder.txtStatus.visibility = View.VISIBLE
-                            holder.txtStatus.alpha = 0f
-                            holder.txtStatus.animate().alpha(1f).setDuration(500).start()
-                        }
-                    }
+                    holder.txtStatus.text = statusText
+                    holder.txtStatus.visibility = View.VISIBLE
+                    holder.txtStatus.alpha = 1f
                 } else {
                     holder.txtStatus.visibility = View.GONE
-                    holder.txtStatus.text = ""
                 }
             } else {
                 holder.txtMessage.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
@@ -74,6 +69,8 @@ class ChatAdapter(private var chatList: List<Chat>) : RecyclerView.Adapter<Recyc
                     animateTextTypewriter(holder.txtMessage, messageText)
                 } else {
                     holder.txtMessage.text = messageText
+                    holder.txtMessage.alpha = 1f
+                    holder.txtMessage.translationY = 0f
                 }
             }
         } else if (holder is UserViewHolder) {
@@ -85,12 +82,29 @@ class ChatAdapter(private var chatList: List<Chat>) : RecyclerView.Adapter<Recyc
         val handler = Handler(Looper.getMainLooper())
         var i = 0
         textView.text = ""
+        textView.alpha = 0f
+        textView.translationY = 15f
+        textView.animate().alpha(1f).translationY(0f).setDuration(300).start()
+        
+        setRendering(true)
+        
         val runnable = object : Runnable {
             override fun run() {
                 if (i <= text.length) {
-                    // Type faster by taking 2-3 chars if it's long, or just lower the delay
-                    textView.text = text.substring(0, i++)
-                    handler.postDelayed(this, 10) // Ultra fast speed
+                    textView.text = text.substring(0, i)
+                    // Ultra fast typewriter: 4-6 chars per tick
+                    val step = if (text.length > 200) 6 else 4
+                    i += step
+                    if (i > text.length) i = text.length
+                    
+                    if (i < text.length) {
+                        handler.postDelayed(this, 1) // Minimal delay
+                    } else {
+                        textView.text = text
+                        setRendering(false)
+                    }
+                } else {
+                    setRendering(false)
                 }
             }
         }
@@ -128,15 +142,14 @@ class ChatAdapter(private var chatList: List<Chat>) : RecyclerView.Adapter<Recyc
     class BotViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtMessage: TextView = view.findViewById(R.id.tvMessage)
         val txtStatus: TextView = view.findViewById(R.id.tvStatus)
-        init {
-            view.animation = android.view.animation.AnimationUtils.loadAnimation(view.context, R.anim.item_animation_fall_down)
-        }
     }
 
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtMessage: TextView = view.findViewById(R.id.tvMessage)
         init {
-            view.animation = android.view.animation.AnimationUtils.loadAnimation(view.context, R.anim.item_animation_fall_down)
+            view.alpha = 0f
+            view.translationY = 20f
+            view.animate().alpha(1f).translationY(0f).setDuration(400).setInterpolator(android.view.animation.OvershootInterpolator(1.2f)).start()
         }
     }
 }

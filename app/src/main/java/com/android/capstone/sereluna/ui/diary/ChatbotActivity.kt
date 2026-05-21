@@ -44,7 +44,14 @@ class ChatbotActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         // The adapter is now initialized with an empty list, it will be updated by LiveData
-        chatAdapter = ChatAdapter(emptyList())
+        chatAdapter = ChatAdapter(emptyList()) { isRendering ->
+            binding.submitFab.isEnabled = !isRendering
+            binding.diaryEditText.isEnabled = !isRendering
+            binding.submitFab.alpha = if (isRendering) 0.5f else 1.0f
+            if (!isRendering) {
+                binding.recyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
+            }
+        }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@ChatbotActivity)
             adapter = chatAdapter
@@ -57,8 +64,11 @@ class ChatbotActivity : AppCompatActivity() {
             if (userMessage.isNotEmpty()) {
                 viewModel.sendMessage(userMessage)
                 binding.diaryEditText.text?.clear()
+                // Instantly disable to prevent double tapping
+                binding.submitFab.isEnabled = false
+                binding.submitFab.alpha = 0.5f
             } else {
-                Toast.makeText(this, "Please write something...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Tulis sesuatu dulu ya...", Toast.LENGTH_SHORT).show()
             }
         }
 
