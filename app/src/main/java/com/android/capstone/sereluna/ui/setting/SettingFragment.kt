@@ -68,7 +68,11 @@ class SettingFragment : Fragment() {
         }
         binding.itemChangePassword.apply {
             tvSettingIcon.text = "\ue897" // lock
-            tvSettingTitle.text = "Ganti Password"
+            tvSettingTitle.text = "Ganti Password Manual"
+        }
+        binding.itemResetEmail.apply {
+            tvSettingIcon.text = "\ue0be" // email
+            tvSettingTitle.text = "Reset via Link Email"
         }
         binding.itemDeleteAccount.apply {
             tvSettingIcon.text = "\ue872" // delete
@@ -96,6 +100,13 @@ class SettingFragment : Fragment() {
 
         binding.itemChangePassword.root.setOnClickListener {
             showChangePasswordDialog()
+        }
+
+        binding.itemResetEmail.root.setOnClickListener {
+            val email = binding.tvEmail.text.toString()
+            if (email.isNotEmpty()) {
+                showResetEmailConfirmation(email)
+            }
         }
 
         binding.itemDeleteAccount.root.setOnClickListener {
@@ -189,6 +200,24 @@ class SettingFragment : Fragment() {
             .setMessage("Apakah kamu yakin ingin keluar dari Sereluna?")
             .setPositiveButton("Keluar") { _, _ ->
                 performLogout()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun showResetEmailConfirmation(email: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Kirim Link Reset Password?")
+            .setMessage("Kami akan mengirimkan link instruksi untuk mengganti password ke email Anda ($email).")
+            .setPositiveButton("Kirim") { _, _ ->
+                lifecycleScope.launch {
+                    try {
+                        repository.forgotPassword(email)
+                        Toast.makeText(requireContext(), "Link berhasil dikirim. Silakan cek email Anda.", Toast.LENGTH_LONG).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(requireContext(), "Gagal mengirim link: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
             .setNegativeButton("Batal", null)
             .show()

@@ -90,7 +90,13 @@ class CalendarActivity : AppCompatActivity() {
         binding.previousMonthButton.setOnClickListener { moveMonth(-1) }
         binding.nextMonthButton.setOnClickListener { moveMonth(1) }
         binding.retryButton.setOnClickListener { loadMonthSummary() }
-        binding.addMoodButton.setOnClickListener { showMoodSheet() }
+        binding.addMoodButton.setOnClickListener {
+            if (selectedDate.after(Calendar.getInstance())) {
+                Toast.makeText(this, "Tidak bisa mencatat mood untuk masa depan", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            showMoodSheet()
+        }
     }
 
     private fun moveMonth(delta: Int) {

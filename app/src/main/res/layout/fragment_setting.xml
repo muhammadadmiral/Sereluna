@@ -91,6 +91,12 @@
                 <View style="@style/SettingsDivider" />
 
                 <include
+                    android:id="@+id/itemResetEmail"
+                    layout="@layout/item_setting_row" />
+
+                <View style="@style/SettingsDivider" />
+
+                <include
                     android:id="@+id/itemDeleteAccount"
                     layout="@layout/item_setting_row" />
 

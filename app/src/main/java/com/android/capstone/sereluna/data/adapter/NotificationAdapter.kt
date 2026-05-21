@@ -34,10 +34,15 @@ class NotificationAdapter(
             
             // Handle Read/Unread UI
             if (notification.isRead) {
-                binding.root.setCardBackgroundColor(Color.WHITE)
+                // Read: Darker/Grayish background
+                binding.root.setCardBackgroundColor(ContextCompat.getColor(context, R.color.gray_200))
+                binding.unreadDot.visibility = android.view.View.GONE
+                binding.root.alpha = 0.7f // Dim the read notification
             } else {
-                // Light purple tint for unread
-                binding.root.setCardBackgroundColor(ContextCompat.getColor(context, R.color.light_purple_bg))
+                // Unread: White background with purple dot
+                binding.root.setCardBackgroundColor(Color.WHITE)
+                binding.unreadDot.visibility = android.view.View.VISIBLE
+                binding.root.alpha = 1.0f
             }
 
             val (colorRes, iconRes) = when (notification.notifStatus) {
