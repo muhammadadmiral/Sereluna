@@ -23,7 +23,6 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
-    private val repository = SerelunaRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,7 +40,7 @@ class HomeFragment : Fragment() {
         setupObservers()
 
         userViewModel.loadUserData()
-        loadScreeningPrompt()
+        userViewModel.loadScreeningStatus()
     }
 
     private fun setupListeners() {
@@ -53,23 +52,6 @@ class HomeFragment : Fragment() {
             startActivity(Intent(requireActivity(), ScreeningActivity::class.java))
         }
         // TODO: Add OnClickListeners for cvArticle, cvDoctor, cvCalendar, etc.
-    }
-
-    private fun loadScreeningPrompt() {
-        lifecycleScope.launch {
-            try {
-                val status = repository.getScreeningStatus()
-                binding.cvScreening.visibility = if (status.is_due) View.VISIBLE else View.GONE
-                binding.textViewScreening.text = if (status.is_due) {
-                    "Skrining DASS-21"
-                } else {
-                    "Baseline aktif"
-                }
-            } catch (e: Exception) {
-                binding.cvScreening.visibility = View.VISIBLE
-                binding.textViewScreening.text = "Skrining DASS-21"
-            }
-        }
     }
 
     private fun setupObservers() {
@@ -91,6 +73,21 @@ class HomeFragment : Fragment() {
                     // Handle error state
                     binding.tvUserName.text = "Error loading data"
                 }
+            }
+        }
+
+        userViewModel.screeningStatus.observe(viewLifecycleOwner) { status ->
+            if (status != null) {
+                binding.cvScreening.visibility = if (status.is_due) View.VISIBLE else View.GONE
+                binding.textViewScreening.text = if (status.is_due) {
+                    "Skrining DASS-21"
+                } else {
+                    "Baseline aktif"
+                }
+            } else {
+                // Default to visible if error or not yet loaded to be safe
+                binding.cvScreening.visibility = View.VISIBLE
+                binding.textViewScreening.text = "Skrining DASS-21"
             }
         }
     }

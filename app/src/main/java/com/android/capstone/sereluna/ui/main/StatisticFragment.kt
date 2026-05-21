@@ -83,6 +83,11 @@ class StatisticFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.scrollView.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
+        }
+
         viewModel.moodData.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is UiState.Success -> updateMoodChart(state.data)

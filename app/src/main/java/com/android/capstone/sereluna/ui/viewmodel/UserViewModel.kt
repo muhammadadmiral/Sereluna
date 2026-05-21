@@ -25,6 +25,9 @@ class UserViewModel : ViewModel() {
     private val _updateState = MutableLiveData<UiState<Unit>>()
     val updateState: LiveData<UiState<Unit>> = _updateState
 
+    private val _screeningStatus = MutableLiveData<com.android.capstone.sereluna.data.api.ScreeningStatusDto?>()
+    val screeningStatus: LiveData<com.android.capstone.sereluna.data.api.ScreeningStatusDto?> = _screeningStatus
+
     fun loadUserData(forceRefresh: Boolean = false) {
         if (!forceRefresh && _userData.value is UiState.Success) {
             return // Use cached data
@@ -36,6 +39,20 @@ class UserViewModel : ViewModel() {
                 _userData.value = UiState.Success(repository.getProfileAsMap())
             } catch (e: Exception) {
                 _userData.value = UiState.Error(e.message ?: "Failed to load user data.")
+            }
+        }
+    }
+
+    fun loadScreeningStatus(forceRefresh: Boolean = false) {
+        if (!forceRefresh && _screeningStatus.value != null) {
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                _screeningStatus.value = repository.getScreeningStatus()
+            } catch (e: Exception) {
+                // If it fails, we keep the old value or set null
             }
         }
     }

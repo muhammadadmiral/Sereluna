@@ -23,32 +23,62 @@ class StatisticViewModel : ViewModel() {
     private val _wellbeingData = MutableLiveData<UiState<WellbeingStatisticsResponseDto>>()
     val wellbeingData: LiveData<UiState<WellbeingStatisticsResponseDto>> = _wellbeingData
 
-    fun loadStats(days: Int) {
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> = _loading
+
+    private val moodCache = mutableMapOf<Int, MoodDistributionResponseDto>()
+    private val sleepCache = mutableMapOf<Int, SleepTrendsResponseDto>()
+    private val wellbeingCache = mutableMapOf<Int, WellbeingStatisticsResponseDto>()
+
+    fun fetchAll() {
+        if (wellbeingCache.isNotEmpty()) return
+        
         viewModelScope.launch {
-            _wellbeingData.value = UiState.Loading
-            _moodData.value = UiState.Loading
-            _sleepData.value = UiState.Loading
-
-            try {
-                val range = "${days}d"
-                _wellbeingData.value = UiState.Success(repository.getWellbeingStatistics(range))
-            } catch (e: Exception) {
-                _wellbeingData.value = UiState.Error(e.message ?: "Gagal memuat statistik wellbeing.")
+            _loading.value = true
+            val periods = listOf(7, 30, 90)
+            
+            val jobs = periods.map { days ->
+                launch {
+                    try {
+                        val range = "${days}d"
+                        val wellbeing = repository.getWellbeingStatistics(range)
+                        wellbeingCache[days] = wellbeing
+                        
+                        val mood = repository.getMoodDistribution(days)
+                        moodCache[days] = mood
+                        
+                        val sleep = repository.getSleepTrends(days)
+                        sleepCache[days] = sleep
+                        
+                        // Set initial data to 7 days if it's the first one to finish or specifically 7
+                        if (days == 7) {
+                            _wellbeingData.postValue(UiState.Success(wellbeing))
+                            _moodData.postValue(UiState.Success(mood))
+                            _sleepData.postValue(UiState.Success(sleep))
+                        }
+                    } catch (e: Exception) {
+                        if (days == 7) {
+                            _wellbeingData.postValue(UiState.Error(e.message ?: "Gagal memuat statistik."))
+                        }
+                    }
+                }
             }
-
-            try {
-                val mood = repository.getMoodDistribution(days)
-                _moodData.value = UiState.Success(mood)
-            } catch (e: Exception) {
-                _moodData.value = UiState.Error(e.message ?: "Gagal memuat statistik mood.")
-            }
-
-            try {
-                val sleep = repository.getSleepTrends(days)
-                _sleepData.value = UiState.Success(sleep)
-            } catch (e: Exception) {
-                _sleepData.value = UiState.Error(e.message ?: "Gagal memuat statistik tidur.")
-            }
+            jobs.forEach { it.join() }
+            _loading.value = false
         }
+    }
+
+    fun switchPeriod(days: Int) {
+        wellbeingCache[days]?.let { _wellbeingData.value = UiState.Success(it) }
+        moodCache[days]?.let { _moodData.value = UiState.Success(it) }
+        sleepCache[days]?.let { _sleepData.value = UiState.Success(it) }
+    }
+
+    fun loadStats(days: Int) {
+        if (wellbeingCache.containsKey(days)) {
+            switchPeriod(days)
+            return
+        }
+        fetchAll()
     }
 }
