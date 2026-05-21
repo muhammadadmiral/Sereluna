@@ -45,12 +45,24 @@ class ChatAdapter(private var chatList: List<Chat>) : RecyclerView.Adapter<Recyc
                 
                 // Show thinking status if available
                 if (!statusText.isNullOrBlank()) {
-                    holder.txtStatus.text = statusText
-                    holder.txtStatus.visibility = View.VISIBLE
-                    holder.txtStatus.alpha = 0f
-                    holder.txtStatus.animate().alpha(1f).setDuration(500).start()
+                    if (holder.txtStatus.text != statusText) {
+                        if (holder.txtStatus.visibility == View.VISIBLE) {
+                            // Smooth transition between different status messages
+                            holder.txtStatus.animate().alpha(0f).setDuration(200).withEndAction {
+                                holder.txtStatus.text = statusText
+                                holder.txtStatus.animate().alpha(1f).setDuration(200).start()
+                            }.start()
+                        } else {
+                            // First time showing status
+                            holder.txtStatus.text = statusText
+                            holder.txtStatus.visibility = View.VISIBLE
+                            holder.txtStatus.alpha = 0f
+                            holder.txtStatus.animate().alpha(1f).setDuration(500).start()
+                        }
+                    }
                 } else {
                     holder.txtStatus.visibility = View.GONE
+                    holder.txtStatus.text = ""
                 }
             } else {
                 holder.txtMessage.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)

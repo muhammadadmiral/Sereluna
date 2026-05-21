@@ -47,14 +47,29 @@ class ChatViewModel : ViewModel() {
         _sessionClosed.value = false
     }
 
-    private val randomThinkingMessages = listOf(
-        "Sereluna sedang mengingat memori jurnalmu...",
-        "Mencoba memahami perasaanmu lebih dalam...",
-        "Mencari saran yang paling pas buat kamu...",
-        "Menghubungkan titik-titik cerita harimu...",
-        "Menyusun kata-kata penyemangat...",
-        "Melihat gambaran besar dari ceritamu...",
-        "Sedang merangkai balasan yang hangat..."
+    private val understandingContextMessages = listOf(
+        "Memahami konteks...",
+        "Menganalisis pesanmu...",
+        "Meresapi ceritamu...",
+        "Menyelami perasaanmu...",
+        "Membedah curhatanmu...",
+        "Mengingat memori sebelumnya...",
+        "Menelaah kata-katamu..."
+    )
+
+    private val preparingResponseMessages = listOf(
+        "Menyusun respon...",
+        "Menyiapkan pesan...",
+        "Merangkai kata-kata...",
+        "Sedang mengetik...",
+        "Mencari saran terbaik...",
+        "Hampir selesai...",
+        "Menghaluskan balasan...",
+        "Menyusun kalimat penyemangat...",
+        "Menyesuaikan nada bicara...",
+        "Mencocokkan dengan perasaanmu...",
+        "Sedang merenungkan balasan...",
+        "Mempersiapkan dukungan untukmu..."
     )
 
     fun sendMessage(userMessage: String) {
@@ -75,12 +90,20 @@ class ChatViewModel : ViewModel() {
             // Immediately add the typing indicator
             addMessageToList(Chat("Typing...", "bot", true))
             
-            // Background loop to update status ONLY after 3 seconds delay
+            // Background loop to update status based on time
             val typingJob = launch {
-                kotlinx.coroutines.delay(3500) // Wait 3.5 seconds before starting status rotation
+                // 0-3s: bubble animation only (status is null)
+                kotlinx.coroutines.delay(3000)
+                
+                // 3-6s: understanding context (randomize once)
+                val understandingStatus = understandingContextMessages.random()
+                updateLastMessageStatus(understandingStatus)
+                kotlinx.coroutines.delay(3000)
+                
+                // >6s: preparing response (randomize every 3 seconds)
                 while (true) {
-                    val randomStatus = randomThinkingMessages.random()
-                    updateLastMessageStatus(randomStatus)
+                    val preparingStatus = preparingResponseMessages.random()
+                    updateLastMessageStatus(preparingStatus)
                     kotlinx.coroutines.delay(3000)
                 }
             }
