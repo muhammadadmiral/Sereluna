@@ -34,6 +34,78 @@
         android:alpha="0.1"
         android:background="@color/black" />
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvWellbeingDetail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        app:cardBackgroundColor="@color/light_purple_bg"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvWellbeingScore"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:fontFamily="@font/raleway_bold"
+                    android:gravity="center"
+                    android:textColor="@color/brand_purple_primary"
+                    android:textSize="22sp"
+                    tools:text="62" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvWellbeingLevel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/raleway_bold"
+                        android:textColor="@color/brand_purple_dark"
+                        android:textSize="16sp"
+                        tools:text="Perlu dipantau" />
+
+                    <TextView
+                        android:id="@+id/tvWellbeingSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/raleway_medium"
+                        android:lineSpacingExtra="2dp"
+                        android:textColor="@color/brand_purple_dark"
+                        android:textSize="13sp"
+                        tools:text="Mood cenderung tegang, tidur kurang mendukung pemulihan." />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvWellbeingSignals"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/raleway_medium"
+                android:textColor="@color/gray_500"
+                android:textSize="12sp"
+                tools:text="Sinyal: mood anxious, tidur pendek" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- Mood Section -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -172,6 +244,54 @@
                 android:textColor="@color/brand_purple_dark"
                 android:textSize="13sp"
                 tools:text="Kamu terlihat stabil hari ini. Tidur yang cukup sangat membantu mood kamu tetap positif!" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvScreeningContext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/brand_purple_pastel"
+        app:strokeWidth="1dp"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/raleway_bold"
+                android:text="Baseline DASS-21"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvScreeningContext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/raleway_medium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="13sp"
+                tools:text="Stres moderate • Cemas mild • Depresi normal" />
+
+            <TextView
+                android:id="@+id/tvScreeningDisclaimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/raleway_medium"
+                android:textColor="@color/gray_500"
+                android:textSize="12sp"
+                tools:text="Bukan diagnosis medis." />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

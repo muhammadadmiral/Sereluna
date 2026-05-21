@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.api.MoodDistributionResponseDto
 import com.android.capstone.sereluna.data.api.SleepTrendsResponseDto
+import com.android.capstone.sereluna.data.api.WellbeingStatisticsResponseDto
 import com.android.capstone.sereluna.databinding.FragmentStatisticBinding
 import com.android.capstone.sereluna.ui.viewmodel.StatisticViewModel
 import com.android.capstone.sereluna.ui.viewmodel.UiState
@@ -71,7 +72,11 @@ class StatisticFragment : Fragment() {
     private fun setupListeners() {
         binding.toggleGroupPeriod.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
-                val days = if (checkedId == R.id.btn7Days) 7 else 30
+                val days = when (checkedId) {
+                    R.id.btn7Days -> 7
+                    R.id.btn90Days -> 90
+                    else -> 30
+                }
                 viewModel.loadStats(days)
             }
         }
@@ -92,6 +97,51 @@ class StatisticFragment : Fragment() {
                 is UiState.Error -> Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
                 else -> {}
             }
+        }
+
+        viewModel.wellbeingData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Success -> updateWellbeingCards(state.data)
+                is UiState.Error -> {
+                    binding.tvWellbeingScore.text = "--"
+                    binding.tvOverallMood.text = "Belum ada insight wellbeing."
+                    binding.tvWellbeingInsight.text = state.message
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private fun updateWellbeingCards(data: WellbeingStatisticsResponseDto) {
+        binding.tvWellbeingScore.text = data.average_wellbeing_score?.let {
+            String.format(Locale.US, "%.0f", it)
+        } ?: "--"
+        binding.tvOverallMood.text = data.overall_mood.ifBlank { "Belum cukup data" }
+        binding.tvDominantMood.text = data.dominant_mood?.toDisplayLabel() ?: "-"
+
+        val baseline = data.screening_context
+        binding.tvScreeningBaseline.text = if (baseline != null) {
+            "Stres ${baseline.stress ?: "-"} • Cemas ${baseline.anxiety ?: "-"} • Depresi ${baseline.depression ?: "-"}"
+        } else {
+            "Baseline DASS-21 belum tersedia"
+        }
+        binding.tvStatsDisclaimer.text = data.disclaimer
+            ?: baseline?.disclaimer
+            ?: "Insight ini bukan diagnosis medis."
+
+        binding.tvWellbeingInsight.text = data.insights.firstOrNull()
+            ?: "Insight akan muncul setelah data mood, diary, dan tidur terkumpul."
+
+        if (data.mood_distribution.isNotEmpty()) {
+            val dto = MoodDistributionResponseDto(
+                period_days = data.period_days,
+                data = data.mood_distribution.map { (mood, count) ->
+                    com.android.capstone.sereluna.data.api.MoodCountDto(mood, count)
+                },
+                dominant_mood = data.dominant_mood,
+                insight = data.insights.firstOrNull()
+            )
+            updateMoodChart(dto)
         }
     }
 
@@ -150,6 +200,10 @@ class StatisticFragment : Fragment() {
         binding.sleepLineChart.data = LineData(dataSet)
         binding.sleepLineChart.invalidate()
         binding.tvSleepInsight.text = data.insight ?: "Analisis kualitas tidur kamu akan tampil di sini."
+    }
+
+    private fun String.toDisplayLabel(): String {
+        return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
     }
 
     override fun onDestroyView() {

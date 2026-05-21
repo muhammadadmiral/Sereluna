@@ -30,6 +30,14 @@ interface SerelunaApi {
         @Body request: ScreeningRequestDto
     ): ScreeningResponseDto
 
+    @GET("api/v1/screening/dass21/")
+    suspend fun getDass21Questionnaire(): Dass21QuestionnaireDto
+
+    @GET("api/v1/screening/status/")
+    suspend fun getScreeningStatus(
+        @Header("Authorization") authorization: String
+    ): ScreeningStatusDto
+
     @GET("api/v1/me/context/")
     suspend fun getContext(
         @Header("Authorization") authorization: String
@@ -152,4 +160,10 @@ interface SerelunaApi {
         @Header("Authorization") authorization: String,
         @Query("days") days: Int
     ): SleepTrendsResponseDto
+
+    @GET("api/v1/statistics/wellbeing/")
+    suspend fun getWellbeingStatistics(
+        @Header("Authorization") authorization: String,
+        @Query("range") range: String
+    ): WellbeingStatisticsResponseDto
 }

@@ -13,10 +13,13 @@ import com.android.capstone.sereluna.data.api.CalendarDetailDto
 import com.android.capstone.sereluna.data.api.CalendarSleepDetailDto
 import com.android.capstone.sereluna.data.api.CalendarSummaryItemDto
 import com.android.capstone.sereluna.data.api.CalendarWellbeingDto
+import com.android.capstone.sereluna.data.api.Dass21QuestionnaireDto
 import com.android.capstone.sereluna.data.api.MoodRequestDto
 import com.android.capstone.sereluna.data.api.NotificationItemDto
 import com.android.capstone.sereluna.data.api.ScreeningRequestDto
 import com.android.capstone.sereluna.data.api.ScreeningResponseDto
+import com.android.capstone.sereluna.data.api.ScreeningContextDto
+import com.android.capstone.sereluna.data.api.ScreeningStatusDto
 import com.android.capstone.sereluna.data.api.SerelunaApi
 import com.android.capstone.sereluna.data.api.SerelunaApiClient
 import com.android.capstone.sereluna.data.api.SleepDailyItemDto
@@ -31,6 +34,7 @@ import com.android.capstone.sereluna.data.api.ChangePasswordRequestDto
 import com.android.capstone.sereluna.data.api.MessageResponseDto
 import com.android.capstone.sereluna.data.api.MoodDistributionResponseDto
 import com.android.capstone.sereluna.data.api.SleepTrendsResponseDto
+import com.android.capstone.sereluna.data.api.WellbeingStatisticsResponseDto
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.JsonElement
@@ -87,6 +91,14 @@ class SerelunaRepository(
                 note = note
             )
         )
+    }
+
+    suspend fun getDass21Questionnaire(): Dass21QuestionnaireDto {
+        return api.getDass21Questionnaire()
+    }
+
+    suspend fun getScreeningStatus(): ScreeningStatusDto {
+        return api.getScreeningStatus(authHeader())
     }
 
     suspend fun getContext(): UserContextResponseDto {
@@ -184,6 +196,10 @@ class SerelunaRepository(
         return api.getSleepTrends(authHeader(), days)
     }
 
+    suspend fun getWellbeingStatistics(range: String): WellbeingStatisticsResponseDto {
+        return api.getWellbeingStatistics(authHeader(), range)
+    }
+
     suspend fun signOut() {
         auth.signOut()
     }
@@ -232,7 +248,12 @@ class SerelunaRepository(
                 has_diary = item.booleanOrFalse("has_diary"),
                 wellbeing_score = item.intOrNull("wellbeing_score"),
                 wellbeing_level = item.stringOrNull("wellbeing_level"),
-                indicator = item.stringOrNull("indicator")
+                indicator = item.stringOrNull("indicator"),
+                summary = item.stringOrNull("summary"),
+                recommendation = item.stringOrNull("recommendation"),
+                risk_level = item.stringOrNull("risk_level"),
+                model_version = item.stringOrNull("model_version"),
+                screening_context = item.get("screening_context").asObjectOrNull()?.toScreeningContext()
             )
         }.filter { it.date.isNotBlank() }
     }
@@ -242,9 +263,12 @@ class SerelunaRepository(
         val root = raw.asObjectOrNull() ?: return CalendarDetailDto(date = date)
         val sleep = root.get("sleep").asObjectOrNull()
         val wellbeing = root.get("wellbeing").asObjectOrNull()
+        val screeningContext = root.get("screening_context").asObjectOrNull()?.toScreeningContext()
         val diarySnippet = root.stringOrNull("diary_snippet")
             ?: root.stringOrNull("diary_summary")
             ?: root.stringOrNull("preview")
+        val summary = wellbeing?.stringOrNull("summary")
+            ?: root.stringOrNull("summary")
 
         return CalendarDetailDto(
             date = root.stringOrNull("date") ?: date,
@@ -265,8 +289,14 @@ class SerelunaRepository(
                 level = wellbeing?.stringOrNull("level") ?: root.stringOrNull("wellbeing_level"),
                 signals = wellbeing?.stringList("signals") ?: root.stringList("signals"),
                 recommendation = wellbeing?.stringOrNull("recommendation")
-                    ?: root.stringOrNull("recommendation")
-            )
+                    ?: root.stringOrNull("recommendation"),
+                summary = summary,
+                indicator = wellbeing?.stringOrNull("indicator") ?: root.stringOrNull("indicator"),
+                risk_level = wellbeing?.stringOrNull("risk_level") ?: root.stringOrNull("risk_level")
+            ),
+            summary = summary,
+            indicator = root.stringOrNull("indicator") ?: wellbeing?.stringOrNull("indicator"),
+            screening_context = screeningContext
         )
     }
 
@@ -316,6 +346,16 @@ class SerelunaRepository(
             runCatching { element.takeIf { !it.isJsonNull }?.asString }.getOrNull()
                 ?.takeIf { it.isNotBlank() }
         }
+    }
+
+    private fun JsonObject.toScreeningContext(): ScreeningContextDto {
+        return ScreeningContextDto(
+            latest_date = stringOrNull("latest_date"),
+            stress = stringOrNull("stress"),
+            anxiety = stringOrNull("anxiety"),
+            depression = stringOrNull("depression"),
+            disclaimer = stringOrNull("disclaimer")
+        )
     }
 
     companion object {

@@ -201,6 +201,20 @@ class CalendarActivity : AppCompatActivity() {
         val detailBinding = DialogCalendarDetailBinding.inflate(layoutInflater)
         
         detailBinding.tvDetailDate.text = readableDateFormat.format(selectedDate.time)
+
+        val wellbeing = detail.wellbeing
+        detailBinding.tvWellbeingScore.text = wellbeing.score?.toString() ?: "--"
+        detailBinding.tvWellbeingLevel.text = wellbeing.level?.toDisplayLabel()
+            ?: detail.indicator?.toDisplayLabel()
+            ?: "Belum ada skor wellbeing"
+        detailBinding.tvWellbeingSummary.text = detail.summary
+            ?: wellbeing.summary
+            ?: "Data mood, diary, dan tidur akan membentuk insight harian di sini."
+        detailBinding.tvWellbeingSignals.text = if (wellbeing.signals.isNotEmpty()) {
+            "Sinyal: ${wellbeing.signals.joinToString(", ")}"
+        } else {
+            "Sinyal harian belum cukup."
+        }
         
         // Mood setup
         val mood = detail.mood
@@ -237,6 +251,17 @@ class CalendarActivity : AppCompatActivity() {
             detailBinding.tvAiInsightText.text = detail.wellbeing.recommendation
         } else {
             detailBinding.cvAiInsight.visibility = View.GONE
+        }
+
+        val screeningContext = detail.screening_context
+        if (screeningContext != null) {
+            detailBinding.cvScreeningContext.visibility = View.VISIBLE
+            detailBinding.tvScreeningContext.text =
+                "Stres ${screeningContext.stress ?: "-"} • Cemas ${screeningContext.anxiety ?: "-"} • Depresi ${screeningContext.depression ?: "-"}"
+            detailBinding.tvScreeningDisclaimer.text =
+                screeningContext.disclaimer ?: "Bukan diagnosis medis."
+        } else {
+            detailBinding.cvScreeningContext.visibility = View.GONE
         }
 
         detailBinding.btnCloseSheet.setOnClickListener { dialog.dismiss() }

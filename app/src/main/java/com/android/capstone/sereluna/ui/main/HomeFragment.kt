@@ -7,11 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.FragmentHomeBinding
 import com.android.capstone.sereluna.ui.diary.DiaryActivity
+import com.android.capstone.sereluna.ui.diary.ScreeningActivity
 import com.android.capstone.sereluna.ui.viewmodel.UiState
 import com.android.capstone.sereluna.ui.viewmodel.UserViewModel
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
@@ -19,6 +23,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
+    private val repository = SerelunaRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,6 +41,7 @@ class HomeFragment : Fragment() {
         setupObservers()
 
         userViewModel.loadUserData()
+        loadScreeningPrompt()
     }
 
     private fun setupListeners() {
@@ -43,7 +49,27 @@ class HomeFragment : Fragment() {
             val intent = Intent(requireActivity(), DiaryActivity::class.java)
             startActivity(intent)
         }
+        binding.cvScreening.setOnClickListener {
+            startActivity(Intent(requireActivity(), ScreeningActivity::class.java))
+        }
         // TODO: Add OnClickListeners for cvArticle, cvDoctor, cvCalendar, etc.
+    }
+
+    private fun loadScreeningPrompt() {
+        lifecycleScope.launch {
+            try {
+                val status = repository.getScreeningStatus()
+                binding.cvScreening.visibility = if (status.is_due) View.VISIBLE else View.GONE
+                binding.textViewScreening.text = if (status.is_due) {
+                    "Skrining DASS-21"
+                } else {
+                    "Baseline aktif"
+                }
+            } catch (e: Exception) {
+                binding.cvScreening.visibility = View.VISIBLE
+                binding.textViewScreening.text = "Skrining DASS-21"
+            }
+        }
     }
 
     private fun setupObservers() {

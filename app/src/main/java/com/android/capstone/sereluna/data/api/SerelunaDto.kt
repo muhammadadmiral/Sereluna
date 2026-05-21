@@ -46,7 +46,50 @@ data class ScreeningResponseDto(
     val severity: Map<String, String> = emptyMap(),
     val summary: String = "",
     val has_screening_today: Boolean = false,
+    val next_recommended_date: String? = null,
+    val recommended_interval_days: Int? = null,
+    val disclaimer: String? = null,
     val algorithm: Map<String, Any>? = null
+)
+
+data class Dass21QuestionnaireDto(
+    val instrument: String = "DASS-21",
+    val version: String = "",
+    val source_file: String = "",
+    val recommended_interval_days: Int = 7,
+    val disclaimer: String = "DASS-21 adalah alat screening, bukan diagnosis medis.",
+    val instructions: String = "",
+    val answer_options: List<Dass21AnswerOptionDto> = emptyList(),
+    val questions: List<Dass21QuestionDto> = emptyList()
+)
+
+data class Dass21AnswerOptionDto(
+    val value: Int = 0,
+    val label: String = ""
+)
+
+data class Dass21QuestionDto(
+    val id: Int = 0,
+    val category: String = "",
+    val text: String = "",
+    val answer_min: Int = 0,
+    val answer_max: Int = 3
+)
+
+data class ScreeningStatusDto(
+    val instrument: String = "DASS-21",
+    val recommended_interval_days: Int = 7,
+    val is_due: Boolean = true,
+    val latest: ScreeningLatestDto? = null,
+    val next_recommended_date: String? = null,
+    val disclaimer: String = "DASS-21 adalah alat screening, bukan diagnosis medis."
+)
+
+data class ScreeningLatestDto(
+    val date: String = "",
+    val severity: Map<String, String> = emptyMap(),
+    val scores: Map<String, Int> = emptyMap(),
+    val summary: String = ""
 )
 
 data class UserContextResponseDto(
@@ -187,7 +230,12 @@ data class CalendarSummaryItemDto(
     val has_diary: Boolean = false,
     val wellbeing_score: Int? = null,
     val wellbeing_level: String? = null,
-    val indicator: String? = null
+    val indicator: String? = null,
+    val summary: String? = null,
+    val recommendation: String? = null,
+    val risk_level: String? = null,
+    val model_version: String? = null,
+    val screening_context: ScreeningContextDto? = null
 )
 
 data class CalendarSleepDetailDto(
@@ -201,7 +249,18 @@ data class CalendarWellbeingDto(
     val score: Int? = null,
     val level: String? = null,
     val signals: List<String> = emptyList(),
-    val recommendation: String? = null
+    val recommendation: String? = null,
+    val summary: String? = null,
+    val indicator: String? = null,
+    val risk_level: String? = null
+)
+
+data class ScreeningContextDto(
+    val latest_date: String? = null,
+    val stress: String? = null,
+    val anxiety: String? = null,
+    val depression: String? = null,
+    val disclaimer: String? = null
 )
 
 data class CalendarDetailDto(
@@ -211,7 +270,10 @@ data class CalendarDetailDto(
     val has_diary: Boolean = false,
     val diary_snippet: String? = null,
     val sleep: CalendarSleepDetailDto = CalendarSleepDetailDto(),
-    val wellbeing: CalendarWellbeingDto = CalendarWellbeingDto()
+    val wellbeing: CalendarWellbeingDto = CalendarWellbeingDto(),
+    val summary: String? = null,
+    val indicator: String? = null,
+    val screening_context: ScreeningContextDto? = null
 )
 
 data class SuccessResponseDto(
@@ -258,4 +320,26 @@ data class SleepTrendsResponseDto(
 data class SleepTrendItemDto(
     val date: String = "",
     val hours: Double = 0.0
+)
+
+data class WellbeingStatisticsResponseDto(
+    val range: String = "30d",
+    val period_days: Int = 30,
+    val overall_mood: String = "",
+    val average_wellbeing_score: Double? = null,
+    val mood_distribution: Map<String, Int> = emptyMap(),
+    val dominant_mood: String? = null,
+    val screening_context: ScreeningContextDto? = null,
+    val insights: List<String> = emptyList(),
+    val daily_items: List<WellbeingDailyItemDto> = emptyList(),
+    val model_version: String? = null,
+    val disclaimer: String? = null
+)
+
+data class WellbeingDailyItemDto(
+    val date: String = "",
+    val mood: String? = null,
+    val wellbeing_score: Int? = null,
+    val wellbeing_level: String? = null,
+    val risk_level: String? = null
 )

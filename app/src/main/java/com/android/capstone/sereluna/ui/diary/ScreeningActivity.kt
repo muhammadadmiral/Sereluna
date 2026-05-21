@@ -16,8 +16,8 @@ class ScreeningActivity : AppCompatActivity() {
     private lateinit var binding: ActivityScreeningBinding
     private val repository = SerelunaRepository()
     private lateinit var adapter: DassAdapter
-    private val answers = IntArray(21) { -1 }
-    private val questions = listOf(
+    private var answers = IntArray(21) { -1 }
+    private val fallbackQuestions = listOf(
         "Saya merasa sulit untuk tenang.",
         "Mulut saya terasa kering.",
         "Saya sepertinya tidak bisa merasakan perasaan positif.",
@@ -48,11 +48,13 @@ class ScreeningActivity : AppCompatActivity() {
 
         setupRecycler()
         setupListeners()
-        checkToday()
+        loadScreeningStatus()
+        loadQuestionnaire()
     }
 
-    private fun setupRecycler() {
-        val dassQuestions = questions.mapIndexed { index, text ->
+    private fun setupRecycler(questionTexts: List<String> = fallbackQuestions) {
+        answers = IntArray(questionTexts.size) { -1 }
+        val dassQuestions = questionTexts.mapIndexed { index, text ->
             DassQuestion(index + 1, text)
         }
         adapter = DassAdapter(dassQuestions) { position, value ->
@@ -67,15 +69,43 @@ class ScreeningActivity : AppCompatActivity() {
         binding.btnSubmit.setOnClickListener { submitScreening() }
     }
 
-    private fun checkToday() {
+    private fun loadScreeningStatus() {
         lifecycleScope.launch {
             try {
-                if (repository.getContext().has_screening_today) {
-                    Toast.makeText(this@ScreeningActivity, "Skrining hari ini sudah dilakukan.", Toast.LENGTH_LONG).show()
+                val status = repository.getScreeningStatus()
+                binding.tvSubtitle.text = status.disclaimer
+                if (!status.is_due) {
+                    Toast.makeText(
+                        this@ScreeningActivity,
+                        "Baseline DASS-21 masih aktif. Rekomendasi berikutnya: ${status.next_recommended_date ?: "-"}",
+                        Toast.LENGTH_LONG
+                    ).show()
                     finish()
                 }
             } catch (e: Exception) {
                 // jika gagal cek, biarkan user lanjut
+            }
+        }
+    }
+
+    private fun loadQuestionnaire() {
+        lifecycleScope.launch {
+            try {
+                val questionnaire = repository.getDass21Questionnaire()
+                binding.tvSubtitle.text = listOf(
+                    questionnaire.instructions,
+                    questionnaire.disclaimer
+                ).filter { it.isNotBlank() }.joinToString("\n\n")
+
+                val loadedQuestions = questionnaire.questions
+                    .sortedBy { it.id }
+                    .map { it.text }
+                    .filter { it.isNotBlank() }
+                if (loadedQuestions.size == 21) {
+                    setupRecycler(loadedQuestions)
+                }
+            } catch (e: Exception) {
+                // fallback pertanyaan lokal tetap dipakai
             }
         }
     }
@@ -102,12 +132,15 @@ class ScreeningActivity : AppCompatActivity() {
         val scores = response.scores
         val severity = response.severity
         val msg = """
+            Area yang perlu diperhatikan:
             Depresi: ${scores["depression"] ?: 0} (${severity["depression"] ?: "-"})
             Kecemasan: ${scores["anxiety"] ?: 0} (${severity["anxiety"] ?: "-"})
             Stres: ${scores["stress"] ?: 0} (${severity["stress"] ?: "-"})
+
+            ${response.disclaimer ?: "DASS-21 adalah alat screening, bukan diagnosis medis."}
         """.trimIndent()
         AlertDialog.Builder(this)
-            .setTitle("Hasil Skrining")
+            .setTitle("Ringkasan Screening")
             .setMessage(msg)
             .setPositiveButton("OK") { d, _ ->
                 d.dismiss()
