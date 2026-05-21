@@ -102,8 +102,7 @@ class HomeFragment : Fragment() {
                     binding.textViewScreening.text = if (status.is_due) {
                         "Skrining DASS-21"
                     } else {
-                        nextScreeningDate?.let { "Skrining tersedia lagi: $it" }
-                            ?: "Skrining tersedia lagi nanti"
+                        screeningAvailableText(status.next_recommended_in_days, status.next_recommended_date)
                     }
                     isScreeningLoaded = true
                     updateVisibility()
@@ -121,6 +120,18 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun screeningAvailableText(days: Int?, nextDate: String?): String {
+        if (days != null) {
+            return when {
+                days <= 0 -> "Skrining tersedia lagi hari ini"
+                days == 1 -> "Skrining tersedia lagi besok"
+                else -> "Skrining tersedia lagi dalam $days hari"
+            }
+        }
+        return nextDate?.let { "Skrining tersedia lagi: $it" }
+            ?: "Skrining tersedia lagi nanti"
     }
 
 

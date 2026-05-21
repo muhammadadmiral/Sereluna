@@ -148,7 +148,8 @@ class StatisticFragment : Fragment() {
                     com.android.capstone.sereluna.data.api.MoodCountDto(mood, count)
                 },
                 dominant_mood = data.dominant_mood,
-                insight = data.insights.firstOrNull()
+                insight = data.insights.firstOrNull(),
+                detail = data.mood_distribution_detail
             )
             updateMoodChart(dto)
         }
@@ -164,7 +165,7 @@ class StatisticFragment : Fragment() {
 
         val total = visibleItems.sumOf { it.count }.coerceAtLeast(1)
         val entries = visibleItems.map { item ->
-            PieEntry(item.count.toFloat(), moodDisplayName(item.mood), item.mood)
+            PieEntry(item.count.toFloat(), moodDisplayName(item.mood, data), item.mood)
         }
         
         val dataSet = PieDataSet(entries, "Distribusi Mood")
@@ -180,9 +181,18 @@ class StatisticFragment : Fragment() {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 val entry = e as? PieEntry ?: return
                 val moodKey = entry.data as? String ?: entry.label
-                val count = entry.value.toInt()
-                val percent = (count * 100f) / total
-                binding.tvMoodInsight.text = "${moodDisplayName(moodKey)} tercatat $count kali (${String.format(Locale.US, "%.0f", percent)}%) dalam periode ini. ${moodDetailText(moodKey)}"
+                val detail = data.detail[moodKey]
+                val count = detail?.count?.takeIf { it > 0 } ?: entry.value.toInt()
+                val percent = detail?.percent ?: ((count * 100.0) / total)
+                val dates = detail?.dates.orEmpty().take(3).joinToString(", ")
+                val signals = detail?.top_signals.orEmpty().take(3).joinToString(", ")
+                val summary = detail?.summary?.takeIf { it.isNotBlank() } ?: moodDetailText(moodKey)
+                val supportingText = listOfNotNull(
+                    dates.takeIf { it.isNotBlank() }?.let { "Tanggal terkait: $it." },
+                    signals.takeIf { it.isNotBlank() }?.let { "Sinyal utama: $it." }
+                ).joinToString(" ")
+
+                binding.tvMoodInsight.text = "${moodDisplayName(moodKey, data)} tercatat $count kali (${String.format(Locale.US, "%.0f", percent)}%) dalam periode ini. $summary $supportingText".trim()
             }
 
             override fun onNothingSelected() {
@@ -227,7 +237,8 @@ class StatisticFragment : Fragment() {
         return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
     }
 
-    private fun moodDisplayName(mood: String): String {
+    private fun moodDisplayName(mood: String, data: MoodDistributionResponseDto? = null): String {
+        data?.detail?.get(mood)?.label?.takeIf { it.isNotBlank() }?.let { return it }
         return when (mood.lowercase(Locale.ROOT)) {
             "happy" -> "Senang"
             "neutral" -> "Netral"

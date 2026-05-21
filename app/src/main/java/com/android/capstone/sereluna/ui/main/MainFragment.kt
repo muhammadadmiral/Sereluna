@@ -89,6 +89,14 @@ class MainFragment : Fragment() {
     }
 
     private fun screeningAvailableText(): String {
+        val days = screeningStatus?.next_recommended_in_days
+        if (days != null) {
+            return when {
+                days <= 0 -> "Skrining tersedia lagi hari ini"
+                days == 1 -> "Skrining tersedia lagi besok"
+                else -> "Skrining tersedia lagi dalam $days hari"
+            }
+        }
         val nextDate = screeningStatus?.next_recommended_date
         return if (nextDate.isNullOrBlank()) {
             "Skrining tersedia lagi nanti"

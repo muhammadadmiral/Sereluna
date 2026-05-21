@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.capstone.sereluna.data.api.MoodCountDto
+import com.android.capstone.sereluna.data.api.MoodDistributionDetailDto
 import com.android.capstone.sereluna.data.api.MoodDistributionResponseDto
 import com.android.capstone.sereluna.data.api.SleepTrendItemDto
 import com.android.capstone.sereluna.data.api.SleepTrendsResponseDto
@@ -51,24 +52,25 @@ class StatisticViewModel : ViewModel() {
 
             val jobs = periods.map { days ->
                 launch {
-                    if (!forceRefresh && wellbeingCache.containsKey(days)) return@launch
-                    try {
-                        val range = "${days}d"
-                        val wellbeing = repository.getWellbeingStatistics(range)
-                        wellbeingCache[days] = wellbeing
-                        moodCache[days] = wellbeing.toMoodDistribution()
-                        trendCache[days] = wellbeing.toWellbeingTrend()
-                        failedPeriods.remove(days)
+                    if (forceRefresh || !wellbeingCache.containsKey(days)) {
+                        try {
+                            val range = "${days}d"
+                            val wellbeing = repository.getWellbeingStatistics(range)
+                            wellbeingCache[days] = wellbeing
+                            moodCache[days] = wellbeing.toMoodDistribution()
+                            trendCache[days] = wellbeing.toWellbeingTrend()
+                            failedPeriods.remove(days)
 
-                        if (days == selectedPeriod) {
-                            _wellbeingData.postValue(UiState.Success(wellbeing))
-                            _moodData.postValue(UiState.Success(moodCache.getValue(days)))
-                            _sleepData.postValue(UiState.Success(trendCache.getValue(days)))
-                        }
-                    } catch (e: Exception) {
-                        failedPeriods[days] = e.message ?: "Gagal memuat statistik."
-                        if (days == selectedPeriod) {
-                            _wellbeingData.postValue(UiState.Error(failedPeriods.getValue(days)))
+                            if (days == selectedPeriod) {
+                                _wellbeingData.postValue(UiState.Success(wellbeing))
+                                _moodData.postValue(UiState.Success(moodCache.getValue(days)))
+                                _sleepData.postValue(UiState.Success(trendCache.getValue(days)))
+                            }
+                        } catch (e: Exception) {
+                            failedPeriods[days] = e.message ?: "Gagal memuat statistik."
+                            if (days == selectedPeriod) {
+                                _wellbeingData.postValue(UiState.Error(failedPeriods.getValue(days)))
+                            }
                         }
                     }
                 }
@@ -111,7 +113,8 @@ class StatisticViewModel : ViewModel() {
             period_days = period_days,
             data = mood_distribution.map { (mood, count) -> MoodCountDto(mood, count) },
             dominant_mood = dominant_mood,
-            insight = insights.firstOrNull()
+            insight = insights.firstOrNull(),
+            detail = mood_distribution_detail
         )
     }
 

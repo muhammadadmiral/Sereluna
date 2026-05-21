@@ -47,7 +47,10 @@ data class ScreeningResponseDto(
     val summary: String = "",
     val has_screening_today: Boolean = false,
     val next_recommended_date: String? = null,
+    val next_recommended_in_days: Int? = null,
     val recommended_interval_days: Int? = null,
+    val updated_at: String? = null,
+    val updated_statistics_version: String? = null,
     val disclaimer: String? = null,
     val algorithm: Map<String, Any>? = null
 )
@@ -82,6 +85,9 @@ data class ScreeningStatusDto(
     val is_due: Boolean = true,
     val latest: ScreeningLatestDto? = null,
     val next_recommended_date: String? = null,
+    val next_recommended_in_days: Int? = null,
+    val server_time: String? = null,
+    val updated_at: String? = null,
     val disclaimer: String = "DASS-21 adalah alat screening, bukan diagnosis medis."
 )
 
@@ -303,7 +309,8 @@ data class MoodDistributionResponseDto(
     val period_days: Int = 0,
     val data: List<MoodCountDto> = emptyList(),
     val dominant_mood: String? = null,
-    val insight: String? = null
+    val insight: String? = null,
+    val detail: Map<String, MoodDistributionDetailDto> = emptyMap()
 )
 
 data class MoodCountDto(
@@ -328,12 +335,24 @@ data class WellbeingStatisticsResponseDto(
     val overall_mood: String = "",
     val average_wellbeing_score: Double? = null,
     val mood_distribution: Map<String, Int> = emptyMap(),
+    val mood_distribution_detail: Map<String, MoodDistributionDetailDto> = emptyMap(),
     val dominant_mood: String? = null,
     val screening_context: ScreeningContextDto? = null,
     val insights: List<String> = emptyList(),
     val daily_items: List<WellbeingDailyItemDto> = emptyList(),
     val model_version: String? = null,
+    val updated_at: String? = null,
+    val updated_statistics_version: String? = null,
     val disclaimer: String? = null
+)
+
+data class MoodDistributionDetailDto(
+    val label: String = "",
+    val count: Int = 0,
+    val percent: Double? = null,
+    val dates: List<String> = emptyList(),
+    val top_signals: List<String> = emptyList(),
+    val summary: String? = null
 )
 
 data class WellbeingDailyItemDto(
