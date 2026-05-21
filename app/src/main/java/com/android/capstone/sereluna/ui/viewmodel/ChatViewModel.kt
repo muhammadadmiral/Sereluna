@@ -26,6 +26,9 @@ class ChatViewModel : ViewModel() {
     private val _previousSummary = MutableLiveData<String?>()
     val previousSummary: LiveData<String?> = _previousSummary
 
+    private val _isThinking = MutableLiveData(false)
+    val isThinking: LiveData<Boolean> = _isThinking
+
     private var activeRoomId: String? = null
     private var activeSessionId: String? = null
     private var previousSessionSummary: String? = null
@@ -86,6 +89,7 @@ class ChatViewModel : ViewModel() {
 
         val mood = sentimentAnalyzer.analyze(userMessage).first
 
+        _isThinking.value = true
         viewModelScope.launch {
             // Immediately add the typing indicator
             addMessageToList(Chat("Typing...", "bot", true))
@@ -132,6 +136,8 @@ class ChatViewModel : ViewModel() {
                 typingJob.cancel()
                 removeTypingIndicator()
                 _errorState.value = "Koneksi terganggu. Pastikan backend Sereluna aktif."
+            } finally {
+                _isThinking.value = false
             }
         }
     }

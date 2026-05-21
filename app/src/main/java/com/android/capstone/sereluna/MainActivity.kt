@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -71,10 +72,14 @@ class MainActivity : AppCompatActivity() {
 
         // Setup Toolbar with NavController
         setSupportActionBar(binding.toolbar)
-        setupActionBarWithNavController(navController)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         // Setup BottomNavigationView with NavController
         binding.bottomNavigationView.setupWithNavController(navController)
+
+        binding.btnNotification.setOnClickListener {
+            navController.navigate(R.id.NotificationFragment)
+        }
 
         requestNotificationPermissionIfNeeded()
         ScreeningReminderScheduler.scheduleNext(this)
@@ -154,11 +159,20 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val unreadCount = serelunaRepository.getNotificationUnreadCount().unread_count
+                
+                // Update header badge
+                if (unreadCount > 0) {
+                    binding.tvNotificationBadge.visibility = View.VISIBLE
+                    binding.tvNotificationBadge.text = if (unreadCount > 9) "9+" else unreadCount.toString()
+                } else {
+                    binding.tvNotificationBadge.visibility = View.GONE
+                }
+
+                // Update bottom nav badge
                 if (unreadCount > 0) {
                     binding.bottomNavigationView.getOrCreateBadge(R.id.NotificationFragment).apply {
                         isVisible = true
                         number = unreadCount
-                        maxCharacterCount = 3
                         backgroundColor = ContextCompat.getColor(this@MainActivity, R.color.red_error)
                         badgeTextColor = ContextCompat.getColor(this@MainActivity, R.color.white)
                     }

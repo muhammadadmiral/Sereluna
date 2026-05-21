@@ -11,6 +11,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -18,7 +19,7 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="72dp"
             app:contentInsetEnd="0dp"
             app:contentInsetLeft="0dp"
             app:contentInsetRight="0dp"
@@ -30,36 +31,61 @@
 
                 <ImageButton
                     android:id="@+id/backButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="8dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/back_button_description"
-                    android:src="@drawable/ic_back"
+                    android:src="@drawable/ic_arrow_back"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivBotHeaderAvatar"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/chatbot"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/backButton"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/toolbarTitle"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:fontFamily="@font/raleway_bold"
-                    android:gravity="center"
-                    android:text="@string/diary_chatbot_header"
-                    android:textColor="@color/purple"
-                    android:textSize="20sp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/profileImageDiary"
-                    app:layout_constraintStart_toEndOf="@+id/backButton"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintStart_toEndOf="@id/ivBotHeaderAvatar"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/toolbarTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/raleway_bold"
+                        android:text="Sereluna AI"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/tvBotStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/raleway_medium"
+                        android:text="Online"
+                        android:textColor="@color/calendar_green"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profileImageDiary"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_marginEnd="16dp"
                     android:src="@drawable/profile_image"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -73,8 +99,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
         app:layout_constraintBottom_toTopOf="@+id/summaryCard"
         app:layout_constraintStart_toStartOf="parent"
@@ -156,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:hint="Write your diary...">
+                android:hint="Tulis ceritamu di sini...">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/diaryEditText"
@@ -166,7 +192,7 @@
                     android:maxLines="5"
                     android:minLines="1"
                     android:overScrollMode="ifContentScrolls"
-                    android:textColor="@color/purple"
+                    android:textColor="?attr/colorOnSurface"
                     android:textColorHint="@color/light_purple" />
             </com.google.android.material.textfield.TextInputLayout>
 
