@@ -20,6 +20,8 @@ import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import java.util.Locale
 
 class StatisticFragment : Fragment() {
@@ -54,6 +56,8 @@ class StatisticFragment : Fragment() {
             setEntryLabelColor(Color.BLACK)
             setEntryLabelTextSize(12f)
             legend.isEnabled = true
+            isHighlightPerTapEnabled = true
+            setTouchEnabled(true)
             animateY(1000, Easing.EaseInOutQuad)
         }
 
@@ -151,30 +155,42 @@ class StatisticFragment : Fragment() {
     }
 
     private fun updateMoodChart(data: MoodDistributionResponseDto) {
-        if (data.data.isEmpty()) {
+        val visibleItems = data.data.filter { it.count > 0 }
+        if (visibleItems.isEmpty()) {
             binding.moodPieChart.clear()
-            binding.tvMoodInsight.text = getString(R.string.stats_placeholder)
+            binding.tvMoodInsight.text = "Belum ada distribusi mood untuk periode ini."
             return
         }
 
-        val entries = data.data.map { item ->
-            PieEntry(item.count.toFloat(), item.mood.replaceFirstChar { c -> c.uppercase() }) 
+        val total = visibleItems.sumOf { it.count }.coerceAtLeast(1)
+        val entries = visibleItems.map { item ->
+            PieEntry(item.count.toFloat(), moodDisplayName(item.mood), item.mood)
         }
         
         val dataSet = PieDataSet(entries, "Distribusi Mood")
-        dataSet.colors = listOf(
-            ContextCompat.getColor(requireContext(), R.color.calendar_green),
-            ContextCompat.getColor(requireContext(), R.color.calendar_blue),
-            ContextCompat.getColor(requireContext(), R.color.calendar_yellow),
-            ContextCompat.getColor(requireContext(), R.color.calendar_orange),
-            ContextCompat.getColor(requireContext(), R.color.calendar_red)
-        )
+        dataSet.colors = visibleItems.map { moodColor(it.mood) }
         dataSet.valueTextSize = 14f
         dataSet.valueTextColor = Color.WHITE
+        dataSet.selectionShift = 12f
 
         binding.moodPieChart.data = PieData(dataSet)
+        binding.moodPieChart.centerText = "Tap bagian chart"
+        binding.moodPieChart.setCenterTextSize(12f)
+        binding.moodPieChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                val entry = e as? PieEntry ?: return
+                val moodKey = entry.data as? String ?: entry.label
+                val count = entry.value.toInt()
+                val percent = (count * 100f) / total
+                binding.tvMoodInsight.text = "${moodDisplayName(moodKey)} tercatat $count kali (${String.format(Locale.US, "%.0f", percent)}%) dalam periode ini. ${moodDetailText(moodKey)}"
+            }
+
+            override fun onNothingSelected() {
+                binding.tvMoodInsight.text = data.insight ?: "Tap salah satu bagian chart untuk melihat detail mood."
+            }
+        })
         binding.moodPieChart.invalidate()
-        binding.tvMoodInsight.text = data.insight ?: "Analisis mood kamu akan tampil di sini."
+        binding.tvMoodInsight.text = data.insight ?: "Tap salah satu bagian chart untuk melihat detail mood."
     }
 
     private fun updateSleepChart(data: SleepTrendsResponseDto) {
@@ -209,6 +225,40 @@ class StatisticFragment : Fragment() {
 
     private fun String.toDisplayLabel(): String {
         return replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+    }
+
+    private fun moodDisplayName(mood: String): String {
+        return when (mood.lowercase(Locale.ROOT)) {
+            "happy" -> "Senang"
+            "neutral" -> "Netral"
+            "sad" -> "Sedih"
+            "anxious" -> "Cemas"
+            "angry", "anger" -> "Marah"
+            else -> mood.toDisplayLabel()
+        }
+    }
+
+    private fun moodDetailText(mood: String): String {
+        return when (mood.lowercase(Locale.ROOT)) {
+            "happy" -> "Ini biasanya menandakan hari dengan pengalaman positif atau energi yang lebih baik."
+            "neutral" -> "Ini menandakan mood relatif stabil atau tidak terlalu ekstrem."
+            "sad" -> "Perhatikan pemicu harian seperti tidur, diary, atau beban aktivitas."
+            "anxious" -> "Coba lihat pola tidur dan catatan harian di tanggal terkait."
+            "angry", "anger" -> "Perhatikan konteks konflik, kelelahan, atau tekanan pada hari terkait."
+            else -> "Detail akan lebih akurat kalau backend mengirim contoh tanggal dan pemicu utamanya."
+        }
+    }
+
+    private fun moodColor(mood: String): Int {
+        val colorRes = when (mood.lowercase(Locale.ROOT)) {
+            "happy" -> R.color.calendar_green
+            "neutral" -> R.color.calendar_blue
+            "sad" -> R.color.calendar_yellow
+            "anxious" -> R.color.calendar_orange
+            "angry", "anger" -> R.color.calendar_red
+            else -> R.color.brand_purple_primary
+        }
+        return ContextCompat.getColor(requireContext(), colorRes)
     }
 
     override fun onDestroyView() {
