@@ -40,4 +40,42 @@
     <string name="dass_option_3">3</string>
     <string name="title_statistic">Statistic Kesehatan Mental</string>
     <string name="stats_placeholder">Statistik akan tampil di sini...</string>
+
+    <string name="terms_content" translatable="false"><![CDATA[
+        <big><b>SYARAT DAN KETENTUAN PENGGUNAAN SERELUNA</b></big><br><br>
+        <i>Terakhir Diperbarui: 21 Mei 2026</i><br><br>
+        <b>1. FILOSOFI LAYANAN: ASISTEN RESPON PERTAMA</b><br>
+        Sereluna diposisikan secara hukum dan fungsional sebagai <b>First-Line Mental Health Assistant</b>. Aplikasi ini menggunakan algoritma pemrosesan bahasa alami (NLP) untuk mengidentifikasi pola emosi, tingkat stres, dan kecenderungan mood pengguna. Sereluna berfungsi sebagai deteksi dini (early warning system) yang membantu pengguna memahami kondisi internal mereka sebelum memutuskan untuk mencari bantuan profesional.<br><br>
+        <b>2. DISCLAIMER MEDIS (PENTING)</b><br>
+        Sereluna <b>BUKAN</b> penyedia layanan medis, psikiatri, atau psikologi klinis. Konten, analisis, dan indikasi yang dihasilkan oleh AI Sereluna tidak boleh dianggap sebagai diagnosis medis. Kami tidak memberikan resep obat atau intervensi klinis. Pengguna sangat disarankan untuk mengonfirmasi hasil indikasi Sereluna dengan profesional kesehatan mental berlisensi.<br><br>
+        <b>3. MEKANISME PEMBELAJARAN AI (EVOLUSI KONTEKS)</b><br>
+        Sistem AI kami menggunakan model pembelajaran progresif. Anda memahami bahwa:<br>
+        • Efektivitas AI bergantung pada intensitas dan kejujuran input jurnal/chat Anda.<br>
+        • Konteks AI akan berkembang ("semakin pintar") seiring bertambahnya data historis untuk memberikan refleksi yang lebih akurat.<br>
+        • Hasil analisis bersifat dinamis dan dapat berubah sesuai dengan perkembangan data terbaru.<br><br>
+        <b>4. SITUASI KRITIS & DARURAT</b><br>
+        Sereluna tidak dirancang untuk menangani krisis bunuh diri atau keadaan darurat medis akut. Jika Anda merasa dalam bahaya, aplikasi ini akan mengarahkan Anda untuk mencari bantuan eksternal. Kami tidak bertanggung jawab atas tindakan yang diambil pengguna di luar panduan keselamatan ini.<br><br>
+        <b>5. INTEGRITAS DATA HARDCODED</b><br>
+        Beberapa parameter keamanan dan logika inti aplikasi diatur secara <b>hardcoded</b> untuk menjaga stabilitas sistem dari intervensi eksternal, memastikan asisten Anda selalu tersedia dalam kondisi offline maupun online terbatas.
+    ]]></string>
+
+    <string name="privacy_content" translatable="false"><![CDATA[
+        <big><b>KEBIJAKAN PRIVASI & KEAMANAN DATA SERELUNA</b></big><br><br>
+        <b>1. KOMITMEN PRIVASI MUTLAK</b><br>
+        Kami memahami bahwa data kesehatan mental adalah data yang paling sensitif. Sereluna berkomitmen untuk melindungi privasi Anda dengan standar keamanan yang ketat. Data Anda adalah milik Anda sepenuhnya.<br><br>
+        <b>2. ARSITEKTUR KEAMANAN & ENKRIPSI</b><br>
+        Seluruh transmisi data antara perangkat Anda dan server kami dilindungi oleh enkripsi end-to-end. Data yang tersimpan di server kami (At Rest) dienkripsi menggunakan standar industri tinggi sehingga pihak internal Sereluna sekalipun tidak dapat membaca isi Jurnal atau Chat Anda tanpa kunci otentikasi akun Anda.<br><br>
+        <b>3. PEMROSESAN DATA AI YANG ANONIM</b><br>
+        Pemrosesan data untuk kebutuhan analisis sentimen dan penguatan konteks AI dilakukan melalui mesin otomatis. Data Anda digunakan untuk:<br>
+        • Membangun profil kesehatan mental personal yang hanya dapat diakses oleh Anda.<br>
+        • Meningkatkan akurasi respon bot dalam memahami nuansa perasaan Anda.<br>
+        • Menghasilkan statistik tren kesehatan mental mingguan/bulanan.<br><br>
+        <b>4. KEDAULATAN DATA (DATA SOVEREIGNTY)</b><br>
+        Anda memiliki hak penuh atas data Anda:<br>
+        • <b>Akses</b>: Melihat seluruh data yang pernah Anda masukkan.<br>
+        • <b>Portabilitas</b>: Membaca riwayat jurnal kapan saja dalam aplikasi.<br>
+        • <b>Penghapusan (Right to be Forgotten)</b>: Menghapus akun akan memicu perintah penghapusan permanen seluruh data terenkripsi Anda dari server kami tanpa sisa.<br><br>
+        <b>5. KEBIJAKAN NON-KOMERSIALISASI</b><br>
+        Sereluna menjamin secara mutlak bahwa kami <b>TIDAK AKAN PERNAH</b> menjual, menyewakan, atau memberikan data pribadi maupun data kesehatan mental Anda kepada pengiklan, perusahaan asuransi, atau pihak ketiga manapun untuk kepentingan komersial. Data Anda hanya digunakan untuk satu tujuan: Membantu Anda menjadi lebih baik.
+    ]]></string>
 </resources>

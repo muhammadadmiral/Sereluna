@@ -114,11 +114,11 @@ class SettingFragment : Fragment() {
         }
 
         binding.itemTerms.root.setOnClickListener {
-            openUrl("https://sereluna.app/terms")
+            showPolicyDialog("Syarat & Ketentuan", getString(R.string.terms_content))
         }
 
         binding.itemPrivacy.root.setOnClickListener {
-            openUrl("https://sereluna.app/privacy")
+            showPolicyDialog("Kebijakan Privasi", getString(R.string.privacy_content))
         }
 
         // Dark Mode Toggle
@@ -241,6 +241,14 @@ class SettingFragment : Fragment() {
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Gagal membuka link", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showPolicyDialog(title: String, content: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(title)
+            .setMessage(android.text.Html.fromHtml(content, android.text.Html.FROM_HTML_MODE_COMPACT))
+            .setPositiveButton("Tutup", null)
+            .show()
     }
 
     private fun setupObservers() {
