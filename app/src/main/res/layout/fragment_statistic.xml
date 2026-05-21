@@ -196,14 +196,16 @@
                 android:fontFamily="@font/raleway_bold"
                 android:text="Distribusi Mood"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="18sp" />
+                android:textSize="20sp" />
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMoodChart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -214,38 +216,50 @@
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/moodPieChart"
                         android:layout_width="match_parent"
-                        android:layout_height="250dp" />
+                        android:layout_height="280dp" />
 
-                    <TextView
-                        android:id="@+id/tvMoodInsight"
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:fontFamily="@font/raleway_medium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="14sp"
-                        tools:text="Minggu ini mood kamu terlihat stabil..." />
+                        app:cardBackgroundColor="@color/light_purple_bg"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
+
+                        <TextView
+                            android:id="@+id/tvMoodInsight"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="12dp"
+                            android:fontFamily="@font/raleway_medium"
+                            android:textColor="@color/brand_purple_dark"
+                            android:textSize="14sp"
+                            android:lineSpacingExtra="4dp"
+                            tools:text="Minggu ini mood kamu terlihat stabil..." />
+                    </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Wellbeing Trend Section -->
+            <!-- Sleep Trends Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/raleway_bold"
-                android:text="Tren Wellbeing"
+                android:text="Tren Tidur"
                 android:textColor="?attr/colorOnBackground"
-                android:textSize="18sp" />
+                android:textSize="20sp" />
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSleepChart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="32dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -253,38 +267,67 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/tvAvgSleep"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/raleway_bold"
-                        android:textColor="@color/calendar_blue"
-                        android:textSize="24sp"
-                        tools:text="74" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+                        
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/tvAvgSleep"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/raleway_bold"
+                                android:textColor="@color/calendar_blue"
+                                android:textSize="26sp"
+                                tools:text="6.8 jam" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/raleway_medium"
-                        android:text="Rata-rata skor wellbeing"
-                        android:textColor="@color/gray_500"
-                        android:textSize="12sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/raleway_medium"
+                                android:text="Rata-rata tidur harian"
+                                android:textColor="@color/gray_500"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                        
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/moon_icon"
+                            app:tint="@color/calendar_blue" />
+                    </LinearLayout>
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/sleepLineChart"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="220dp"
                         android:layout_marginTop="16dp" />
 
-                    <TextView
-                        android:id="@+id/tvSleepInsight"
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:fontFamily="@font/raleway_medium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="14sp"
-                        tools:text="Tren wellbeing kamu terlihat stabil..." />
+                        app:cardBackgroundColor="#F0F7FF"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
+
+                        <TextView
+                            android:id="@+id/tvSleepInsight"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="12dp"
+                            android:fontFamily="@font/raleway_medium"
+                            android:textColor="#0056B3"
+                            android:textSize="14sp"
+                            android:lineSpacingExtra="4dp"
+                            tools:text="Durasi tidurmu cukup oke secara rata-rata..." />
+                    </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

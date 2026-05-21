@@ -24,6 +24,9 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import java.util.Locale
 
+import android.view.MotionEvent
+import android.view.animation.AccelerateDecelerateInterpolator
+
 class StatisticFragment : Fragment() {
 
     private var _binding: FragmentStatisticBinding? = null
@@ -55,10 +58,25 @@ class StatisticFragment : Fragment() {
             setHoleColor(Color.TRANSPARENT)
             setEntryLabelColor(Color.BLACK)
             setEntryLabelTextSize(12f)
+            holeRadius = 58f
+            transparentCircleRadius = 61f
+            setCenterTextSize(14f)
+            setCenterTextColor(ContextCompat.getColor(requireContext(), R.color.brand_purple_primary))
             legend.isEnabled = true
+            legend.verticalAlignment = com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM
+            legend.horizontalAlignment = com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER
+            legend.orientation = com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL
+            legend.setDrawInside(false)
+            legend.yOffset = 5f
+            
             isHighlightPerTapEnabled = true
             setTouchEnabled(true)
-            animateY(1000, Easing.EaseInOutQuad)
+            animateY(1200, Easing.EaseInOutQuart)
+            
+            setOnTouchListener { v, event ->
+                handleChartTouch(v, event)
+                false
+            }
         }
 
         binding.sleepLineChart.apply {
@@ -67,9 +85,29 @@ class StatisticFragment : Fragment() {
             setPinchZoom(true)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
             xAxis.setDrawGridLines(false)
+            xAxis.granularity = 1f
             axisRight.isEnabled = false
             axisLeft.setDrawGridLines(true)
-            animateX(1000)
+            axisLeft.gridColor = Color.parseColor("#E0E0E0")
+            animateX(1200, Easing.EaseInOutQuart)
+
+            setOnTouchListener { v, event ->
+                handleChartTouch(v, event)
+                false
+            }
+        }
+    }
+
+    private fun handleChartTouch(view: View, event: MotionEvent) {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                view.animate().scaleX(1.03f).scaleY(1.03f).setDuration(150)
+                    .setInterpolator(AccelerateDecelerateInterpolator()).start()
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                view.animate().scaleX(1f).scaleY(1f).setDuration(150)
+                    .setInterpolator(AccelerateDecelerateInterpolator()).start()
+            }
         }
     }
 
