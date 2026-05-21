@@ -47,11 +47,14 @@ class ChatViewModel : ViewModel() {
         _sessionClosed.value = false
     }
 
-    private val thinkingStates = listOf(
-        "Sedang berpikir...",
-        "Mengambil konteks jurnal...",
-        "Menganalisis suasana hati...",
-        "Mempersiapkan saran terbaik..."
+    private val randomThinkingMessages = listOf(
+        "Sereluna sedang mengingat memori jurnalmu...",
+        "Mencoba memahami perasaanmu lebih dalam...",
+        "Mencari saran yang paling pas buat kamu...",
+        "Menghubungkan titik-titik cerita harimu...",
+        "Menyusun kata-kata penyemangat...",
+        "Melihat gambaran besar dari ceritamu...",
+        "Sedang merangkai balasan yang hangat..."
     )
 
     fun sendMessage(userMessage: String) {
@@ -66,19 +69,19 @@ class ChatViewModel : ViewModel() {
         addMessageToList(Chat(userMessage, "user", false))
         userMessageCount++
 
-        val typingChat = Chat(thinkingStates[0], "bot", true)
-        addMessageToList(typingChat)
-
         val mood = sentimentAnalyzer.analyze(userMessage).first
 
         viewModelScope.launch {
-            // Background loop to rotate thinking messages if it takes a long time
+            // Immediately add the typing indicator
+            addMessageToList(Chat("Typing...", "bot", true))
+            
+            // Background loop to update status ONLY after 3 seconds delay
             val typingJob = launch {
-                var stateIndex = 0
+                kotlinx.coroutines.delay(3500) // Wait 3.5 seconds before starting status rotation
                 while (true) {
+                    val randomStatus = randomThinkingMessages.random()
+                    updateLastMessageStatus(randomStatus)
                     kotlinx.coroutines.delay(3000)
-                    stateIndex = (stateIndex + 1) % thinkingStates.size
-                    updateLastMessage(thinkingStates[stateIndex])
                 }
             }
 
@@ -91,6 +94,7 @@ class ChatViewModel : ViewModel() {
                 )
                 typingJob.cancel()
                 removeTypingIndicator()
+                
                 activeRoomId = response.room_id ?: activeRoomId
                 activeSessionId = response.session_id ?: activeSessionId
                 previousSessionSummary = response.session_summary
@@ -137,17 +141,17 @@ class ChatViewModel : ViewModel() {
         _chatMessages.value = list
     }
 
-    private fun updateLastMessage(newMessage: String) {
+    private fun updateLastMessageStatus(status: String) {
         val list = _chatMessages.value ?: mutableListOf()
-        if (list.isNotEmpty() && list.last().isBot) {
-            list[list.size - 1] = list.last().copy(message = newMessage)
+        if (list.isNotEmpty() && list.last().isBot && list.last().message == "Typing...") {
+            list[list.size - 1] = list.last().copy(status = status)
             _chatMessages.value = list
         }
     }
 
     private fun removeTypingIndicator() {
         val list = _chatMessages.value ?: mutableListOf()
-        if (list.isNotEmpty() && list.last().isBot && thinkingStates.any { it == list.last().message || list.last().message == "Typing..." }) {
+        if (list.isNotEmpty() && list.last().isBot && list.last().message == "Typing...") {
             list.removeAt(list.size - 1)
             _chatMessages.value = list
         }
