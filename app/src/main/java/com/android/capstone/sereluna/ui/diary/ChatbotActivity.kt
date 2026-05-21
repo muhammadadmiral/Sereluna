@@ -73,6 +73,12 @@ class ChatbotActivity : AppCompatActivity() {
     }
 
     private fun showExitConfirmationDialog() {
+        val messages = viewModel.chatMessages.value
+        if (messages.isNullOrEmpty()) {
+            finish()
+            return
+        }
+
         MaterialAlertDialogBuilder(this)
             .setTitle("Akhiri Sesi Percakapan?")
             .setMessage("Apakah kamu yakin ingin keluar? Sesi ini akan ditutup secara permanen dan dirangkum ke dalam Jurnal. Sesi yang sudah ditutup tidak dapat dilanjutkan kembali.")
