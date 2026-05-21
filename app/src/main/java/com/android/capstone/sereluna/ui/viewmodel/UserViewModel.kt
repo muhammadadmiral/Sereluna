@@ -25,8 +25,8 @@ class UserViewModel : ViewModel() {
     private val _updateState = MutableLiveData<UiState<Unit>>()
     val updateState: LiveData<UiState<Unit>> = _updateState
 
-    private val _screeningStatus = MutableLiveData<com.android.capstone.sereluna.data.api.ScreeningStatusDto?>(null)
-    val screeningStatus: LiveData<com.android.capstone.sereluna.data.api.ScreeningStatusDto?> = _screeningStatus
+    private val _screeningStatus = MutableLiveData<UiState<com.android.capstone.sereluna.data.api.ScreeningStatusDto>>()
+    val screeningStatus: LiveData<UiState<com.android.capstone.sereluna.data.api.ScreeningStatusDto>> = _screeningStatus
 
     fun loadUserData(forceRefresh: Boolean = false) {
         if (!forceRefresh && _userData.value is UiState.Success) {
@@ -44,15 +44,16 @@ class UserViewModel : ViewModel() {
     }
 
     fun loadScreeningStatus(forceRefresh: Boolean = false) {
-        if (!forceRefresh && _screeningStatus.value != null) {
+        if (!forceRefresh && _screeningStatus.value is UiState.Success) {
             return
         }
 
         viewModelScope.launch {
+            _screeningStatus.value = UiState.Loading
             try {
-                _screeningStatus.value = repository.getScreeningStatus()
+                _screeningStatus.value = UiState.Success(repository.getScreeningStatus())
             } catch (e: Exception) {
-                // If it fails, we keep the old value or set null
+                _screeningStatus.value = UiState.Error(e.message ?: "Failed to load screening status.")
             }
         }
     }

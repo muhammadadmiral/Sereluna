@@ -229,13 +229,13 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Sleep Trends Section -->
+            <!-- Wellbeing Trend Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/raleway_bold"
-                android:text="Tren Tidur"
+                android:text="Tren Wellbeing"
                 android:textColor="?attr/colorOnBackground"
                 android:textSize="18sp" />
 
@@ -260,13 +260,13 @@
                         android:fontFamily="@font/raleway_bold"
                         android:textColor="@color/calendar_blue"
                         android:textSize="24sp"
-                        tools:text="6.8 jam" />
+                        tools:text="74" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/raleway_medium"
-                        android:text="Rata-rata tidur harian"
+                        android:text="Rata-rata skor wellbeing"
                         android:textColor="@color/gray_500"
                         android:textSize="12sp" />
 
@@ -284,7 +284,7 @@
                         android:fontFamily="@font/raleway_medium"
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="14sp"
-                        tools:text="Durasi tidurmu cukup oke secara rata-rata..." />
+                        tools:text="Tren wellbeing kamu terlihat stabil..." />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

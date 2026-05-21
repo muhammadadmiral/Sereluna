@@ -23,6 +23,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserViewModel by activityViewModels()
+    private var nextScreeningDate: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,29 +84,41 @@ class HomeFragment : Fragment() {
                 is UiState.Loading -> {
                     isUserLoaded = false
                     updateVisibility()
-                    binding.tvUserName.text = "Loading..."
                 }
                 is UiState.Error -> {
-                    isUserLoaded = true // Show error state
+                    isUserLoaded = true 
                     updateVisibility()
-                    binding.tvUserName.text = "Error loading data"
+                    binding.tvUserName.text = "Hi!"
                 }
             }
         }
 
-        userViewModel.screeningStatus.observe(viewLifecycleOwner) { status ->
-            if (status != null) {
-                binding.cvScreening.visibility = View.VISIBLE 
-                binding.textViewScreening.text = if (status.is_due) {
-                    "Skrining DASS-21"
-                } else {
-                    "Baseline aktif"
+        userViewModel.screeningStatus.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Success -> {
+                    val status = state.data
+                    nextScreeningDate = status.next_recommended_date
+                    binding.cvScreening.visibility = View.VISIBLE 
+                    binding.textViewScreening.text = if (status.is_due) {
+                        "Skrining DASS-21"
+                    } else {
+                        nextScreeningDate?.let { "Skrining tersedia lagi: $it" }
+                            ?: "Skrining tersedia lagi nanti"
+                    }
+                    isScreeningLoaded = true
+                    updateVisibility()
                 }
-                isScreeningLoaded = true
-                updateVisibility()
-            } else {
-                // If we're using a cached/shared VM, status might be null initially
-                // or after a reset. loadScreeningStatus will eventually trigger a non-null.
+                is UiState.Loading -> {
+                    isScreeningLoaded = false
+                    updateVisibility()
+                }
+                is UiState.Error -> {
+                    isScreeningLoaded = true
+                    updateVisibility()
+                    // Fallback to default state
+                    binding.cvScreening.visibility = View.VISIBLE
+                    binding.textViewScreening.text = "Skrining DASS-21"
+                }
             }
         }
     }

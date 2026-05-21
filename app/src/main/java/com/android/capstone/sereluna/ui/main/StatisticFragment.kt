@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.api.MoodDistributionResponseDto
 import com.android.capstone.sereluna.data.api.SleepTrendsResponseDto
@@ -26,7 +26,7 @@ class StatisticFragment : Fragment() {
 
     private var _binding: FragmentStatisticBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: StatisticViewModel by viewModels()
+    private val viewModel: StatisticViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +43,7 @@ class StatisticFragment : Fragment() {
         setupListeners()
         setupObservers()
 
-        viewModel.loadStats(7)
+        viewModel.fetchAll()
     }
 
     private fun setupCharts() {
@@ -77,7 +77,7 @@ class StatisticFragment : Fragment() {
                     R.id.btn90Days -> 90
                     else -> 30
                 }
-                viewModel.loadStats(days)
+                viewModel.switchPeriod(days)
             }
         }
     }
@@ -85,7 +85,7 @@ class StatisticFragment : Fragment() {
     private fun setupObservers() {
         viewModel.loading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            binding.scrollView.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
+            binding.scrollView.visibility = if (isLoading && binding.tvWellbeingScore.text.isNullOrBlank()) View.INVISIBLE else View.VISIBLE
         }
 
         viewModel.moodData.observe(viewLifecycleOwner) { state ->
@@ -178,7 +178,7 @@ class StatisticFragment : Fragment() {
     }
 
     private fun updateSleepChart(data: SleepTrendsResponseDto) {
-        binding.tvAvgSleep.text = String.format(Locale.US, "%.1f jam", data.average_hours)
+        binding.tvAvgSleep.text = String.format(Locale.US, "%.0f", data.average_hours)
         
         if (data.items.isEmpty()) {
             binding.sleepLineChart.clear()
@@ -190,7 +190,7 @@ class StatisticFragment : Fragment() {
             Entry(index.toFloat(), item.hours.toFloat())
         }
 
-        val dataSet = LineDataSet(entries, "Jam Tidur")
+        val dataSet = LineDataSet(entries, "Skor Wellbeing")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.calendar_blue)
         dataSet.setCircleColor(ContextCompat.getColor(requireContext(), R.color.calendar_blue))
         dataSet.lineWidth = 3f
@@ -204,7 +204,7 @@ class StatisticFragment : Fragment() {
         binding.sleepLineChart.xAxis.valueFormatter = IndexAxisValueFormatter(data.items.map { it.date.takeLast(5) })
         binding.sleepLineChart.data = LineData(dataSet)
         binding.sleepLineChart.invalidate()
-        binding.tvSleepInsight.text = data.insight ?: "Analisis kualitas tidur kamu akan tampil di sini."
+        binding.tvSleepInsight.text = data.insight ?: "Tren wellbeing kamu akan tampil di sini."
     }
 
     private fun String.toDisplayLabel(): String {
