@@ -15,11 +15,10 @@
         android:id="@+id/tvSettingIcon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:fontFamily="@font/material_symbols"
         android:gravity="center"
         android:textColor="@color/brand_purple_primary"
-        android:textSize="20sp"
-        tools:text="&#xe8b8;" />
+        android:textSize="18sp"
+        tools:text="✦" />
 
     <TextView
         android:id="@+id/tvSettingTitle"

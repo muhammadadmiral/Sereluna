@@ -208,7 +208,7 @@ class CalendarActivity : AppCompatActivity() {
             detailBinding.tvMoodIcon.text = moodEmoji(mood)
             detailBinding.tvMoodLabel.text = mood.toDisplayLabel()
         } else {
-            detailBinding.tvMoodIcon.text = "\ue10c" // neutral icon
+            detailBinding.tvMoodIcon.text = "○"
             detailBinding.tvMoodLabel.text = "Belum ada mood"
         }
 
@@ -292,23 +292,23 @@ class CalendarActivity : AppCompatActivity() {
 
     private fun moodEmoji(mood: String): String {
         return when (mood.lowercase(Locale.ROOT)) {
-            "happy" -> "\ue7f2" // mood
-            "neutral" -> "\ue811" // sentiment_neutral
-            "sad" -> "\ue814" // sentiment_very_dissatisfied
-            "anxious" -> "\ue812" // sentiment_dissatisfied
-            "angry" -> "\ue813" // sentiment_very_dissatisfied (angry variation)
-            else -> "\ue811"
+            "happy" -> "☺"
+            "neutral" -> "○"
+            "sad" -> "☹"
+            "anxious" -> "◇"
+            "angry" -> "!"
+            else -> "○"
         }
     }
 
     private fun getMoodUnicode(mood: String): String {
         return when (mood.lowercase(Locale.ROOT)) {
-            "happy" -> "\uE7F2"
-            "neutral" -> "\uE811"
-            "sad" -> "\uE814"
-            "anxious" -> "\uE812"
-            "angry" -> "\uE813"
-            else -> "\uE811"
+            "happy" -> "☺"
+            "neutral" -> "○"
+            "sad" -> "☹"
+            "anxious" -> "◇"
+            "angry" -> "!"
+            else -> "○"
         }
     }
 

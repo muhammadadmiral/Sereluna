@@ -63,19 +63,19 @@ class SettingFragment : Fragment() {
     private fun initSettingRows() {
         // Akun Section
         binding.itemEditProfile.apply {
-            tvSettingIcon.text = "\ue3c9" // edit
+            tvSettingIcon.text = "✎"
             tvSettingTitle.text = "Edit Profil"
         }
         binding.itemChangePassword.apply {
-            tvSettingIcon.text = "\ue897" // lock
+            tvSettingIcon.text = "●"
             tvSettingTitle.text = "Ganti Password Manual"
         }
         binding.itemResetEmail.apply {
-            tvSettingIcon.text = "\ue0be" // email
+            tvSettingIcon.text = "@"
             tvSettingTitle.text = "Reset via Link Email"
         }
         binding.itemDeleteAccount.apply {
-            tvSettingIcon.text = "\ue872" // delete
+            tvSettingIcon.text = "!"
             tvSettingTitle.text = "Hapus Akun"
             tvSettingTitle.setTextColor(resources.getColor(R.color.red_error, null))
             tvSettingIcon.setTextColor(resources.getColor(R.color.red_error, null))
@@ -83,11 +83,11 @@ class SettingFragment : Fragment() {
 
         // Legal Section
         binding.itemTerms.apply {
-            tvSettingIcon.text = "\uef42" // description
+            tvSettingIcon.text = "§"
             tvSettingTitle.text = "Syarat & Ketentuan"
         }
         binding.itemPrivacy.apply {
-            tvSettingIcon.text = "\ue898" // lock_person
+            tvSettingIcon.text = "◇"
             tvSettingTitle.text = "Kebijakan Privasi"
         }
     }

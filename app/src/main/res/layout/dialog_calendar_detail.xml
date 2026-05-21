@@ -45,11 +45,10 @@
             android:id="@+id/tvMoodIcon"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:fontFamily="@font/material_symbols"
             android:gravity="center"
             android:textColor="@color/brand_purple_primary"
             android:textSize="28sp"
-            tools:text="&#xe7f2;" />
+            tools:text="☺" />
 
         <TextView
             android:id="@+id/tvMoodLabel"
@@ -90,10 +89,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/material_symbols"
-                    android:text="&#xef76;"
+                    android:fontFamily="@font/raleway_bold"
+                    android:text="Zz"
                     android:textColor="@color/calendar_blue"
-                    android:textSize="18sp" />
+                    android:textSize="14sp" />
 
                 <TextView
                     android:layout_width="wrap_content"

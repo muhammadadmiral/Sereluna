@@ -60,11 +60,10 @@
                     android:layout_height="44dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Bulan sebelumnya"
-                    android:fontFamily="@font/material_symbols"
                     android:gravity="center"
-                    android:text="chevron_left"
+                    android:text="‹"
                     android:textColor="?attr/colorOnBackground"
-                    android:textSize="28sp" />
+                    android:textSize="32sp" />
 
                 <TextView
                     android:id="@+id/nextMonthButton"
@@ -72,11 +71,10 @@
                     android:layout_height="44dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Bulan berikutnya"
-                    android:fontFamily="@font/material_symbols"
                     android:gravity="center"
-                    android:text="chevron_right"
+                    android:text="›"
                     android:textColor="?attr/colorOnBackground"
-                    android:textSize="28sp" />
+                    android:textSize="32sp" />
             </LinearLayout>
 
             <TextView
@@ -109,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway_medium"
-                    android:text="green  Stabil"
+                    android:text="● Stabil"
                     android:textColor="@color/calendar_green"
                     android:textSize="12sp" />
 
@@ -119,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway_medium"
-                    android:text="yellow  Pantau"
+                    android:text="● Pantau"
                     android:textColor="@color/calendar_yellow"
                     android:textSize="12sp" />
 
@@ -129,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway_medium"
-                    android:text="orange  Perhatian"
+                    android:text="● Perhatian"
                     android:textColor="@color/calendar_orange"
                     android:textSize="12sp" />
 
@@ -139,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway_medium"
-                    android:text="red  Tinggi"
+                    android:text="● Tinggi"
                     android:textColor="@color/calendar_red"
                     android:textSize="12sp" />
             </LinearLayout>
