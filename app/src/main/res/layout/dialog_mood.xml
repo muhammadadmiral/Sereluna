@@ -53,12 +53,12 @@
             android:text="Happy" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/chipCalm"
+            android:id="@+id/chipNeutral"
             style="@style/Widget.Material3.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:tag="calm"
-            android:text="Calm" />
+            android:tag="neutral"
+            android:text="Neutral" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chipSad"
@@ -83,14 +83,7 @@
             android:layout_height="wrap_content"
             android:tag="angry"
             android:text="Angry" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipTired"
-            style="@style/Widget.Material3.Chip.Filter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:tag="tired"
-            android:text="Tired" />
+            
     </com.google.android.material.chip.ChipGroup>
 
     <com.google.android.material.button.MaterialButton

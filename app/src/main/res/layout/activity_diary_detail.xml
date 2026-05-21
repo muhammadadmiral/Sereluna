@@ -67,6 +67,7 @@
                         android:lineSpacingExtra="4dp"
                         android:textColor="?attr/colorOnPrimaryContainer"
                         android:textSize="12sp"
+                        android:visibility="gone"
                         tools:text="Diary ID: ...\nSession ID: ...\nUpdated: ..." />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

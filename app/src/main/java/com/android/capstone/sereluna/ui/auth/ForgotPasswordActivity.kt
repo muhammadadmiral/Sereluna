@@ -44,7 +44,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
                 repository.forgotPassword(email)
                 binding.btnSendResetLink.isEnabled = true
                 binding.btnSendResetLink.text = "Kirim Link Reset"
-                Toast.makeText(this@ForgotPasswordActivity, "Jika email terdaftar, link reset password telah dikirim.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@ForgotPasswordActivity, "Instruksi reset password telah dikirim ke email Anda. Silakan periksa kotak masuk atau spam.", Toast.LENGTH_LONG).show()
                 finish()
             } catch (e: Exception) {
                 binding.btnSendResetLink.isEnabled = true
