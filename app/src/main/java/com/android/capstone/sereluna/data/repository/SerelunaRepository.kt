@@ -29,6 +29,8 @@ import com.android.capstone.sereluna.data.api.ForgotPasswordRequestDto
 import com.android.capstone.sereluna.data.api.ForgotPasswordResponseDto
 import com.android.capstone.sereluna.data.api.ChangePasswordRequestDto
 import com.android.capstone.sereluna.data.api.MessageResponseDto
+import com.android.capstone.sereluna.data.api.MoodDistributionResponseDto
+import com.android.capstone.sereluna.data.api.SleepTrendsResponseDto
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.JsonElement
@@ -172,6 +174,14 @@ class SerelunaRepository(
 
     suspend fun deleteAccount(): MessageResponseDto {
         return api.deleteAccount(authHeader())
+    }
+
+    suspend fun getMoodDistribution(days: Int): MoodDistributionResponseDto {
+        return api.getMoodDistribution(authHeader(), days)
+    }
+
+    suspend fun getSleepTrends(days: Int): SleepTrendsResponseDto {
+        return api.getSleepTrends(authHeader(), days)
     }
 
     suspend fun signOut() {

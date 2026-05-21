@@ -140,4 +140,16 @@ interface SerelunaApi {
     suspend fun deleteAccount(
         @Header("Authorization") authorization: String
     ): MessageResponseDto
+
+    @GET("api/v1/stats/mood-distribution/")
+    suspend fun getMoodDistribution(
+        @Header("Authorization") authorization: String,
+        @Query("days") days: Int
+    ): MoodDistributionResponseDto
+
+    @GET("api/v1/stats/sleep-trends/")
+    suspend fun getSleepTrends(
+        @Header("Authorization") authorization: String,
+        @Query("days") days: Int
+    ): SleepTrendsResponseDto
 }

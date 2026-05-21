@@ -236,3 +236,26 @@ data class ChangePasswordRequestDto(
     val old_password: String,
     val new_password: String
 )
+
+data class MoodDistributionResponseDto(
+    val period_days: Int = 0,
+    val data: List<MoodCountDto> = emptyList(),
+    val dominant_mood: String? = null,
+    val insight: String? = null
+)
+
+data class MoodCountDto(
+    val mood: String = "",
+    val count: Int = 0
+)
+
+data class SleepTrendsResponseDto(
+    val average_hours: Double = 0.0,
+    val items: List<SleepTrendItemDto> = emptyList(),
+    val insight: String? = null
+)
+
+data class SleepTrendItemDto(
+    val date: String = "",
+    val hours: Double = 0.0
+)

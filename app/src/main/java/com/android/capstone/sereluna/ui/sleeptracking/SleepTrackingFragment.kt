@@ -10,6 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.capstone.sereluna.databinding.FragmentSleepTrackingBinding
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
+import com.android.capstone.sereluna.data.adapter.SleepHistoryAdapter
+import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -36,13 +39,13 @@ class SleepTrackingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.saveSleepDataButton.setOnClickListener {
-            saveSleepData()
+            validateAndSave()
         }
 
         loadSleepHistory()
     }
 
-    private fun saveSleepData() {
+    private fun validateAndSave() {
         val bedtimeHour = binding.bedtimePicker.hour
         val bedtimeMinute = binding.bedtimePicker.minute
         val wakeupHour = binding.wakeupPicker.hour
@@ -62,37 +65,61 @@ class SleepTrackingFragment : Fragment() {
             set(Calendar.MILLISECOND, 0)
         }
 
+        // Handle overnight sleep
         if (!wakeup.after(bedtime)) {
-            wakeup.add(Calendar.DATE, 1) // Menangani jika waktu bangun setelah tengah malam
+            wakeup.add(Calendar.DATE, 1)
         }
 
-        val sleepDuration = (((wakeup.timeInMillis - bedtime.timeInMillis) / (1000 * 60 * 60.0)) * 10)
+        val duration = (((wakeup.timeInMillis - bedtime.timeInMillis) / (1000 * 60 * 60.0)) * 10)
             .roundToInt() / 10.0
 
-        val sleepQuality = when {
-            sleepDuration < 6 -> "Poor"
-            sleepDuration <= 8.5 -> "Good"
-            else -> "Excellent"
+        if (duration < 3.0) {
+            showConfirmation("Tidurmu sangat pendek (${duration} jam). Yakin ingin simpan?") {
+                performSave(bedtime.time, wakeup.time, duration)
+            }
+        } else if (duration > 12.0) {
+            showConfirmation("Tidurmu sangat panjang (${duration} jam). Yakin ingin simpan?") {
+                performSave(bedtime.time, wakeup.time, duration)
+            }
+        } else {
+            performSave(bedtime.time, wakeup.time, duration)
         }
+    }
 
-        val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(wakeup.time)
-        val bedtimeIso = toUtcIso(bedtime.time)
-        val wakeupIso = toUtcIso(wakeup.time)
+    private fun showConfirmation(message: String, onConfirm: () -> Unit) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Konfirmasi")
+            .setMessage(message)
+            .setPositiveButton("Ya, Simpan") { _, _ -> onConfirm() }
+            .setNegativeButton("Cek Lagi", null)
+            .show()
+    }
+
+    private fun performSave(bedtime: Date, wakeup: Date, duration: Double) {
+        val checkedId = binding.moodChipGroup.checkedChipId
+        val chip = binding.moodChipGroup.findViewById<Chip>(checkedId)
+        val quality = chip?.tag?.toString() ?: "Good"
+
+        val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(wakeup)
+        val bedtimeIso = toUtcIso(bedtime)
+        val wakeupIso = toUtcIso(wakeup)
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
+                binding.saveSleepDataButton.isEnabled = false
                 repository.submitSleepDaily(
-                    date = date,
+                    date = dateKey,
                     bedtime = bedtimeIso,
                     wakeup = wakeupIso,
-                    totalSleepHours = sleepDuration,
-                    sleepQuality = sleepQuality,
+                    totalSleepHours = duration,
+                    sleepQuality = quality
                 )
-                Toast.makeText(requireContext(), "Sleep data saved successfully", Toast.LENGTH_SHORT).show()
-                binding.sleepQualityResult.text = "Sleep Quality: $sleepQuality - ${formatHours(sleepDuration)}"
+                Toast.makeText(requireContext(), "Data tidur berhasil disimpan", Toast.LENGTH_SHORT).show()
                 loadSleepHistory()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Failed to save sleep data: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Gagal menyimpan: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                binding.saveSleepDataButton.isEnabled = true
             }
         }
     }
@@ -109,10 +136,12 @@ class SleepTrackingFragment : Fragment() {
                         sleepQuality = item.sleep_quality
                     )
                 }
-                binding.sleepHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-                binding.sleepHistoryRecyclerView.adapter = SleepHistoryAdapter(sleepHistory)
+                binding.sleepHistoryRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(requireContext())
+                    adapter = SleepHistoryAdapter(sleepHistory)
+                }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Failed to load sleep history: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Gagal memuat riwayat", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -131,29 +160,23 @@ class SleepTrackingFragment : Fragment() {
             },
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
-            },
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
+            }
         )
         return formats.firstNotNullOfOrNull { format ->
             runCatching { format.parse(value) }.getOrNull()
         }
     }
 
-    private fun formatHours(value: Double): String {
-        val formatted = if (value % 1.0 == 0.0) value.toInt().toString() else String.format(Locale.US, "%.1f", value)
-        return "$formatted hours"
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-}
 
-data class SleepData(
-    val date: String = "",
-    val bedtime: Date? = null,
-    val wakeup: Date? = null,
-    val sleepDuration: Double = 0.0,
-    val sleepQuality: String = ""
-)
+    data class SleepData(
+        val date: String = "",
+        val bedtime: Date? = null,
+        val wakeup: Date? = null,
+        val sleepDuration: Double = 0.0,
+        val sleepQuality: String = ""
+    )
+}
