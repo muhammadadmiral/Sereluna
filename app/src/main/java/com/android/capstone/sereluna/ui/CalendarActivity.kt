@@ -286,20 +286,23 @@ class CalendarActivity : AppCompatActivity() {
 
     private fun moodEmoji(mood: String): String {
         return when (mood.lowercase(Locale.ROOT)) {
-            "happy" -> "\ue7f2;" // mood code
-            "calm" -> "\ue7f2;" 
-            "sad" -> "\ue7f2;" 
-            "anxious" -> "\ue7f2;"
-            "angry" -> "\ue7f2;"
-            else -> "\ue7f2;"
+            "happy" -> "\ue7f2" // mood
+            "neutral" -> "\ue811" // sentiment_neutral
+            "sad" -> "\ue814" // sentiment_very_dissatisfied
+            "anxious" -> "\ue812" // sentiment_dissatisfied
+            "angry" -> "\ue813" // sentiment_very_dissatisfied (angry variation)
+            else -> "\ue811"
         }
     }
-    // Note: The moodEmoji unicode should ideally be handled via string resources or correct hex codes.
-    // Re-using the logic from previous success:
+
     private fun getMoodUnicode(mood: String): String {
         return when (mood.lowercase(Locale.ROOT)) {
             "happy" -> "\uE7F2"
-            else -> "\uE7F2"
+            "neutral" -> "\uE811"
+            "sad" -> "\uE814"
+            "anxious" -> "\uE812"
+            "angry" -> "\uE813"
+            else -> "\uE811"
         }
     }
 
