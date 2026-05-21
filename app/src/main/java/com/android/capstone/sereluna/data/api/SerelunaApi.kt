@@ -1,6 +1,7 @@
 package com.android.capstone.sereluna.data.api
 
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
@@ -118,4 +119,25 @@ interface SerelunaApi {
         @Header("Authorization") authorization: String,
         @Query("date") date: String
     ): JsonElement
+
+    @POST("api/v1/auth/forgot-password/")
+    suspend fun forgotPassword(
+        @Body request: ForgotPasswordRequestDto
+    ): ForgotPasswordResponseDto
+
+    @POST("api/v1/auth/change-password/")
+    suspend fun changePassword(
+        @Header("Authorization") authorization: String,
+        @Body request: ChangePasswordRequestDto
+    ): MessageResponseDto
+
+    @PATCH("api/v1/notifications/read-all/")
+    suspend fun markAllNotificationsRead(
+        @Header("Authorization") authorization: String
+    ): SuccessResponseDto
+
+    @DELETE("api/v1/me/account/")
+    suspend fun deleteAccount(
+        @Header("Authorization") authorization: String
+    ): MessageResponseDto
 }

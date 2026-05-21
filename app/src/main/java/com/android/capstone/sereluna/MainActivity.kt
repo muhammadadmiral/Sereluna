@@ -18,15 +18,8 @@ import com.android.capstone.sereluna.ui.auth.LoginActivity
 import com.android.capstone.sereluna.util.AuthSessionManager
 import com.android.capstone.sereluna.util.DarkModePrefUtil
 import com.google.firebase.FirebaseApp
-
-import android.view.LayoutInflater
-import android.widget.PopupWindow
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.android.capstone.sereluna.data.adapter.NotificationAdapter
-import com.android.capstone.sereluna.data.model.Notification
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
-import com.android.capstone.sereluna.databinding.DropdownNotificationsBinding
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -35,8 +28,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
 
     private val serelunaRepository = SerelunaRepository()
-    private val notificationAdapter = NotificationAdapter()
-    private var notificationPopup: PopupWindow? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,67 +58,9 @@ class MainActivity : AppCompatActivity() {
         // Setup BottomNavigationView with NavController
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        setupNotificationDropdown()
-
         requestNotificationPermissionIfNeeded()
         ScreeningReminderScheduler.scheduleNext(this)
         submitPendingDeviceToken()
-    }
-
-    private fun setupNotificationDropdown() {
-        binding.btnNotificationDropdown.setOnClickListener {
-            loadNotifications()
-            showNotificationDropdown()
-        }
-
-        loadNotifications()
-    }
-
-    private fun loadNotifications() {
-        lifecycleScope.launch {
-            try {
-                val notifications = serelunaRepository.getNotifications().map { item ->
-                    Notification(
-                        id = item.id,
-                        title = item.title,
-                        body = item.body,
-                        notifStatus = item.type
-                    )
-                }
-                val filteredNotifications = notifications.filter {
-                    it.notifStatus != "diary" && it.notifStatus != "diary_summary"
-                }
-                notificationAdapter.submitList(filteredNotifications)
-            } catch (_: Exception) {
-            }
-        }
-    }
-
-    private fun showNotificationDropdown() {
-        val dropdownBinding = DropdownNotificationsBinding.inflate(LayoutInflater.from(this))
-        dropdownBinding.rvDropdownNotifications.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = notificationAdapter
-        }
-
-        // Check if list is empty
-        if (notificationAdapter.itemCount == 0) {
-            dropdownBinding.tvEmptyNotifications.visibility = android.view.View.VISIBLE
-            dropdownBinding.rvDropdownNotifications.visibility = android.view.View.GONE
-        } else {
-            dropdownBinding.tvEmptyNotifications.visibility = android.view.View.GONE
-            dropdownBinding.rvDropdownNotifications.visibility = android.view.View.VISIBLE
-        }
-
-        notificationPopup = PopupWindow(
-            dropdownBinding.root,
-            android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-            android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-            true
-        ).apply {
-            elevation = 10f
-            showAsDropDown(binding.btnNotificationDropdown, 0, 0)
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

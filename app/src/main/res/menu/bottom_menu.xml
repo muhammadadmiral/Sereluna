@@ -7,10 +7,18 @@
         android:icon="@drawable/home"/>
 
     <item
+        android:id="@+id/StatisticFragment"
+        android:title="Statistic"
+        android:icon="@drawable/baseline_widgets_24"/>
+
+    <item
+        android:id="@+id/NotificationFragment"
+        android:title="Notifikasi"
+        android:icon="@drawable/bell"/>
+
+    <item
         android:id="@+id/SettingFragment"
-        android:title="Setting"
+        android:title="Settings"
         android:icon="@drawable/setting"/>
-
-
 
 </menu>

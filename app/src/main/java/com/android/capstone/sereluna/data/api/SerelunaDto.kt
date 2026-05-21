@@ -142,6 +142,7 @@ data class NotificationItemDto(
     val body: String = "",
     val type: String = "",
     val is_read: Boolean = false,
+    val action_link: String? = null,
     val created_at: String? = null
 )
 
@@ -215,4 +216,23 @@ data class CalendarDetailDto(
 
 data class SuccessResponseDto(
     val success: Boolean = false
+)
+
+data class MessageResponseDto(
+    val message: String = ""
+)
+
+data class ForgotPasswordRequestDto(
+    val email: String,
+    val continue_url: String? = null
+)
+
+data class ForgotPasswordResponseDto(
+    val message: String = "",
+    val reset_link: String? = null
+)
+
+data class ChangePasswordRequestDto(
+    val old_password: String,
+    val new_password: String
 )

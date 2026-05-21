@@ -25,6 +25,10 @@ import com.android.capstone.sereluna.data.api.SuccessResponseDto
 import com.android.capstone.sereluna.data.api.UserContextResponseDto
 import com.android.capstone.sereluna.data.api.UserProfileResponseDto
 import com.android.capstone.sereluna.data.api.UserProfileUpdateRequestDto
+import com.android.capstone.sereluna.data.api.ForgotPasswordRequestDto
+import com.android.capstone.sereluna.data.api.ForgotPasswordResponseDto
+import com.android.capstone.sereluna.data.api.ChangePasswordRequestDto
+import com.android.capstone.sereluna.data.api.MessageResponseDto
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.JsonElement
@@ -144,11 +148,34 @@ class SerelunaRepository(
         return api.markNotificationRead(authHeader(), notificationId)
     }
 
+    suspend fun markAllNotificationsRead(): SuccessResponseDto {
+        return api.markAllNotificationsRead(authHeader())
+    }
+
     suspend fun submitDeviceToken(token: String): SuccessResponseDto {
         return api.submitDeviceToken(
             authorization = authHeader(),
             request = DeviceTokenRequestDto(token)
         )
+    }
+
+    suspend fun forgotPassword(email: String, continueUrl: String? = null): ForgotPasswordResponseDto {
+        return api.forgotPassword(ForgotPasswordRequestDto(email, continueUrl))
+    }
+
+    suspend fun changePassword(oldPassword: String, newPassword: String): MessageResponseDto {
+        return api.changePassword(
+            authorization = authHeader(),
+            request = ChangePasswordRequestDto(oldPassword, newPassword)
+        )
+    }
+
+    suspend fun deleteAccount(): MessageResponseDto {
+        return api.deleteAccount(authHeader())
+    }
+
+    suspend fun signOut() {
+        auth.signOut()
     }
 
     suspend fun submitSleepDaily(

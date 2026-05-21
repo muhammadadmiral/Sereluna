@@ -5,6 +5,7 @@
     <color name="brand_purple_primary">#6A1B9A</color>
     <color name="brand_purple_light">#9C4DCC</color>
     <color name="brand_purple_pastel">#E1BEE7</color>
+    <color name="light_purple_bg">#F3E5F5</color>
 
     <!-- Light Theme Surface Colors -->
     <color name="light_background">#F7F2FA</color> <!-- Off-white with a hint of purple -->
@@ -35,6 +36,7 @@
     <color name="light_blue">@color/brand_purple_light</color> <!-- Remapped -->
     <color name="gray">#BDBDBD</color>
     <color name="gray_200">#EEEEEE</color>
+    <color name="gray_500">#9E9E9E</color>
     <color name="blue_700">@color/brand_purple_primary</color> <!-- Remapped -->
     <color name="blue_500">@color/brand_purple_light</color> <!-- Remapped -->
 

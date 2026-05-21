@@ -12,18 +12,6 @@
         android:background="?attr/colorPrimary"
         app:elevation="2dp"
         android:theme="?attr/actionBarTheme">
-
-        <ImageView
-            android:id="@+id/btnNotificationDropdown"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="end"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Notifications"
-            android:padding="12dp"
-            android:src="@drawable/bell"
-            app:tint="?attr/colorOnPrimary" />
     </com.google.android.material.appbar.MaterialToolbar>
 
     <androidx.fragment.app.FragmentContainerView

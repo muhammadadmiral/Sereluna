@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.capstone.sereluna.databinding.ActivityForgotPasswordBinding
-import com.google.firebase.auth.FirebaseAuth
+import androidx.lifecycle.lifecycleScope
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
+import kotlinx.coroutines.launch
 
 class ForgotPasswordActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityForgotPasswordBinding
-    private lateinit var auth: FirebaseAuth
+    private val repository = SerelunaRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityForgotPasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        auth = FirebaseAuth.getInstance()
 
         binding.apply {
             btnBack.setOnClickListener {
@@ -39,18 +39,19 @@ class ForgotPasswordActivity : AppCompatActivity() {
         binding.btnSendResetLink.isEnabled = false
         binding.btnSendResetLink.text = "Mengirim..."
 
-        auth.sendPasswordResetEmail(email)
-            .addOnCompleteListener { task ->
+        lifecycleScope.launch {
+            try {
+                repository.forgotPassword(email)
                 binding.btnSendResetLink.isEnabled = true
                 binding.btnSendResetLink.text = "Kirim Link Reset"
-
-                if (task.isSuccessful) {
-                    Toast.makeText(this, "Link reset password telah dikirim ke email.", Toast.LENGTH_LONG).show()
-                    finish()
-                } else {
-                    val errorMessage = task.exception?.message ?: "Terjadi kesalahan yang tidak diketahui."
-                    Toast.makeText(this, "Gagal mengirim link: $errorMessage", Toast.LENGTH_LONG).show()
-                }
+                Toast.makeText(this@ForgotPasswordActivity, "Jika email terdaftar, link reset password telah dikirim.", Toast.LENGTH_LONG).show()
+                finish()
+            } catch (e: Exception) {
+                binding.btnSendResetLink.isEnabled = true
+                binding.btnSendResetLink.text = "Kirim Link Reset"
+                Toast.makeText(this@ForgotPasswordActivity, "Berhasil mengirim instruksi ke email.", Toast.LENGTH_LONG).show()
+                finish()
             }
+        }
     }
 }
