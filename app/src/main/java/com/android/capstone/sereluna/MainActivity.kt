@@ -61,6 +61,12 @@ class MainActivity : AppCompatActivity() {
         requestNotificationPermissionIfNeeded()
         ScreeningReminderScheduler.scheduleNext(this)
         submitPendingDeviceToken()
+        updateNotificationBadge()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (::binding.isInitialized) updateNotificationBadge()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -102,6 +108,26 @@ class MainActivity : AppCompatActivity() {
             try {
                 serelunaRepository.submitDeviceToken(token)
                 prefs.edit().remove("pending_token").apply()
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    private fun updateNotificationBadge() {
+        lifecycleScope.launch {
+            try {
+                val unreadCount = serelunaRepository.getNotificationUnreadCount().unread_count
+                if (unreadCount > 0) {
+                    binding.bottomNavigationView.getOrCreateBadge(R.id.NotificationFragment).apply {
+                        isVisible = true
+                        number = unreadCount
+                        maxCharacterCount = 3
+                        backgroundColor = ContextCompat.getColor(this@MainActivity, R.color.red_error)
+                        badgeTextColor = ContextCompat.getColor(this@MainActivity, R.color.white)
+                    }
+                } else {
+                    binding.bottomNavigationView.removeBadge(R.id.NotificationFragment)
+                }
             } catch (_: Exception) {
             }
         }

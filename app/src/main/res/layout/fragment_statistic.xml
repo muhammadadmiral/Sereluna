@@ -219,23 +219,42 @@
                         android:layout_height="280dp" />
 
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cvMoodDetail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         app:cardBackgroundColor="@color/light_purple_bg"
-                        app:cardCornerRadius="12dp"
-                        app:cardElevation="0dp">
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/brand_purple_pastel"
+                        app:strokeWidth="1dp">
 
-                        <TextView
-                            android:id="@+id/tvMoodInsight"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="12dp"
-                            android:fontFamily="@font/raleway_medium"
-                            android:textColor="@color/brand_purple_dark"
-                            android:textSize="14sp"
-                            android:lineSpacingExtra="4dp"
-                            tools:text="Minggu ini mood kamu terlihat stabil..." />
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:id="@+id/tvMoodDetailTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/raleway_bold"
+                                android:text="Detail Mood"
+                                android:textColor="@color/brand_purple_dark"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvMoodInsight"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:fontFamily="@font/raleway_medium"
+                                android:lineSpacingExtra="4dp"
+                                android:textColor="@color/brand_purple_dark"
+                                android:textSize="13sp"
+                                tools:text="Tap salah satu bagian chart untuk melihat detail mood." />
+                        </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
                 </LinearLayout>

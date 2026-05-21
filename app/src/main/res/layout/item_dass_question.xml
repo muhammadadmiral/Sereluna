@@ -1,53 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="6dp"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="2dp">
+    android:layout_marginVertical="7dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/brand_purple_pastel"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/tvQuestion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/raleway_bold"
+            android:lineSpacingExtra="3dp"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="15sp"
+            tools:text="1. Saya merasa sulit untuk tenang." />
 
         <RadioGroup
             android:id="@+id/rgAnswers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:weightSum="4">
 
             <RadioButton
                 android:id="@+id/rb0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:buttonTint="@color/brand_purple_primary"
+                android:fontFamily="@font/raleway_bold"
+                android:gravity="center"
                 android:text="@string/dass_option_0" />
+
             <RadioButton
                 android:id="@+id/rb1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:buttonTint="@color/brand_purple_primary"
+                android:fontFamily="@font/raleway_bold"
+                android:gravity="center"
                 android:text="@string/dass_option_1" />
+
             <RadioButton
                 android:id="@+id/rb2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:buttonTint="@color/brand_purple_primary"
+                android:fontFamily="@font/raleway_bold"
+                android:gravity="center"
                 android:text="@string/dass_option_2" />
+
             <RadioButton
                 android:id="@+id/rb3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:buttonTint="@color/brand_purple_primary"
+                android:fontFamily="@font/raleway_bold"
+                android:gravity="center"
                 android:text="@string/dass_option_3" />
         </RadioGroup>
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

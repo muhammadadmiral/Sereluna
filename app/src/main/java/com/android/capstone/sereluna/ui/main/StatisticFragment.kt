@@ -1,5 +1,6 @@
 package com.android.capstone.sereluna.ui.main
 
+import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -32,6 +33,7 @@ class StatisticFragment : Fragment() {
     private var _binding: FragmentStatisticBinding? = null
     private val binding get() = _binding!!
     private val viewModel: StatisticViewModel by activityViewModels()
+    private var moodSelectionAnimator: ValueAnimator? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -210,7 +212,7 @@ class StatisticFragment : Fragment() {
         dataSet.colors = visibleItems.map { moodColor(it.mood) }
         dataSet.valueTextSize = 14f
         dataSet.valueTextColor = Color.WHITE
-        dataSet.selectionShift = 12f
+        dataSet.selectionShift = 0f
 
         binding.moodPieChart.data = PieData(dataSet)
         binding.moodPieChart.centerText = "Tap bagian chart"
@@ -231,10 +233,14 @@ class StatisticFragment : Fragment() {
                 ).joinToString(" ")
 
                 binding.tvMoodInsight.text = "${moodDisplayName(moodKey, data)} tercatat $count kali (${String.format(Locale.US, "%.0f", percent)}%) dalam periode ini. $summary $supportingText".trim()
+                animateMoodSelection(dataSet, selected = true)
+                animateMoodDetailCard(selected = true)
             }
 
             override fun onNothingSelected() {
                 binding.tvMoodInsight.text = data.insight ?: "Tap salah satu bagian chart untuk melihat detail mood."
+                animateMoodSelection(dataSet, selected = false)
+                animateMoodDetailCard(selected = false)
             }
         })
         binding.moodPieChart.invalidate()
@@ -310,7 +316,30 @@ class StatisticFragment : Fragment() {
         return ContextCompat.getColor(requireContext(), colorRes)
     }
 
+    private fun animateMoodSelection(dataSet: PieDataSet, selected: Boolean) {
+        moodSelectionAnimator?.cancel()
+        val target = if (selected) 18f else 0f
+        moodSelectionAnimator = ValueAnimator.ofFloat(dataSet.selectionShift, target).apply {
+            duration = 260L
+            addUpdateListener { animator ->
+                dataSet.selectionShift = animator.animatedValue as Float
+                binding.moodPieChart.invalidate()
+            }
+            start()
+        }
+    }
+
+    private fun animateMoodDetailCard(selected: Boolean) {
+        val scale = if (selected) 1.015f else 1f
+        binding.cvMoodDetail.animate()
+            .scaleX(scale)
+            .scaleY(scale)
+            .setDuration(220L)
+            .start()
+    }
+
     override fun onDestroyView() {
+        moodSelectionAnimator?.cancel()
         super.onDestroyView()
         _binding = null
     }

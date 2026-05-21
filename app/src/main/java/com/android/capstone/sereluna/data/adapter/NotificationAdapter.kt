@@ -1,7 +1,7 @@
 package com.android.capstone.sereluna.data.adapter
 
-import android.graphics.Color
 import android.graphics.PorterDuff
+import android.content.res.Configuration
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -33,15 +33,19 @@ class NotificationAdapter(
             val context = itemView.context
             
             // Handle Read/Unread UI
+            val isNight = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
             if (notification.isRead) {
-                // Read: Darker/Grayish background
-                binding.root.setCardBackgroundColor(ContextCompat.getColor(context, R.color.gray_200))
-                binding.unreadDot.visibility = android.view.View.GONE
-                binding.root.alpha = 0.7f // Dim the read notification
+                binding.root.setCardBackgroundColor(
+                    ContextCompat.getColor(context, if (isNight) R.color.dark_card else R.color.light_surface)
+                )
+                binding.tvNewBadge.visibility = android.view.View.GONE
+                binding.root.alpha = 0.74f
             } else {
-                // Unread: White background with purple dot
-                binding.root.setCardBackgroundColor(Color.WHITE)
-                binding.unreadDot.visibility = android.view.View.VISIBLE
+                binding.root.setCardBackgroundColor(
+                    ContextCompat.getColor(context, if (isNight) R.color.dark_surface else R.color.white)
+                )
+                binding.tvNewBadge.visibility = android.view.View.VISIBLE
                 binding.root.alpha = 1.0f
             }
 

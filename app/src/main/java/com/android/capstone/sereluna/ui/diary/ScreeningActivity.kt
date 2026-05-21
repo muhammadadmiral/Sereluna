@@ -59,14 +59,24 @@ class ScreeningActivity : AppCompatActivity() {
         }
         adapter = DassAdapter(dassQuestions) { position, value ->
             answers[position] = value
+            updateProgress()
         }
         binding.rvQuestions.layoutManager = LinearLayoutManager(this)
         binding.rvQuestions.adapter = adapter
+        binding.screeningProgress.max = questionTexts.size
+        updateProgress()
     }
 
     private fun setupListeners() {
         binding.backButton.setOnClickListener { finish() }
         binding.btnSubmit.setOnClickListener { submitScreening() }
+    }
+
+    private fun updateProgress() {
+        val answered = answers.count { it in 0..3 }
+        binding.screeningProgress.progress = answered
+        binding.tvProgressText.text = "$answered dari ${answers.size} terjawab"
+        binding.btnSubmit.alpha = if (answered == answers.size) 1f else 0.72f
     }
 
     private fun loadScreeningStatus() {
@@ -117,12 +127,14 @@ class ScreeningActivity : AppCompatActivity() {
         }
         lifecycleScope.launch {
             try {
+                binding.btnSubmit.isEnabled = false
                 val response = repository.submitScreening(
                     answers = answers.toList(),
                     note = null
                 )
                 showResultDialog(response)
             } catch (e: Exception) {
+                binding.btnSubmit.isEnabled = true
                 Toast.makeText(this@ScreeningActivity, "Gagal simpan: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }

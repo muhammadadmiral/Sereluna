@@ -3,17 +3,89 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?attr/backgroundColor"
+    android:padding="18dp">
+
+    <TextView
+        android:id="@+id/tvNotificationTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/raleway_bold"
+        android:text="Notifikasi"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="28sp"
+        app:layout_constraintEnd_toStartOf="@id/tvUnreadBadge"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvUnreadBadge"
+        android:layout_width="wrap_content"
+        android:minWidth="26dp"
+        android:layout_height="26dp"
+        android:background="@drawable/bg_unread_badge"
+        android:fontFamily="@font/raleway_bold"
+        android:gravity="center"
+        android:paddingHorizontal="8dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tvNotificationTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvNotificationTitle"
+        tools:text="3"
+        tools:visibility="visible" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnMarkAllRead"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/raleway_bold"
+        android:text="Tandai semua dibaca"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvNotificationTitle"
+        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNotification"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="12dp"
         android:clipToPadding="false"
+        android:paddingTop="12dp"
+        android:paddingBottom="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnMarkAllRead"
         tools:listitem="@layout/notification_item_list" />
+
+    <TextView
+        android:id="@+id/tvNotificationEmpty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/raleway_medium"
+        android:gravity="center"
+        android:text="Belum ada notifikasi."
+        android:textColor="@color/gray_500"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnMarkAllRead"
+        tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/notificationProgress"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnMarkAllRead" />
 </androidx.constraintlayout.widget.ConstraintLayout>

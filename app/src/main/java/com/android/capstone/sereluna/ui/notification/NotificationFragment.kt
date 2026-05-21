@@ -23,6 +23,8 @@ class NotificationFragment: Fragment() {
     private val binding get() = _binding!!
     private lateinit var notificationAdapter: NotificationAdapter
     private val repository = SerelunaRepository()
+    private var notifications: List<Notification> = emptyList()
+    private var unreadCount: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,8 +55,19 @@ class NotificationFragment: Fragment() {
     }
 
     private fun setupListeners() {
-        // You could add a 'Mark all as read' button in the UI if needed
-        // For now, let's assume there's a button or menu for it
+        binding.btnMarkAllRead.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                try {
+                    repository.markAllNotificationsRead()
+                    notifications = notifications.map { it.copy(isRead = true) }
+                    unreadCount = 0
+                    notificationAdapter.submitList(notifications)
+                    renderNotificationState()
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "Gagal menandai notifikasi", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun onNotificationClick(notification: Notification) {
@@ -62,8 +75,13 @@ class NotificationFragment: Fragment() {
         if (!notification.isRead) {
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    repository.markNotificationRead(notification.id)
-                    loadNotifications() // Refresh list
+                    val response = repository.markNotificationRead(notification.id)
+                    notifications = notifications.map {
+                        if (it.id == notification.id) it.copy(isRead = true) else it
+                    }
+                    unreadCount = response.unread_count ?: notifications.count { !it.isRead }
+                    notificationAdapter.submitList(notifications)
+                    renderNotificationState()
                 } catch (_: Exception) {}
             }
         }
@@ -93,7 +111,10 @@ class NotificationFragment: Fragment() {
     private fun loadNotifications() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val notifications = repository.getNotifications().map { item ->
+                binding.notificationProgress.visibility = View.VISIBLE
+                val response = repository.getNotificationsResponse()
+                unreadCount = response.unread_count
+                notifications = response.items.map { item ->
                     Notification(
                         id = item.id,
                         title = item.title,
@@ -104,17 +125,27 @@ class NotificationFragment: Fragment() {
                     )
                 }
                 notificationAdapter.submitList(notifications)
-                
-                if (notifications.isEmpty()) {
-                    binding.rvNotification.visibility = View.GONE
-                    // show empty state if you have one
-                } else {
-                    binding.rvNotification.visibility = View.VISIBLE
-                }
+                renderNotificationState()
             } catch (e: Exception) {
+                binding.notificationProgress.visibility = View.GONE
                 Toast.makeText(requireContext(), "Gagal memuat notifikasi", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun renderNotificationState() {
+        binding.notificationProgress.visibility = View.GONE
+        binding.tvUnreadBadge.visibility = if (unreadCount > 0) View.VISIBLE else View.GONE
+        binding.tvUnreadBadge.text = if (unreadCount > 99) "99+" else unreadCount.toString()
+        binding.btnMarkAllRead.visibility = if (unreadCount > 0) View.VISIBLE else View.GONE
+
+                if (notifications.isEmpty()) {
+                    binding.rvNotification.visibility = View.GONE
+            binding.tvNotificationEmpty.visibility = View.VISIBLE
+                } else {
+                    binding.rvNotification.visibility = View.VISIBLE
+            binding.tvNotificationEmpty.visibility = View.GONE
+                }
     }
 
     override fun onDestroyView() {
