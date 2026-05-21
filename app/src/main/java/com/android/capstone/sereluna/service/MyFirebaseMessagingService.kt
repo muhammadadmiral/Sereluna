@@ -29,6 +29,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
+        if (remoteMessage.data["type"] == "notification_refresh") {
+            sendBroadcast(Intent(ACTION_NOTIFICATION_REFRESH).setPackage(packageName))
+        }
+
         // Check if message contains a notification payload.
         remoteMessage.notification?.let {
             val title = it.title ?: "New Notification"
@@ -91,5 +95,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "MyFirebaseMsgService"
+        const val ACTION_NOTIFICATION_REFRESH = "com.android.capstone.sereluna.NOTIFICATION_REFRESH"
     }
 }

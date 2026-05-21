@@ -9,12 +9,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.adapter.NotificationAdapter
 import com.android.capstone.sereluna.data.model.Notification
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.FragmentNotificationBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.android.capstone.sereluna.ui.CalendarActivity
+import com.android.capstone.sereluna.ui.diary.DiaryActivity
+import com.android.capstone.sereluna.ui.diary.ScreeningActivity
 import kotlinx.coroutines.launch
 
 class NotificationFragment: Fragment() {
@@ -40,7 +44,6 @@ class NotificationFragment: Fragment() {
 
         setupRecyclerView()
         setupListeners()
-        loadNotifications()
     }
 
     private fun setupRecyclerView() {
@@ -88,19 +91,22 @@ class NotificationFragment: Fragment() {
 
         // 2. Handle deep link (actionLink)
         notification.actionLink?.let { link ->
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                startActivity(intent)
-            } catch (e: Exception) {
-                // If it's an internal app link and fail, we can try to navigate manually
-                handleInternalNavigation(link)
-            }
+            handleActionLink(link)
         }
     }
 
-    private fun handleInternalNavigation(link: String) {
-        // Basic manual fallback if ACTION_VIEW fails for sereluna:// links
-        Toast.makeText(requireContext(), "Membuka: $link", Toast.LENGTH_SHORT).show()
+    private fun handleActionLink(link: String) {
+        when {
+            link.startsWith("/diary") -> startActivity(Intent(requireContext(), DiaryActivity::class.java))
+            link.startsWith("/calendar") -> startActivity(Intent(requireContext(), CalendarActivity::class.java))
+            link.startsWith("/sleep") -> findNavController().navigate(R.id.SleepTrackingFragment)
+            link.startsWith("/screening") -> startActivity(Intent(requireContext(), ScreeningActivity::class.java))
+            link.startsWith("/settings") -> findNavController().navigate(R.id.SettingFragment)
+            link.startsWith("http://") || link.startsWith("https://") -> {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link)))
+            }
+            else -> Toast.makeText(requireContext(), "Aksi belum tersedia.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onResume() {
@@ -120,8 +126,11 @@ class NotificationFragment: Fragment() {
                         title = item.title,
                         body = item.body,
                         notifStatus = item.type,
+                        priority = item.priority.orEmpty(),
+                        categoryLabel = item.category_label.orEmpty(),
                         isRead = item.is_read,
-                        actionLink = item.action_link
+                        actionLink = item.action_link,
+                        createdAtText = item.created_at.orEmpty()
                     )
                 }
                 notificationAdapter.submitList(notifications)
@@ -139,13 +148,13 @@ class NotificationFragment: Fragment() {
         binding.tvUnreadBadge.text = if (unreadCount > 99) "99+" else unreadCount.toString()
         binding.btnMarkAllRead.visibility = if (unreadCount > 0) View.VISIBLE else View.GONE
 
-                if (notifications.isEmpty()) {
-                    binding.rvNotification.visibility = View.GONE
+        if (notifications.isEmpty()) {
+            binding.rvNotification.visibility = View.GONE
             binding.tvNotificationEmpty.visibility = View.VISIBLE
-                } else {
-                    binding.rvNotification.visibility = View.VISIBLE
+        } else {
+            binding.rvNotification.visibility = View.VISIBLE
             binding.tvNotificationEmpty.visibility = View.GONE
-                }
+        }
     }
 
     override fun onDestroyView() {

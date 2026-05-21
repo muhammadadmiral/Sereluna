@@ -97,7 +97,7 @@
             android:layout_marginTop="24dp"
             android:fontFamily="@font/raleway_bold"
             android:text="Profil"
-            android:textColor="@color/brand_purple_dark"
+            android:textColor="?attr/colorPrimary"
             android:textSize="16sp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout

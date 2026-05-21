@@ -1,6 +1,10 @@
 package com.android.capstone.sereluna.data.repository
 
 import android.net.Uri
+import com.android.capstone.sereluna.data.api.ArticleNotifyRequestDto
+import com.android.capstone.sereluna.data.api.ArticleNotifyResponseDto
+import com.android.capstone.sereluna.data.api.ArticleRecommendationsResponseDto
+import com.android.capstone.sereluna.data.api.ArticleTopicsResponseDto
 import com.android.capstone.sereluna.data.api.ChatFinishRequestDto
 import com.android.capstone.sereluna.data.api.ChatRequestDto
 import com.android.capstone.sereluna.data.api.ChatResponseDto
@@ -16,6 +20,8 @@ import com.android.capstone.sereluna.data.api.CalendarWellbeingDto
 import com.android.capstone.sereluna.data.api.Dass21QuestionnaireDto
 import com.android.capstone.sereluna.data.api.MoodRequestDto
 import com.android.capstone.sereluna.data.api.NotificationItemDto
+import com.android.capstone.sereluna.data.api.NotificationUnreadCountDto
+import com.android.capstone.sereluna.data.api.NotificationsResponseDto
 import com.android.capstone.sereluna.data.api.ScreeningRequestDto
 import com.android.capstone.sereluna.data.api.ScreeningResponseDto
 import com.android.capstone.sereluna.data.api.ScreeningContextDto
@@ -158,6 +164,14 @@ class SerelunaRepository(
         return api.getNotifications(authHeader(), limit).items
     }
 
+    suspend fun getNotificationsResponse(limit: Int = 30): NotificationsResponseDto {
+        return api.getNotifications(authHeader(), limit)
+    }
+
+    suspend fun getNotificationUnreadCount(): NotificationUnreadCountDto {
+        return api.getNotificationUnreadCount(authHeader())
+    }
+
     suspend fun markNotificationRead(notificationId: String): SuccessResponseDto {
         return api.markNotificationRead(authHeader(), notificationId)
     }
@@ -198,6 +212,44 @@ class SerelunaRepository(
 
     suspend fun getWellbeingStatistics(range: String): WellbeingStatisticsResponseDto {
         return api.getWellbeingStatistics(authHeader(), range)
+    }
+
+    suspend fun getArticleTopics(): ArticleTopicsResponseDto {
+        return api.getArticleTopics(authHeader())
+    }
+
+    suspend fun getArticleRecommendations(
+        topic: String? = null,
+        mood: String? = null,
+        query: String? = null,
+        limit: Int = 8,
+        section: String? = null
+    ): ArticleRecommendationsResponseDto {
+        return api.getArticleRecommendations(
+            authorization = authHeader(),
+            topic = topic,
+            mood = mood,
+            query = query,
+            limit = limit,
+            section = section
+        )
+    }
+
+    suspend fun notifyArticleRecommendation(
+        articleId: String,
+        title: String,
+        url: String,
+        summary: String?
+    ): ArticleNotifyResponseDto {
+        return api.notifyArticleRecommendation(
+            authorization = authHeader(),
+            request = ArticleNotifyRequestDto(
+                article_id = articleId,
+                title = title,
+                url = url,
+                summary = summary
+            )
+        )
     }
 
     suspend fun signOut() {

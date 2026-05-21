@@ -24,9 +24,18 @@ class ArticleAdapter(private val onClick: (Article) -> Unit) : ListAdapter<Artic
     inner class ViewHolder(private val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(article: Article) {
             binding.tvArticleTitle.text = article.title
-            binding.tvArticleAuthor.text = article.author
+            binding.tvArticleAuthor.text = article.summary.ifBlank { article.content.ifBlank { article.contentWarning } }
+            binding.tvArticleTopic.text = article.topicLabel.ifBlank { article.section.ifBlank { "Artikel" } }
+            binding.tvArticleSource.text = listOf(article.source, article.publishedAt.take(10))
+                .filter { it.isNotBlank() }
+                .joinToString(" | ")
+            binding.tvWhyRecommended.text = article.whyRecommended.ifBlank {
+                article.contentWarning.ifBlank { "Bacaan pendukung, bukan pengganti bantuan profesional." }
+            }
             if (article.imageUrl.isNotEmpty()) {
-                Picasso.get().load(article.imageUrl).into(binding.ivArticleImage)
+                Picasso.get().load(article.imageUrl).fit().centerCrop().into(binding.ivArticleImage)
+            } else {
+                binding.ivArticleImage.setImageResource(com.android.capstone.sereluna.R.drawable.article)
             }
             itemView.setOnClickListener {
                 onClick(article)

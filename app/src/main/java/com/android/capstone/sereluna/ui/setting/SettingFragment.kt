@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -58,36 +59,37 @@ class SettingFragment : Fragment() {
         setupObservers()
 
         userViewModel.loadUserData()
+        restorePendingScrollPosition()
     }
 
     private fun initSettingRows() {
         // Akun Section
         binding.itemEditProfile.apply {
-            tvSettingIcon.text = "✎"
+            ivSettingIcon.setImageResource(R.drawable.ic_edit)
             tvSettingTitle.text = "Edit Profil"
         }
         binding.itemChangePassword.apply {
-            tvSettingIcon.text = "●"
+            ivSettingIcon.setImageResource(R.drawable.ic_hide_password)
             tvSettingTitle.text = "Ganti Password Manual"
         }
         binding.itemResetEmail.apply {
-            tvSettingIcon.text = "@"
+            ivSettingIcon.setImageResource(R.drawable.ic_send)
             tvSettingTitle.text = "Reset via Link Email"
         }
         binding.itemDeleteAccount.apply {
-            tvSettingIcon.text = "!"
+            ivSettingIcon.setImageResource(R.drawable.ic_cancel)
             tvSettingTitle.text = "Hapus Akun"
             tvSettingTitle.setTextColor(resources.getColor(R.color.red_error, null))
-            tvSettingIcon.setTextColor(resources.getColor(R.color.red_error, null))
+            ivSettingIcon.setColorFilter(resources.getColor(R.color.red_error, null))
         }
 
         // Legal Section
         binding.itemTerms.apply {
-            tvSettingIcon.text = "§"
+            ivSettingIcon.setImageResource(R.drawable.ic_article2)
             tvSettingTitle.text = "Syarat & Ketentuan"
         }
         binding.itemPrivacy.apply {
-            tvSettingIcon.text = "◇"
+            ivSettingIcon.setImageResource(R.drawable.ic_account)
             tvSettingTitle.text = "Kebijakan Privasi"
         }
     }
@@ -138,6 +140,7 @@ class SettingFragment : Fragment() {
                     else -> 0
                 }
                 if (newMode != currentTheme) {
+                    savePendingScrollPosition()
                     DarkModePrefUtil.setThemeMode(requireContext(), newMode)
                     requireActivity().recreate()
                 }
@@ -147,6 +150,25 @@ class SettingFragment : Fragment() {
         // Logout
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
+        }
+    }
+
+    private fun savePendingScrollPosition() {
+        val scrollY = (binding.root as? ScrollView)?.scrollY ?: 0
+        requireContext()
+            .getSharedPreferences("settings_ui", android.content.Context.MODE_PRIVATE)
+            .edit()
+            .putInt("pending_scroll_y", scrollY)
+            .apply()
+    }
+
+    private fun restorePendingScrollPosition() {
+        val prefs = requireContext().getSharedPreferences("settings_ui", android.content.Context.MODE_PRIVATE)
+        val scrollY = prefs.getInt("pending_scroll_y", -1)
+        if (scrollY < 0) return
+        prefs.edit().remove("pending_scroll_y").apply()
+        binding.root.post {
+            (binding.root as? ScrollView)?.scrollTo(0, scrollY)
         }
     }
 

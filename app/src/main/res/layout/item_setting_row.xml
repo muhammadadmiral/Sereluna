@@ -11,14 +11,15 @@
     android:orientation="horizontal"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvSettingIcon"
+    <ImageView
+        android:id="@+id/ivSettingIcon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:gravity="center"
-        android:textColor="@color/brand_purple_primary"
-        android:textSize="18sp"
-        tools:text="✦" />
+        android:contentDescription="@null"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_notification"
+        app:tint="?attr/colorPrimary"
+        tools:src="@drawable/ic_account" />
 
     <TextView
         android:id="@+id/tvSettingTitle"
@@ -27,7 +28,7 @@
         android:layout_marginStart="16dp"
         android:layout_weight="1"
         android:fontFamily="@font/raleway_medium"
-        android:textColor="?attr/colorOnBackground"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="16sp"
         tools:text="Edit Profile" />
 
@@ -36,6 +37,6 @@
         android:layout_height="20dp"
         android:alpha="0.5"
         android:src="@drawable/ic_right_arrow"
-        app:tint="?attr/colorOnBackground" />
+        app:tint="?attr/colorOnSurface" />
 
 </LinearLayout>

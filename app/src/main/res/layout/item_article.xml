@@ -1,54 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    android:layout_marginVertical="8dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="3dp"
+    app:strokeColor="@color/brand_purple_pastel"
+    app:strokeWidth="1dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/ivArticleImage"
-            android:layout_width="0dp"
-            android:layout_height="180dp"
+            android:layout_width="match_parent"
+            android:layout_height="176dp"
+            android:background="?attr/colorSurfaceVariant"
             android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            tools:src="@drawable/article" />
 
-        <TextView
-            android:id="@+id/tvArticleTitle"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivArticleImage"
-            tools:text="Article Title" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvArticleAuthor"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:textAppearance="?attr/textAppearanceBody2"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvArticleTitle"
-            tools:text="by Author Name" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/tvArticleTopic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:background="@drawable/bg_luxury_logo_plate"
+                    android:fontFamily="@font/raleway_bold"
+                    android:gravity="center"
+                    android:paddingHorizontal="10dp"
+                    android:textColor="?attr/colorOnPrimaryContainer"
+                    android:textSize="11sp"
+                    tools:text="Cemas" />
 
-</androidx.cardview.widget.CardView>
+                <TextView
+                    android:id="@+id/tvArticleSource"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/raleway_medium"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="12sp"
+                    tools:text="The Guardian | 2026-05-20" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvArticleTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/raleway_bold"
+                android:lineSpacingExtra="2dp"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="17sp"
+                tools:text="Article title" />
+
+            <TextView
+                android:id="@+id/tvArticleAuthor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/raleway_medium"
+                android:lineSpacingExtra="2dp"
+                android:maxLines="3"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="13sp"
+                tools:text="Short article summary displayed in two or three lines." />
+
+            <TextView
+                android:id="@+id/tvWhyRecommended"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/raleway_medium"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="12sp"
+                tools:text="Relevan untuk mood anxious." />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

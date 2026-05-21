@@ -85,6 +85,11 @@ interface SerelunaApi {
         @Query("limit") limit: Int = 30
     ): NotificationsResponseDto
 
+    @GET("api/v1/notifications/unread-count/")
+    suspend fun getNotificationUnreadCount(
+        @Header("Authorization") authorization: String
+    ): NotificationUnreadCountDto
+
     @PATCH("api/v1/notifications/{notification_id}/read/")
     suspend fun markNotificationRead(
         @Header("Authorization") authorization: String,
@@ -166,4 +171,25 @@ interface SerelunaApi {
         @Header("Authorization") authorization: String,
         @Query("range") range: String
     ): WellbeingStatisticsResponseDto
+
+    @GET("api/v1/articles/topics/")
+    suspend fun getArticleTopics(
+        @Header("Authorization") authorization: String
+    ): ArticleTopicsResponseDto
+
+    @GET("api/v1/articles/recommendations/")
+    suspend fun getArticleRecommendations(
+        @Header("Authorization") authorization: String,
+        @Query("topic") topic: String? = null,
+        @Query("mood") mood: String? = null,
+        @Query("query") query: String? = null,
+        @Query("limit") limit: Int = 8,
+        @Query("section") section: String? = null
+    ): ArticleRecommendationsResponseDto
+
+    @POST("api/v1/articles/recommendations/notify/")
+    suspend fun notifyArticleRecommendation(
+        @Header("Authorization") authorization: String,
+        @Body request: ArticleNotifyRequestDto
+    ): ArticleNotifyResponseDto
 }

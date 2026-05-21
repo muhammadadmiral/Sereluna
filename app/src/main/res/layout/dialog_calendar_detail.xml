@@ -32,14 +32,14 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:alpha="0.1"
-        android:background="@color/black" />
+        android:background="?attr/colorOnSurface" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvWellbeingDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        app:cardBackgroundColor="@color/light_purple_bg"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
         app:cardCornerRadius="16dp"
         app:cardElevation="0dp">
 
@@ -77,7 +77,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/raleway_bold"
-                        android:textColor="@color/brand_purple_dark"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="16sp"
                         tools:text="Perlu dipantau" />
 
@@ -88,7 +88,7 @@
                         android:layout_marginTop="4dp"
                         android:fontFamily="@font/raleway_medium"
                         android:lineSpacingExtra="2dp"
-                        android:textColor="@color/brand_purple_dark"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="13sp"
                         tools:text="Mood cenderung tegang, tidur kurang mendukung pemulihan." />
                 </LinearLayout>
@@ -120,7 +120,7 @@
             android:gravity="center"
             android:textColor="@color/brand_purple_primary"
             android:textSize="28sp"
-            tools:text="☺" />
+            tools:text=":)" />
 
         <TextView
             android:id="@+id/tvMoodLabel"
@@ -218,7 +218,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:visibility="gone"
-        app:cardBackgroundColor="@color/light_purple_bg"
+        app:cardBackgroundColor="?attr/colorSurfaceVariant"
         app:cardCornerRadius="16dp"
         app:cardElevation="0dp"
         tools:visibility="visible">
@@ -241,7 +241,7 @@
                 android:layout_marginStart="12dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/raleway_medium"
-                android:textColor="@color/brand_purple_dark"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="13sp"
                 tools:text="Kamu terlihat stabil hari ini. Tidur yang cukup sangat membantu mood kamu tetap positif!" />
         </LinearLayout>
@@ -281,7 +281,7 @@
                 android:fontFamily="@font/raleway_medium"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="13sp"
-                tools:text="Stres moderate • Cemas mild • Depresi normal" />
+                tools:text="Stres moderate | Cemas mild | Depresi normal" />
 
             <TextView
                 android:id="@+id/tvScreeningDisclaimer"

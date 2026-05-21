@@ -222,7 +222,7 @@ class CalendarActivity : AppCompatActivity() {
             detailBinding.tvMoodIcon.text = moodEmoji(mood)
             detailBinding.tvMoodLabel.text = mood.toDisplayLabel()
         } else {
-            detailBinding.tvMoodIcon.text = "○"
+            detailBinding.tvMoodIcon.text = "-"
             detailBinding.tvMoodLabel.text = "Belum ada mood"
         }
 
@@ -257,7 +257,7 @@ class CalendarActivity : AppCompatActivity() {
         if (screeningContext != null) {
             detailBinding.cvScreeningContext.visibility = View.VISIBLE
             detailBinding.tvScreeningContext.text =
-                "Stres ${screeningContext.stress ?: "-"} • Cemas ${screeningContext.anxiety ?: "-"} • Depresi ${screeningContext.depression ?: "-"}"
+                "Stres ${screeningContext.stress ?: "-"} | Cemas ${screeningContext.anxiety ?: "-"} | Depresi ${screeningContext.depression ?: "-"}"
             detailBinding.tvScreeningDisclaimer.text =
                 screeningContext.disclaimer ?: "Bukan diagnosis medis."
         } else {
@@ -317,23 +317,23 @@ class CalendarActivity : AppCompatActivity() {
 
     private fun moodEmoji(mood: String): String {
         return when (mood.lowercase(Locale.ROOT)) {
-            "happy" -> "☺"
-            "neutral" -> "○"
-            "sad" -> "☹"
-            "anxious" -> "◇"
+            "happy" -> ":)"
+            "neutral" -> "-"
+            "sad" -> ":("
+            "anxious" -> "~"
             "angry" -> "!"
-            else -> "○"
+            else -> "-"
         }
     }
 
     private fun getMoodUnicode(mood: String): String {
         return when (mood.lowercase(Locale.ROOT)) {
-            "happy" -> "☺"
-            "neutral" -> "○"
-            "sad" -> "☹"
-            "anxious" -> "◇"
+            "happy" -> ":)"
+            "neutral" -> "-"
+            "sad" -> ":("
+            "anxious" -> "~"
             "angry" -> "!"
-            else -> "○"
+            else -> "-"
         }
     }
 

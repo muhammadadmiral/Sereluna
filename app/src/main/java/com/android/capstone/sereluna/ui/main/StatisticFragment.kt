@@ -73,6 +73,8 @@ class StatisticFragment : Fragment() {
             
             isHighlightPerTapEnabled = true
             setTouchEnabled(true)
+            setExtraOffsets(16f, 18f, 16f, 18f)
+            minOffset = 18f
             animateY(1200, Easing.EaseInOutQuart)
             
             setOnTouchListener { v, event ->
@@ -170,7 +172,7 @@ class StatisticFragment : Fragment() {
 
         val baseline = data.screening_context
         binding.tvScreeningBaseline.text = if (baseline != null) {
-            "Stres ${baseline.stress ?: "-"} • Cemas ${baseline.anxiety ?: "-"} • Depresi ${baseline.depression ?: "-"}"
+            "Stres ${baseline.stress ?: "-"} | Cemas ${baseline.anxiety ?: "-"} | Depresi ${baseline.depression ?: "-"}"
         } else {
             "Baseline DASS-21 belum tersedia"
         }
@@ -212,7 +214,7 @@ class StatisticFragment : Fragment() {
         dataSet.colors = visibleItems.map { moodColor(it.mood) }
         dataSet.valueTextSize = 14f
         dataSet.valueTextColor = Color.WHITE
-        dataSet.selectionShift = 0f
+        dataSet.selectionShift = 4f
 
         binding.moodPieChart.data = PieData(dataSet)
         binding.moodPieChart.centerText = "Tap bagian chart"
@@ -227,12 +229,16 @@ class StatisticFragment : Fragment() {
                 val dates = detail?.dates.orEmpty().take(3).joinToString(", ")
                 val signals = detail?.top_signals.orEmpty().take(3).joinToString(", ")
                 val summary = detail?.summary?.takeIf { it.isNotBlank() } ?: moodDetailText(moodKey)
+                val description = detail?.detail_description?.takeIf { it.isNotBlank() }
                 val supportingText = listOfNotNull(
                     dates.takeIf { it.isNotBlank() }?.let { "Tanggal terkait: $it." },
                     signals.takeIf { it.isNotBlank() }?.let { "Sinyal utama: $it." }
                 ).joinToString(" ")
 
-                binding.tvMoodInsight.text = "${moodDisplayName(moodKey, data)} tercatat $count kali (${String.format(Locale.US, "%.0f", percent)}%) dalam periode ini. $summary $supportingText".trim()
+                binding.tvMoodDetailTitle.text = detail?.detail_title?.takeIf { it.isNotBlank() }
+                    ?: "Detail mood ${moodDisplayName(moodKey, data)}"
+                binding.tvMoodInsight.text = description
+                    ?: "${moodDisplayName(moodKey, data)} tercatat $count kali (${String.format(Locale.US, "%.0f", percent)}%) dalam periode ini. $summary $supportingText".trim()
                 animateMoodSelection(dataSet, selected = true)
                 animateMoodDetailCard(selected = true)
             }
@@ -318,7 +324,7 @@ class StatisticFragment : Fragment() {
 
     private fun animateMoodSelection(dataSet: PieDataSet, selected: Boolean) {
         moodSelectionAnimator?.cancel()
-        val target = if (selected) 18f else 0f
+        val target = if (selected) 15f else 4f
         moodSelectionAnimator = ValueAnimator.ofFloat(dataSet.selectionShift, target).apply {
             duration = 260L
             addUpdateListener { animator ->

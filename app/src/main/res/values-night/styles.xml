@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SettingsSectionHeader">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:fontFamily">@font/raleway_bold</item>
+        <item name="android:textColor">@color/brand_purple_pastel</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="SettingsCard" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">3dp</item>
+        <item name="cardBackgroundColor">@color/dark_surface</item>
+        <item name="strokeColor">@color/dark_card</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+</resources>

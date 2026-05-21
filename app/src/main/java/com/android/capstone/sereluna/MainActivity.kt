@@ -1,10 +1,15 @@
 package com.android.capstone.sereluna
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -14,6 +19,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android.capstone.sereluna.databinding.ActivityMainBinding
 import com.android.capstone.sereluna.service.ScreeningReminderScheduler
+import com.android.capstone.sereluna.service.MyFirebaseMessagingService
 import com.android.capstone.sereluna.ui.auth.LoginActivity
 import com.android.capstone.sereluna.util.AuthSessionManager
 import com.android.capstone.sereluna.util.DarkModePrefUtil
@@ -28,6 +34,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
 
     private val serelunaRepository = SerelunaRepository()
+    private val badgeRefreshHandler = Handler(Looper.getMainLooper())
+    private val badgeRefreshRunnable = object : Runnable {
+        override fun run() {
+            updateNotificationBadge()
+            badgeRefreshHandler.postDelayed(this, BADGE_REFRESH_INTERVAL_MS)
+        }
+    }
+    private val notificationRefreshReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            updateNotificationBadge()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,11 +80,30 @@ class MainActivity : AppCompatActivity() {
         ScreeningReminderScheduler.scheduleNext(this)
         submitPendingDeviceToken()
         updateNotificationBadge()
+        startBadgeRefreshPolling()
+        val refreshFilter = IntentFilter(MyFirebaseMessagingService.ACTION_NOTIFICATION_REFRESH)
+        ContextCompat.registerReceiver(
+            this,
+            notificationRefreshReceiver,
+            refreshFilter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onResume() {
         super.onResume()
         if (::binding.isInitialized) updateNotificationBadge()
+        startBadgeRefreshPolling()
+    }
+
+    override fun onPause() {
+        stopBadgeRefreshPolling()
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        runCatching { unregisterReceiver(notificationRefreshReceiver) }
+        super.onDestroy()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -133,7 +170,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun startBadgeRefreshPolling() {
+        badgeRefreshHandler.removeCallbacks(badgeRefreshRunnable)
+        badgeRefreshHandler.postDelayed(badgeRefreshRunnable, BADGE_REFRESH_INTERVAL_MS)
+    }
+
+    private fun stopBadgeRefreshPolling() {
+        badgeRefreshHandler.removeCallbacks(badgeRefreshRunnable)
+    }
+
     companion object {
         private const val REQUEST_POST_NOTIFICATIONS = 2101
+        private const val BADGE_REFRESH_INTERVAL_MS = 60_000L
     }
 }

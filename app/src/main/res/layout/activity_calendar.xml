@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/backgroundColor"
+    android:background="@drawable/bg_luxury_app"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -17,7 +17,7 @@
         app:title="Kalender"
         app:titleCentered="true"
         app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
-        app:titleTextColor="@color/brand_purple_primary" />
+        app:titleTextColor="?attr/colorPrimary" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -61,7 +61,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Bulan sebelumnya"
                     android:gravity="center"
-                    android:text="‹"
+                    android:text="&lt;"
                     android:textColor="?attr/colorOnBackground"
                     android:textSize="32sp" />
 
@@ -72,7 +72,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Bulan berikutnya"
                     android:gravity="center"
-                    android:text="›"
+                    android:text="&gt;"
                     android:textColor="?attr/colorOnBackground"
                     android:textSize="32sp" />
             </LinearLayout>
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:fontFamily="@font/raleway_medium"
-                android:textColor="@color/text_secondary_dark"
+                android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -107,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway_medium"
-                    android:text="● Stabil"
+                    android:text="Stabil"
                     android:textColor="@color/calendar_green"
                     android:textSize="12sp" />
 
@@ -117,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway_medium"
-                    android:text="● Pantau"
+                    android:text="Pantau"
                     android:textColor="@color/calendar_yellow"
                     android:textSize="12sp" />
 
@@ -127,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway_medium"
-                    android:text="● Perhatian"
+                    android:text="Perhatian"
                     android:textColor="@color/calendar_orange"
                     android:textSize="12sp" />
 
@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway_medium"
-                    android:text="● Tinggi"
+                    android:text="Tinggi"
                     android:textColor="@color/calendar_red"
                     android:textSize="12sp" />
             </LinearLayout>

@@ -182,7 +182,9 @@ data class DiaryMessageDto(
 )
 
 data class NotificationsResponseDto(
-    val items: List<NotificationItemDto> = emptyList()
+    val items: List<NotificationItemDto> = emptyList(),
+    val unread_count: Int = 0,
+    val updated_at: String? = null
 )
 
 data class NotificationItemDto(
@@ -190,9 +192,17 @@ data class NotificationItemDto(
     val title: String = "",
     val body: String = "",
     val type: String = "",
+    val priority: String? = null,
+    val category_label: String? = null,
     val is_read: Boolean = false,
     val action_link: String? = null,
+    val read_at: String? = null,
     val created_at: String? = null
+)
+
+data class NotificationUnreadCountDto(
+    val unread_count: Int = 0,
+    val updated_at: String? = null
 )
 
 data class DeviceTokenRequestDto(
@@ -283,7 +293,9 @@ data class CalendarDetailDto(
 )
 
 data class SuccessResponseDto(
-    val success: Boolean = false
+    val success: Boolean = false,
+    val unread_count: Int? = null,
+    val updated_at: String? = null
 )
 
 data class MessageResponseDto(
@@ -352,7 +364,9 @@ data class MoodDistributionDetailDto(
     val percent: Double? = null,
     val dates: List<String> = emptyList(),
     val top_signals: List<String> = emptyList(),
-    val summary: String? = null
+    val summary: String? = null,
+    val detail_title: String? = null,
+    val detail_description: String? = null
 )
 
 data class WellbeingDailyItemDto(
@@ -361,4 +375,60 @@ data class WellbeingDailyItemDto(
     val wellbeing_score: Int? = null,
     val wellbeing_level: String? = null,
     val risk_level: String? = null
+)
+
+data class ArticleTopicsResponseDto(
+    val default_topic: String = "wellbeing",
+    val topics: List<ArticleTopicDto> = emptyList(),
+    val mood_topic_map: Map<String, String> = emptyMap()
+)
+
+data class ArticleTopicDto(
+    val key: String = "",
+    val label: String = "",
+    val summary: String = ""
+)
+
+data class ArticleRecommendationsResponseDto(
+    val source: String = "The Guardian",
+    val query: String = "",
+    val topic: String? = null,
+    val topic_label: String? = null,
+    val topic_summary: String? = null,
+    val mood: String? = null,
+    val section: String? = null,
+    val count: Int = 0,
+    val disclaimer: String = "",
+    val articles: List<ArticleRecommendationDto> = emptyList()
+)
+
+data class ArticleRecommendationDto(
+    val id: String = "",
+    val title: String = "",
+    val section: String? = null,
+    val published_at: String? = null,
+    val url: String = "",
+    val api_url: String? = null,
+    val summary: String? = null,
+    val thumbnail: String? = null,
+    val tags: List<String> = emptyList(),
+    val source: String = "The Guardian",
+    val topic: String? = null,
+    val topic_label: String? = null,
+    val content_type: String? = null,
+    val content_warning: String? = null,
+    val relevance_score: Int? = null,
+    val why_recommended: String? = null
+)
+
+data class ArticleNotifyRequestDto(
+    val article_id: String,
+    val title: String,
+    val url: String,
+    val summary: String? = null
+)
+
+data class ArticleNotifyResponseDto(
+    val success: Boolean = false,
+    val notification_id: String? = null
 )

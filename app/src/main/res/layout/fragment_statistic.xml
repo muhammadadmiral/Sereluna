@@ -174,7 +174,7 @@
                         android:fontFamily="@font/raleway_medium"
                         android:textColor="@color/brand_purple_dark"
                         android:textSize="13sp"
-                        tools:text="Stres moderate • Cemas mild • Depresi normal" />
+                        tools:text="Stres moderate | Cemas mild | Depresi normal" />
 
                     <TextView
                         android:id="@+id/tvStatsDisclaimer"
@@ -203,6 +203,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:strokeWidth="0dp">
@@ -210,13 +212,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
                     <com.github.mikephil.charting.charts.PieChart
                         android:id="@+id/moodPieChart"
                         android:layout_width="match_parent"
-                        android:layout_height="280dp" />
+                        android:layout_height="300dp"
+                        android:layout_marginTop="8dp" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cvMoodDetail"

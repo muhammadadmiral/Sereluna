@@ -29,6 +29,8 @@ class NotificationAdapter(
         fun bind(notification: Notification) {
             binding.tvNotifTitle.text = notification.title
             binding.tvNotifDescription.text = notification.body
+            binding.tvCategoryLabel.text = notification.categoryLabel.ifBlank { notification.notifStatus.ifBlank { "Info" } }
+            binding.tvNotifTime.text = notification.createdAtText.take(10)
 
             val context = itemView.context
             
@@ -53,6 +55,8 @@ class NotificationAdapter(
                 "profile" -> R.color.notif_blue to R.drawable.ic_account
                 "screening" -> R.color.notif_purple to R.drawable.ic_notification
                 "diary" -> R.color.notif_yellow to R.drawable.diary
+                "wellbeing" -> R.color.brand_rose_gold to R.drawable.ic_notification
+                "article" -> R.color.calendar_blue to R.drawable.ic_article2
                 "reminder" -> R.color.notif_purple to R.drawable.ic_notification
                 "system" -> R.color.brand_purple_primary to R.drawable.ic_stat_notification
                 else -> R.color.gray_500 to R.drawable.ic_notification

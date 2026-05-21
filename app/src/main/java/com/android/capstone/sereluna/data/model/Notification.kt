@@ -8,9 +8,12 @@ data class Notification(
     val title: String,
     val body: String,
     val notifStatus: String = "",
+    val priority: String = "",
+    val categoryLabel: String = "",
     val isRead: Boolean = false,
     val actionLink: String? = null,
-    val createdAt: Date? = null
+    val createdAt: Date? = null,
+    val createdAtText: String = ""
 ) {
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Notification>() {

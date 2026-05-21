@@ -68,5 +68,34 @@
             app:layout_constraintTop_toBottomOf="@id/tvNotifTitle"
             tools:text="Data profilmu sudah tersimpan." />
 
+        <TextView
+            android:id="@+id/tvCategoryLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_luxury_logo_plate"
+            android:fontFamily="@font/raleway_bold"
+            android:gravity="center"
+            android:paddingHorizontal="9dp"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textSize="11sp"
+            app:layout_constraintStart_toStartOf="@id/tvNotifTitle"
+            app:layout_constraintTop_toBottomOf="@id/tvNotifDescription"
+            tools:text="Diary" />
+
+        <TextView
+            android:id="@+id/tvNotifTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/raleway_medium"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="11sp"
+            app:layout_constraintBottom_toBottomOf="@id/tvCategoryLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvCategoryLabel"
+            app:layout_constraintTop_toTopOf="@id/tvCategoryLabel"
+            tools:text="2026-05-26" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
