@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient 
-        android:startColor="@color/brand_purple_primary" 
-        android:endColor="#7A52FF"
-        android:angle="45" />
+    <solid android:color="@color/brand_purple_primary"/>
     <corners
         android:topLeftRadius="20dp"
         android:topRightRadius="20dp"
         android:bottomLeftRadius="20dp"
         android:bottomRightRadius="4dp" />
-    <padding android:left="2dp" android:right="2dp" android:top="2dp" android:bottom="2dp" />
 </shape>

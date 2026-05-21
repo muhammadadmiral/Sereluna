@@ -16,7 +16,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.android.capstone.sereluna.databinding.ActivityMainBinding
 import com.android.capstone.sereluna.service.ScreeningReminderScheduler
@@ -28,6 +27,7 @@ import com.google.firebase.FirebaseApp
 import androidx.lifecycle.lifecycleScope
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,16 +35,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
 
     private val serelunaRepository = SerelunaRepository()
-    private val badgeRefreshHandler = Handler(Looper.getMainLooper())
-    private val badgeRefreshRunnable = object : Runnable {
+    private val refreshHandler = Handler(Looper.getMainLooper())
+    
+    private val refreshRunnable = object : Runnable {
         override fun run() {
             updateNotificationBadge()
-            badgeRefreshHandler.postDelayed(this, BADGE_REFRESH_INTERVAL_MS)
+            updateGamificationData()
+            refreshHandler.postDelayed(this, REFRESH_INTERVAL_MS)
         }
     }
-    private val notificationRefreshReceiver = object : BroadcastReceiver() {
+    
+    private val internalBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             updateNotificationBadge()
+            updateGamificationData()
         }
     }
 
@@ -59,55 +63,53 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Apply dark mode based on saved preference
         DarkModePrefUtil.applySavedMode(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Initialize Navigation Component
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Setup Toolbar with NavController
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // Setup BottomNavigationView with NavController
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        binding.btnNotification.setOnClickListener {
-            navController.navigate(R.id.NotificationFragment)
+        binding.cvGamification.setOnClickListener {
+            // Future: Navigate to Aura Detail page
         }
 
         requestNotificationPermissionIfNeeded()
         ScreeningReminderScheduler.scheduleNext(this)
         submitPendingDeviceToken()
+        
+        // Initial Fetch
         updateNotificationBadge()
-        startBadgeRefreshPolling()
-        val refreshFilter = IntentFilter(MyFirebaseMessagingService.ACTION_NOTIFICATION_REFRESH)
-        ContextCompat.registerReceiver(
-            this,
-            notificationRefreshReceiver,
-            refreshFilter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
+        updateGamificationData()
+        startPolling()
+        
+        val filter = IntentFilter(MyFirebaseMessagingService.ACTION_NOTIFICATION_REFRESH)
+        ContextCompat.registerReceiver(this, internalBroadcastReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
     override fun onResume() {
         super.onResume()
-        if (::binding.isInitialized) updateNotificationBadge()
-        startBadgeRefreshPolling()
+        if (::binding.isInitialized) {
+            updateNotificationBadge()
+            updateGamificationData()
+        }
+        startPolling()
     }
 
     override fun onPause() {
-        stopBadgeRefreshPolling()
+        stopPolling()
         super.onPause()
     }
 
     override fun onDestroy() {
-        runCatching { unregisterReceiver(notificationRefreshReceiver) }
+        runCatching { unregisterReceiver(internalBroadcastReceiver) }
         super.onDestroy()
     }
 
@@ -115,32 +117,11 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (
-            requestCode == REQUEST_POST_NOTIFICATIONS &&
-            grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
-        ) {
-            ScreeningReminderScheduler.scheduleNext(this)
-        }
-    }
-
     private fun requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
-        if (
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
-            PackageManager.PERMISSION_GRANTED
-        ) return
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) return
 
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-            REQUEST_POST_NOTIFICATIONS
-        )
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 2101)
     }
 
     private fun submitPendingDeviceToken() {
@@ -150,8 +131,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 serelunaRepository.submitDeviceToken(token)
                 prefs.edit().remove("pending_token").apply()
-            } catch (_: Exception) {
-            }
+            } catch (_: Exception) {}
         }
     }
 
@@ -159,42 +139,53 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val unreadCount = serelunaRepository.getNotificationUnreadCount().unread_count
-                
-                // Update header badge
-                if (unreadCount > 0) {
-                    binding.tvNotificationBadge.visibility = View.VISIBLE
-                    binding.tvNotificationBadge.text = if (unreadCount > 9) "9+" else unreadCount.toString()
-                } else {
-                    binding.tvNotificationBadge.visibility = View.GONE
-                }
-
-                // Update bottom nav badge
                 if (unreadCount > 0) {
                     binding.bottomNavigationView.getOrCreateBadge(R.id.NotificationFragment).apply {
                         isVisible = true
                         number = unreadCount
                         backgroundColor = ContextCompat.getColor(this@MainActivity, R.color.red_error)
-                        badgeTextColor = ContextCompat.getColor(this@MainActivity, R.color.white)
                     }
                 } else {
                     binding.bottomNavigationView.removeBadge(R.id.NotificationFragment)
                 }
-            } catch (_: Exception) {
-            }
+            } catch (_: Exception) {}
         }
     }
 
-    private fun startBadgeRefreshPolling() {
-        badgeRefreshHandler.removeCallbacks(badgeRefreshRunnable)
-        badgeRefreshHandler.postDelayed(badgeRefreshRunnable, BADGE_REFRESH_INTERVAL_MS)
+    private fun updateGamificationData() {
+        lifecycleScope.launch {
+            try {
+                // Technical Guide: Backend team needs to provide GET /user/gamification
+                // Data shown below is the hyper-complex state designed to care for the user
+                val level = 14 
+                val streak = 8
+                val progress = 72
+                val rank = "Crescent Voyager"
+
+                binding.tvUserLevel.text = level.toString()
+                binding.tvStreakCount.text = "$streak Days"
+                binding.pbAuraProgress.progress = progress
+                binding.tvRankTitle.text = rank
+
+                // Visual care: Glow effect if streak is high
+                if (streak >= 7) {
+                    binding.cvGamification.strokeColor = ContextCompat.getColor(this@MainActivity, R.color.brand_rose_gold)
+                }
+
+            } catch (_: Exception) {}
+        }
     }
 
-    private fun stopBadgeRefreshPolling() {
-        badgeRefreshHandler.removeCallbacks(badgeRefreshRunnable)
+    private fun startPolling() {
+        refreshHandler.removeCallbacks(refreshRunnable)
+        refreshHandler.postDelayed(refreshRunnable, REFRESH_INTERVAL_MS)
+    }
+
+    private fun stopPolling() {
+        refreshHandler.removeCallbacks(refreshRunnable)
     }
 
     companion object {
-        private const val REQUEST_POST_NOTIFICATIONS = 2101
-        private const val BADGE_REFRESH_INTERVAL_MS = 60_000L
+        private const val REFRESH_INTERVAL_MS = 60_000L
     }
 }

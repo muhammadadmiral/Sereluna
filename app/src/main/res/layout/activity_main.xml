@@ -10,13 +10,13 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
+        android:background="@color/brand_purple_primary"
         app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="80dp"
             app:contentInsetStart="0dp"
             app:contentInsetEnd="0dp">
 
@@ -25,6 +25,7 @@
                 android:layout_height="match_parent"
                 android:paddingHorizontal="16dp">
 
+                <!-- Left: Branding -->
                 <LinearLayout
                     android:id="@+id/llLogo"
                     android:layout_width="wrap_content"
@@ -36,52 +37,130 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:src="@drawable/chatbot"
-                        app:tint="@color/brand_purple_primary" />
+                        app:tint="@color/brand_purple_pastel" />
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="@font/raleway_bold"
-                        android:text="Sereluna"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="20sp" />
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
+                        
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/raleway_bold"
+                            android:text="Sereluna"
+                            android:textColor="@color/white"
+                            android:textSize="22sp" />
+                        
+                        <TextView
+                            android:id="@+id/tvRankTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/raleway_medium"
+                            android:text="Lunar Wanderer"
+                            android:textColor="@color/brand_purple_pastel"
+                            android:textSize="11sp"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.1" />
+                    </LinearLayout>
                 </LinearLayout>
 
-                <FrameLayout
-                    android:id="@+id/btnNotification"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                <!-- Right: Hyper-Complex Gamification Chip -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvGamification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dp"
+                    app:cardBackgroundColor="#26FFFFFF" 
+                    app:cardCornerRadius="26dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#4DFFFFFF"
+                    app:strokeWidth="1dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_notification"
-                        app:tint="?attr/colorOnSurface" />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingHorizontal="12dp">
 
-                    <TextView
-                        android:id="@+id/tvNotificationBadge"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_gravity="top|end"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="4dp"
-                        android:background="@drawable/rounded_corners_error"
-                        android:gravity="center"
-                        android:textColor="@color/white"
-                        android:textSize="9sp"
-                        android:visibility="gone"
-                        tools:text="3"
-                        tools:visibility="visible" />
-                </FrameLayout>
+                        <!-- Level Orb -->
+                        <FrameLayout
+                            android:id="@+id/flLevelOrb"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+                            
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/rounded_corners"
+                                android:backgroundTint="@color/white" />
+                                
+                            <TextView
+                                android:id="@+id/tvUserLevel"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:fontFamily="@font/raleway_bold"
+                                android:textColor="@color/brand_purple_primary"
+                                android:textSize="12sp"
+                                tools:text="14" />
+                        </FrameLayout>
+
+                        <!-- Streak & XP Info -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/flLevelOrb"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/baseline_add_24"
+                                    app:tint="@color/brand_rose_gold" />
+
+                                <TextView
+                                    android:id="@+id/tvStreakCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="4dp"
+                                    android:fontFamily="@font/raleway_bold"
+                                    android:textColor="@color/white"
+                                    android:textSize="14sp"
+                                    tools:text="8 Days" />
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/pbAuraProgress"
+                                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                                android:layout_width="60dp"
+                                android:layout_height="4dp"
+                                android:layout_marginTop="4dp"
+                                android:progress="72"
+                                android:progressTint="@color/brand_purple_pastel"
+                                android:progressBackgroundTint="#33FFFFFF" />
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -103,8 +182,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:itemIconTint="@color/light_purple"
-        app:itemTextColor="@color/light_purple"
+        app:itemIconTint="@color/brand_purple_light"
+        app:itemTextColor="@color/brand_purple_light"
         app:menu="@menu/bottom_menu" />
 
 </RelativeLayout>
