@@ -2,6 +2,7 @@ package com.android.capstone.sereluna.data.utils
 
 import android.content.Context
 import android.net.Uri
+import android.webkit.MimeTypeMap
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -11,10 +12,14 @@ object FileUtil {
         var inputStream: InputStream? = null
         var outputStream: FileOutputStream? = null
         try {
-            inputStream = context.contentResolver.openInputStream(uri)
+            val contentResolver = context.contentResolver
+            val mimeType = contentResolver.getType(uri)
+            val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "jpg"
+
+            inputStream = contentResolver.openInputStream(uri)
             if (inputStream == null) return null
             
-            val tempFile = File(context.cacheDir, "temp_upload_file_${System.currentTimeMillis()}.jpg")
+            val tempFile = File(context.cacheDir, "temp_upload_file_${System.currentTimeMillis()}.$extension")
             outputStream = FileOutputStream(tempFile)
             
             val buffer = ByteArray(1024)

@@ -46,6 +46,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import kotlinx.coroutines.tasks.await
+import java.net.URLConnection
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -141,13 +142,15 @@ class SerelunaRepository(
     }
 
     suspend fun uploadProfilePhoto(file: java.io.File): UserProfileResponseDto {
-        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        val contentType = URLConnection.guessContentTypeFromName(file.name) ?: "image/jpeg"
+        val requestFile = file.asRequestBody(contentType.toMediaTypeOrNull())
         val body = okhttp3.MultipartBody.Part.createFormData("file", file.name, requestFile)
         return api.uploadProfilePhoto(authHeader(), body)
     }
 
     suspend fun uploadMediaImage(file: java.io.File): com.android.capstone.sereluna.data.api.MediaImageResponseDto {
-        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        val contentType = URLConnection.guessContentTypeFromName(file.name) ?: "image/jpeg"
+        val requestFile = file.asRequestBody(contentType.toMediaTypeOrNull())
         val body = okhttp3.MultipartBody.Part.createFormData("file", file.name, requestFile)
         return api.uploadMediaImage(authHeader(), body)
     }
