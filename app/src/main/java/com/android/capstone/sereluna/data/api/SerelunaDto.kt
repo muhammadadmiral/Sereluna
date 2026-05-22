@@ -5,7 +5,9 @@ data class ChatRequestDto(
     val room_id: String? = null,
     val session_id: String? = null,
     val mood_signal: String? = "",
-    val mode: String? = "chat"
+    val mode: String? = "chat",
+    val has_image: Boolean = false,
+    val media_ids: List<String>? = null
 )
 
 data class ChatFinishRequestDto(
@@ -20,7 +22,24 @@ data class ChatResponseDto(
     val session_summary: String = "",
     val room_id: String? = null,
     val session_id: String? = null,
-    val algorithm_trace: Map<String, Any>? = null
+    val algorithm_trace: Map<String, Any>? = null,
+    val media: List<MediaAnalysisDto>? = null
+)
+
+data class MediaImageResponseDto(
+    val media_id: String = "",
+    val storage_path: String = "",
+    val content_type: String = "",
+    val size_bytes: Long = 0,
+    val signed_url: String = "",
+    val updated_at: String = ""
+)
+
+data class MediaAnalysisDto(
+    val media_id: String = "",
+    val model: String = "",
+    val analysis: String = "",
+    val cached: Boolean = false
 )
 
 data class UiMetadataDto(
@@ -123,6 +142,10 @@ data class UserProfileResponseDto(
 data class UserProfileUpdateRequestDto(
     val name: String,
     val photo_url: String? = null
+)
+
+data class ProfilePhotoPatchRequestDto(
+    val photo_url: String
 )
 
 data class DiaryListResponseDto(

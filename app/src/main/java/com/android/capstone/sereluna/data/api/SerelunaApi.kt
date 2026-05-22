@@ -9,6 +9,9 @@ import retrofit2.http.Path
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Query
+import retrofit2.http.Multipart
+import retrofit2.http.Part
+import okhttp3.MultipartBody
 import com.google.gson.JsonElement
 
 interface SerelunaApi {
@@ -17,6 +20,13 @@ interface SerelunaApi {
         @Header("Authorization") authorization: String,
         @Body request: ChatRequestDto
     ): ChatResponseDto
+
+    @Multipart
+    @POST("api/v1/media/images/")
+    suspend fun uploadMediaImage(
+        @Header("Authorization") authorization: String,
+        @Part file: MultipartBody.Part
+    ): MediaImageResponseDto
 
     @POST("api/v1/chat/finish/")
     suspend fun finishChat(
@@ -52,6 +62,19 @@ interface SerelunaApi {
     suspend fun updateProfile(
         @Header("Authorization") authorization: String,
         @Body request: UserProfileUpdateRequestDto
+    ): UserProfileResponseDto
+
+    @Multipart
+    @POST("api/v1/me/profile/photo/")
+    suspend fun uploadProfilePhoto(
+        @Header("Authorization") authorization: String,
+        @Part file: MultipartBody.Part
+    ): UserProfileResponseDto
+
+    @PATCH("api/v1/me/profile/photo/")
+    suspend fun patchProfilePhoto(
+        @Header("Authorization") authorization: String,
+        @Body request: ProfilePhotoPatchRequestDto
     ): UserProfileResponseDto
 
     @GET("api/v1/diaries/")

@@ -74,7 +74,20 @@ class ChatAdapter(
                 }
             }
         } else if (holder is UserViewHolder) {
-            holder.txtMessage.text = chat.message
+            if (chat.message.isNotEmpty()) {
+                holder.txtMessage.text = chat.message
+                holder.txtMessage.visibility = View.VISIBLE
+            } else {
+                holder.txtMessage.visibility = View.GONE
+            }
+
+            if (chat.imageUri != null) {
+                holder.ivChatImage.visibility = View.VISIBLE
+                holder.ivChatImage.setImageURI(chat.imageUri)
+            } else {
+                holder.ivChatImage.visibility = View.GONE
+                holder.ivChatImage.setImageDrawable(null)
+            }
         }
     }
 
@@ -146,6 +159,7 @@ class ChatAdapter(
 
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtMessage: TextView = view.findViewById(R.id.tvMessage)
+        val ivChatImage: android.widget.ImageView = view.findViewById(R.id.ivChatImage)
         init {
             view.alpha = 0f
             view.translationY = 20f

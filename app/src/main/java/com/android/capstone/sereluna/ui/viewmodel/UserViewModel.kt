@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
+import android.content.Context
+import com.android.capstone.sereluna.data.utils.FileUtil
 import kotlinx.coroutines.launch
 
 // A sealed class to represent the state of a UI operation
@@ -58,11 +60,17 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun saveUserProfile(name: String, newImageUri: Uri?) {
+    fun saveUserProfile(name: String, newImageUri: Uri?, context: Context? = null) {
         viewModelScope.launch {
             _updateState.value = UiState.Loading
             try {
-                repository.updateProfile(name, newImageUri)
+                if (newImageUri != null && context != null) {
+                    val file = FileUtil.uriToFile(context, newImageUri)
+                    if (file != null) {
+                        repository.uploadProfilePhoto(file)
+                    }
+                }
+                repository.updateProfile(name, null)
                 _updateState.value = UiState.Success(Unit)
             } catch (e: Exception) {
                 _updateState.value = UiState.Error(e.message ?: "Unknown error during profile update.")

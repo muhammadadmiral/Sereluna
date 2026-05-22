@@ -50,6 +50,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+
 class SerelunaRepository(
     private val api: SerelunaApi = SerelunaApiClient.api,
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
@@ -65,7 +68,9 @@ class SerelunaRepository(
         text: String,
         roomId: String?,
         sessionId: String?,
-        moodSignal: String?
+        moodSignal: String?,
+        hasImage: Boolean = false,
+        mediaIds: List<String>? = null
     ): ChatResponseDto {
         return api.chat(
             authorization = authHeader(),
@@ -74,7 +79,9 @@ class SerelunaRepository(
                 room_id = roomId,
                 session_id = sessionId,
                 mood_signal = moodSignal,
-                mode = "chat"
+                mode = "chat",
+                has_image = hasImage,
+                media_ids = mediaIds
             )
         )
     }
@@ -133,8 +140,26 @@ class SerelunaRepository(
         )
     }
 
-    suspend fun updateProfile(name: String, newImageUri: Uri?): UserProfileResponseDto {
-        val photoUrl = if (newImageUri != null) uploadProfileImage(newImageUri) else null
+    suspend fun uploadProfilePhoto(file: java.io.File): UserProfileResponseDto {
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        val body = okhttp3.MultipartBody.Part.createFormData("file", file.name, requestFile)
+        return api.uploadProfilePhoto(authHeader(), body)
+    }
+
+    suspend fun uploadMediaImage(file: java.io.File): com.android.capstone.sereluna.data.api.MediaImageResponseDto {
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        val body = okhttp3.MultipartBody.Part.createFormData("file", file.name, requestFile)
+        return api.uploadMediaImage(authHeader(), body)
+    }
+
+    suspend fun patchProfilePhoto(photoUrl: String): UserProfileResponseDto {
+        return api.patchProfilePhoto(
+            authorization = authHeader(),
+            request = com.android.capstone.sereluna.data.api.ProfilePhotoPatchRequestDto(photoUrl)
+        )
+    }
+
+    suspend fun updateProfile(name: String, photoUrl: String? = null): UserProfileResponseDto {
         return api.updateProfile(
             authorization = authHeader(),
             request = UserProfileUpdateRequestDto(

@@ -1,5 +1,7 @@
 package com.android.capstone.sereluna.ui.viewmodel
 
+import android.net.Uri
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.capstone.sereluna.data.model.Chat
 import com.android.capstone.sereluna.data.ml.SentimentAnalyzer
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
+import com.android.capstone.sereluna.data.utils.FileUtil
 import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
@@ -29,6 +32,9 @@ class ChatViewModel : ViewModel() {
     private val _isThinking = MutableLiveData(false)
     val isThinking: LiveData<Boolean> = _isThinking
 
+    private val _pendingImageUri = MutableLiveData<Uri?>(null)
+    val pendingImageUri: LiveData<Uri?> = _pendingImageUri
+
     private var activeRoomId: String? = null
     private var activeSessionId: String? = null
     private var previousSessionSummary: String? = null
@@ -48,6 +54,11 @@ class ChatViewModel : ViewModel() {
         userMessageCount = 0
         sessionClosedFlag = false
         _sessionClosed.value = false
+        _pendingImageUri.value = null
+    }
+
+    fun setPendingImage(uri: Uri?) {
+        _pendingImageUri.value = uri
     }
 
     private val understandingContextMessages = listOf(
@@ -75,7 +86,7 @@ class ChatViewModel : ViewModel() {
         "Mempersiapkan dukungan untukmu..."
     )
 
-    fun sendMessage(userMessage: String) {
+    fun sendMessage(userMessage: String, context: Context? = null) {
         if (sessionClosedFlag) {
             _errorState.value = "Sesi ini sudah ditutup. Mari mulai sesi baru."
             return
@@ -84,18 +95,26 @@ class ChatViewModel : ViewModel() {
             _errorState.value = "Batas percakapan tercapai. Silakan selesaikan sesi ini."
             return
         }
-        addMessageToList(Chat(userMessage, "user", false))
+        
+        val imageUriToUpload = _pendingImageUri.value
+        _pendingImageUri.value = null // clear early so UI updates
+        
+        // MIGHT DO: send image URI to Chat model to display locally
+        addMessageToList(Chat(userMessage, "user", false, null, imageUriToUpload))
         userMessageCount++
 
         val mood = sentimentAnalyzer.analyze(userMessage).first
 
         _isThinking.value = true
         viewModelScope.launch {
-            // Immediately add the typing indicator
             addMessageToList(Chat("Typing...", "bot", true))
             
-            // Background loop to update status based on time
             val typingJob = launch {
+                if (imageUriToUpload != null) {
+                    updateLastMessageStatus("Mengunggah gambar...")
+                    kotlinx.coroutines.delay(3000)
+                }
+                
                 // 0-3s: bubble animation only (status is null)
                 kotlinx.coroutines.delay(3000)
                 
@@ -113,11 +132,27 @@ class ChatViewModel : ViewModel() {
             }
 
             try {
+                var mediaIds: List<String>? = null
+                var hasImage = false
+                
+                if (imageUriToUpload != null && context != null) {
+                    val file = FileUtil.uriToFile(context, imageUriToUpload)
+                    if (file != null) {
+                        val mediaResponse = repository.uploadMediaImage(file)
+                        if (mediaResponse.media_id.isNotEmpty()) {
+                            mediaIds = listOf(mediaResponse.media_id)
+                            hasImage = true
+                        }
+                    }
+                }
+
                 val response = repository.sendChat(
                     text = userMessage,
                     roomId = activeRoomId,
                     sessionId = activeSessionId,
-                    moodSignal = mood
+                    moodSignal = mood,
+                    hasImage = hasImage,
+                    mediaIds = mediaIds
                 )
                 typingJob.cancel()
                 removeTypingIndicator()

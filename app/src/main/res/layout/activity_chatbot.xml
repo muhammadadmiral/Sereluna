@@ -173,37 +173,82 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
+            <RelativeLayout
+                android:id="@+id/imagePreviewContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-                android:hint="Tulis ceritamu di sini...">
+                android:visibility="gone"
+                android:padding="8dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/diaryEditText"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/ivImagePreview"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/rounded_corners"
+                    android:contentDescription="Preview of the selected image"
+                    android:clipToOutline="true"/>
+
+                <ImageButton
+                    android:id="@+id/btnRemoveImage"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignTop="@id/ivImagePreview"
+                    android:layout_alignEnd="@id/ivImagePreview"
+                    android:layout_marginTop="-8dp"
+                    android:layout_marginEnd="-8dp"
+                    android:src="@drawable/ic_cancel"
+                    android:background="@null"
+                    android:contentDescription="Remove selected image"
+                    app:tint="@color/brand_purple_primary"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp">
+                
+                <ImageButton
+                    android:id="@+id/btnAttachImage"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/baseline_add_24"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Attach an image to the message"
+                    app:tint="@color/brand_purple_primary"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
-                    android:maxLines="5"
-                    android:minLines="1"
-                    android:overScrollMode="ifContentScrolls"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textColorHint="@color/light_purple" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                    android:hint="Tulis ceritamu di sini...">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/submitFab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:src="@drawable/ic_send"
-                app:backgroundTint="@color/purple"
-                app:tint="@color/white" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/diaryEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:maxLines="5"
+                        android:minLines="1"
+                        android:overScrollMode="ifContentScrolls"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textColorHint="@color/light_purple" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/submitFab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_send"
+                    app:backgroundTint="@color/purple"
+                    app:tint="@color/white" />
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

@@ -116,7 +116,7 @@ class ProfileActivity : AppCompatActivity() {
             .setPositiveButton("Yes") { _, _ ->
                 val name = binding.nameEditText.text.toString().trim()
                 if (name.isNotEmpty()) {
-                    userViewModel.saveUserProfile(name, selectedImageUri)
+                    userViewModel.saveUserProfile(name, selectedImageUri, this)
                 } else {
                     showToast("Name cannot be empty.")
                 }

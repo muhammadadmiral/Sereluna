@@ -1,10 +1,14 @@
 package com.android.capstone.sereluna.ui.diary
 
+import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +29,13 @@ class ChatbotActivity : AppCompatActivity() {
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var viewModel: ChatViewModel
     private val repository = SerelunaRepository()
+
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.data
+            viewModel.setPendingImage(uri)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +59,21 @@ class ChatbotActivity : AppCompatActivity() {
     private fun setupListeners() {
         binding.submitFab.setOnClickListener {
             val userMessage = binding.diaryEditText.text.toString().trim()
-            if (userMessage.isNotEmpty()) {
-                viewModel.sendMessage(userMessage)
+            if (userMessage.isNotEmpty() || viewModel.pendingImageUri.value != null) {
+                viewModel.sendMessage(userMessage, this)
                 binding.diaryEditText.text?.clear()
             } else {
                 Toast.makeText(this, "Tulis sesuatu dulu ya...", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.btnAttachImage.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            pickImageLauncher.launch(intent)
+        }
+
+        binding.btnRemoveImage.setOnClickListener {
+            viewModel.setPendingImage(null)
         }
 
         binding.backButton.setOnClickListener {
@@ -106,6 +126,16 @@ class ChatbotActivity : AppCompatActivity() {
             updateInputLockState()
         }
 
+        viewModel.pendingImageUri.observe(this) { uri ->
+            if (uri != null) {
+                binding.imagePreviewContainer.visibility = View.VISIBLE
+                binding.ivImagePreview.setImageURI(uri)
+            } else {
+                binding.imagePreviewContainer.visibility = View.GONE
+                binding.ivImagePreview.setImageDrawable(null)
+            }
+        }
+
         viewModel.errorState.observe(this) { errorMessage ->
             errorMessage?.let {
                 Toast.makeText(this, it, Toast.LENGTH_LONG).show()
@@ -128,7 +158,9 @@ class ChatbotActivity : AppCompatActivity() {
         
         binding.submitFab.isEnabled = !isLocked
         binding.diaryEditText.isEnabled = !isLocked
+        binding.btnAttachImage.isEnabled = !isLocked
         binding.submitFab.alpha = if (isLocked) 0.5f else 1.0f
+        binding.btnAttachImage.alpha = if (isLocked) 0.5f else 1.0f
     }
 
     private fun setupRecyclerView() {
