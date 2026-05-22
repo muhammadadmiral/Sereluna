@@ -1,0 +1,115 @@
+package com.android.capstone.sereluna.ui.gamification
+
+import android.animation.ObjectAnimator
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.os.Bundle
+import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.android.capstone.sereluna.R
+import com.android.capstone.sereluna.data.repository.SerelunaRepository
+import com.android.capstone.sereluna.databinding.ActivityGamificationBinding
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
+
+class GamificationActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityGamificationBinding
+    private val repository = SerelunaRepository()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityGamificationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setupListeners()
+        startAuraAnimation()
+        loadGamificationData()
+    }
+
+    private fun setupListeners() {
+        binding.btnBack.setOnClickListener {
+            finish() // Return to MainActivity
+        }
+
+        binding.btnOracle.setOnClickListener {
+            // Trigger cinematic Oracle Reading
+            Snackbar.make(binding.root, "Membuka koneksi ke Moon Oracle...", Snackbar.LENGTH_LONG)
+                .setBackgroundTint(Color.parseColor("#FFD700"))
+                .setTextColor(Color.parseColor("#150926"))
+                .show()
+        }
+    }
+
+    private fun startAuraAnimation() {
+        // Create a pulsing effect for the aura glow
+        val scaleDownX = ObjectAnimator.ofFloat(binding.vAuraGlow, "scaleX", 1.2f, 1.4f)
+        val scaleDownY = ObjectAnimator.ofFloat(binding.vAuraGlow, "scaleY", 1.2f, 1.4f)
+        val alpha = ObjectAnimator.ofFloat(binding.vAuraGlow, "alpha", 0.3f, 0.1f)
+
+        scaleDownX.repeatCount = ObjectAnimator.INFINITE
+        scaleDownX.repeatMode = ObjectAnimator.REVERSE
+        scaleDownX.duration = 2000
+        scaleDownX.interpolator = AccelerateDecelerateInterpolator()
+
+        scaleDownY.repeatCount = ObjectAnimator.INFINITE
+        scaleDownY.repeatMode = ObjectAnimator.REVERSE
+        scaleDownY.duration = 2000
+        scaleDownY.interpolator = AccelerateDecelerateInterpolator()
+
+        alpha.repeatCount = ObjectAnimator.INFINITE
+        alpha.repeatMode = ObjectAnimator.REVERSE
+        alpha.duration = 2000
+        alpha.interpolator = AccelerateDecelerateInterpolator()
+
+        scaleDownX.start()
+        scaleDownY.start()
+        alpha.start()
+    }
+
+    private fun loadGamificationData() {
+        lifecycleScope.launch {
+            try {
+                // Fetch actual data using the new API DTOs.
+                // For now, we will use the dummy data requested to showcase the UI immediately.
+                val dto = repository.getGamificationPlayerCard() 
+                
+                binding.tvLevel.text = dto.current_xp.toString() // Fallback if API is live
+            } catch (e: Exception) {
+                // Fallback to "Gacor" UI state since API is still being built
+                val tierName = "CELESTIAL GUARDIAN"
+                val tierColorHex = "#FFD700" // Gold
+                val level = 45
+                val currentXp = 4500
+                val nextXp = 5000
+                val stardust = "1,250"
+                val streak = "14 Days"
+                val shields = "1 Active"
+
+                binding.tvRankTitle.text = tierName
+                binding.tvLevel.text = level.toString()
+                binding.tvXp.text = "$currentXp / $nextXp XP"
+                binding.tvStardust.text = stardust
+                binding.tvStreak.text = streak
+                binding.tvShields.text = shields
+
+                val progress = ((currentXp.toFloat() / nextXp.toFloat()) * 100).toInt()
+                binding.pbLevelProgress.progress = progress
+
+                // Apply dynamic color mapping
+                try {
+                    val color = Color.parseColor(tierColorHex)
+                    binding.tvRankTitle.setTextColor(color)
+                    binding.tvLevel.setTextColor(color)
+                    binding.pbLevelProgress.progressTintList = ColorStateList.valueOf(color)
+                    binding.vAuraGlow.backgroundTintList = ColorStateList.valueOf(color)
+                } catch (_: Exception) {}
+            }
+        }
+    }
+}

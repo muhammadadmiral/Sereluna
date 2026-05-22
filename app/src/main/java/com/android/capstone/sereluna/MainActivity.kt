@@ -1,6 +1,7 @@
 package com.android.capstone.sereluna
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,13 +24,13 @@ import com.android.capstone.sereluna.databinding.ActivityMainBinding
 import com.android.capstone.sereluna.service.ScreeningReminderScheduler
 import com.android.capstone.sereluna.service.MyFirebaseMessagingService
 import com.android.capstone.sereluna.ui.auth.LoginActivity
+import com.android.capstone.sereluna.ui.gamification.GamificationActivity
 import com.android.capstone.sereluna.util.AuthSessionManager
 import com.android.capstone.sereluna.util.DarkModePrefUtil
 import com.google.firebase.FirebaseApp
 import androidx.lifecycle.lifecycleScope
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,7 +43,6 @@ class MainActivity : AppCompatActivity() {
     private val refreshRunnable = object : Runnable {
         override fun run() {
             updateNotificationBadge()
-            updateGamificationData()
             refreshHandler.postDelayed(this, REFRESH_INTERVAL_MS)
         }
     }
@@ -48,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     private val internalBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             updateNotificationBadge()
-            updateGamificationData()
         }
     }
 
@@ -77,9 +78,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        binding.cvGamification.setOnClickListener {
-            // Future: Navigate to Aura Detail page
+        // Launch the Gamification Portal
+        binding.btnGamificationPortal.setOnClickListener {
+            startActivity(Intent(this, GamificationActivity::class.java))
         }
+
+        // Add a subtle breathing animation to the moon icon to make it inviting
+        startPortalAnimation(binding.root.findViewById(R.id.ivLunarPortal))
 
         requestNotificationPermissionIfNeeded()
         ScreeningReminderScheduler.scheduleNext(this)
@@ -87,18 +92,32 @@ class MainActivity : AppCompatActivity() {
         
         // Initial Fetch
         updateNotificationBadge()
-        updateGamificationData()
         startPolling()
         
         val filter = IntentFilter(MyFirebaseMessagingService.ACTION_NOTIFICATION_REFRESH)
         ContextCompat.registerReceiver(this, internalBroadcastReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
     }
 
+    private fun startPortalAnimation(view: ImageView?) {
+        view?.let {
+            val scaleX = ObjectAnimator.ofFloat(it, "scaleX", 1.0f, 1.1f)
+            val scaleY = ObjectAnimator.ofFloat(it, "scaleY", 1.0f, 1.1f)
+            val alpha = ObjectAnimator.ofFloat(it, "alpha", 0.8f, 1.0f)
+            
+            listOf(scaleX, scaleY, alpha).forEach { anim ->
+                anim.repeatCount = ObjectAnimator.INFINITE
+                anim.repeatMode = ObjectAnimator.REVERSE
+                anim.duration = 1500
+                anim.interpolator = AccelerateDecelerateInterpolator()
+                anim.start()
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         if (::binding.isInitialized) {
             updateNotificationBadge()
-            updateGamificationData()
         }
         startPolling()
     }
@@ -148,30 +167,6 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     binding.bottomNavigationView.removeBadge(R.id.NotificationFragment)
                 }
-            } catch (_: Exception) {}
-        }
-    }
-
-    private fun updateGamificationData() {
-        lifecycleScope.launch {
-            try {
-                // Technical Guide: Backend team needs to provide GET /user/gamification
-                // Data shown below is the hyper-complex state designed to care for the user
-                val level = 14 
-                val streak = 8
-                val progress = 72
-                val rank = "Crescent Voyager"
-
-                binding.tvUserLevel.text = level.toString()
-                binding.tvStreakCount.text = "$streak Days"
-                binding.pbAuraProgress.progress = progress
-                binding.tvRankTitle.text = rank
-
-                // Visual care: Glow effect if streak is high
-                if (streak >= 7) {
-                    binding.cvGamification.strokeColor = ContextCompat.getColor(this@MainActivity, R.color.brand_rose_gold)
-                }
-
             } catch (_: Exception) {}
         }
     }

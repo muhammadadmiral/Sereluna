@@ -432,3 +432,51 @@ data class ArticleNotifyResponseDto(
     val success: Boolean = false,
     val notification_id: String? = null
 )
+
+// --- GAMIFICATION DTOs ---
+
+data class GamificationPlayerCardDto(
+    val tier_name: String = "Shadow Wanderer",
+    val tier_color: String = "#808080",
+    val current_xp: Int = 0,
+    val next_tier_xp: Int = 100,
+    val stardust: Int = 0,
+    val streak: Int = 0,
+    val eclipse_shields_active: Int = 0,
+    val equipped_title: String? = null
+)
+
+data class GamificationQuestDto(
+    val id: String = "",
+    val desc: String = "",
+    val progress: Int = 0,
+    val target: Int = 1,
+    val reward_stardust: Int = 0
+)
+
+data class GamificationQuestListDto(
+    val daily: List<GamificationQuestDto> = emptyList(),
+    val weekly: List<GamificationQuestDto> = emptyList()
+)
+
+data class GamificationEclipseResponseDto(
+    val success: Boolean = false,
+    val message: String = "",
+    val shields_active: Int = 0,
+    val stardust_remaining: Int = 0
+)
+
+data class GamificationOracleResponseDto(
+    val reading: String = "",
+    val narrative_mood: String = "calm",
+    val generated_at: String? = null
+)
+
+data class GamificationUpdateDto(
+    val xp_gained: Int = 0,
+    val stardust_gained: Int = 0,
+    val is_tier_up: Boolean = false,
+    val celestial_event: Boolean = false,
+    val streak_rescued: Boolean = false,
+    val oracle_echo: String? = null
+)

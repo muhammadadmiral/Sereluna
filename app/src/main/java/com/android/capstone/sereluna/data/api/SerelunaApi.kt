@@ -192,4 +192,26 @@ interface SerelunaApi {
         @Header("Authorization") authorization: String,
         @Body request: ArticleNotifyRequestDto
     ): ArticleNotifyResponseDto
+
+    // --- GAMIFICATION ENDPOINTS ---
+
+    @GET("api/v1/gamification/player-card")
+    suspend fun getGamificationPlayerCard(
+        @Header("Authorization") authorization: String
+    ): GamificationPlayerCardDto
+
+    @GET("api/v1/gamification/quests")
+    suspend fun getGamificationQuests(
+        @Header("Authorization") authorization: String
+    ): GamificationQuestListDto
+
+    @POST("api/v1/gamification/eclipse")
+    suspend fun buyEclipseShield(
+        @Header("Authorization") authorization: String
+    ): GamificationEclipseResponseDto
+
+    @POST("api/v1/gamification/oracle")
+    suspend fun getOracleReading(
+        @Header("Authorization") authorization: String
+    ): GamificationOracleResponseDto
 }

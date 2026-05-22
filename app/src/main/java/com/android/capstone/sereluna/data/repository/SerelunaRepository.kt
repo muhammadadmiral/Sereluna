@@ -410,6 +410,24 @@ class SerelunaRepository(
         )
     }
 
+    // --- GAMIFICATION REPOSITORY METHODS ---
+
+    suspend fun getGamificationPlayerCard(): com.android.capstone.sereluna.data.api.GamificationPlayerCardDto {
+        return api.getGamificationPlayerCard(authHeader())
+    }
+
+    suspend fun getGamificationQuests(): com.android.capstone.sereluna.data.api.GamificationQuestListDto {
+        return api.getGamificationQuests(authHeader())
+    }
+
+    suspend fun buyEclipseShield(): com.android.capstone.sereluna.data.api.GamificationEclipseResponseDto {
+        return api.buyEclipseShield(authHeader())
+    }
+
+    suspend fun getOracleReading(): com.android.capstone.sereluna.data.api.GamificationOracleResponseDto {
+        return api.getOracleReading(authHeader())
+    }
+
     companion object {
         fun todayString(date: Date = Date()): String =
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)

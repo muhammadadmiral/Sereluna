@@ -58,6 +58,7 @@
         <activity android:name=".ui.article.ArticleDetailActivity" />
         <activity android:name=".ui.CalendarActivity" />
         <activity android:name=".ui.diary.ScreeningActivity" android:exported="false" />
+        <activity android:name=".ui.gamification.GamificationActivity" android:exported="false" />
 
         <!-- Firebase Cloud Messaging Service -->
         <service
