@@ -163,7 +163,13 @@ class ChatViewModel : ViewModel() {
                 _previousSummary.value = response.session_summary
 
                 if (response.reply.isNotBlank()) {
-                    addMessageToList(Chat(response.reply, "bot", true))
+                    addMessageToList(Chat(
+                        message = response.reply,
+                        senderId = "bot",
+                        isBot = true,
+                        riskLevel = response.clinical_insight.risk_level,
+                        suggestedAction = response.ui_metadata.suggested_action
+                    ))
                 } else {
                     _errorState.value = "Maaf, Sereluna sedang kehilangan fokus. Coba lagi ya."
                 }

@@ -7,5 +7,7 @@ data class Chat (
     val senderId: String,
     val isBot: Boolean,
     val status: String? = null,
-    val imageUri: Uri? = null
+    val imageUri: Uri? = null,
+    val riskLevel: String? = null,
+    val suggestedAction: String? = null
 )

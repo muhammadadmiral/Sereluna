@@ -164,17 +164,27 @@ class ChatbotActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        chatAdapter = ChatAdapter(emptyList()) { isRendering ->
-            isRenderingInProgress = isRendering
-            updateInputLockState()
-            if (!isRendering) {
-                binding.recyclerView.post {
-                    if (chatAdapter.itemCount > 0) {
-                        binding.recyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
+        chatAdapter = ChatAdapter(
+            chatList = emptyList(),
+            onRenderingStateChanged = { isRendering ->
+                isRenderingInProgress = isRendering
+                updateInputLockState()
+                if (!isRendering) {
+                    binding.recyclerView.post {
+                        if (chatAdapter.itemCount > 0) {
+                            binding.recyclerView.smoothScrollToPosition(chatAdapter.itemCount - 1)
+                        }
                     }
                 }
+            },
+            onDoctorCtaClick = {
+                val intent = Intent(this, com.android.capstone.sereluna.MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                intent.putExtra("OPEN_DOCTOR_FRAGMENT", true)
+                startActivity(intent)
+                finish()
             }
-        }
+        )
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@ChatbotActivity)
             adapter = chatAdapter

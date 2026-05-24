@@ -7,13 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.model.Chat
 import com.android.capstone.sereluna.ui.diary.TypingIndicatorDrawable
 
 class ChatAdapter(
     private var chatList: List<Chat>,
-    private val onRenderingStateChanged: (Boolean) -> Unit = {}
+    private val onRenderingStateChanged: (Boolean) -> Unit = {},
+    private val onDoctorCtaClick: () -> Unit = {}
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val MESSAGE_TYPE_USER = 0
@@ -71,6 +73,15 @@ class ChatAdapter(
                     holder.txtMessage.text = messageText
                     holder.txtMessage.alpha = 1f
                     holder.txtMessage.translationY = 0f
+                }
+                
+                val shouldShowDoctorCta = chat.riskLevel == "high" || chat.riskLevel == "critical" || chat.suggestedAction == "Buka menu Doctor"
+                if (shouldShowDoctorCta) {
+                    holder.btnDoctorCta.visibility = View.VISIBLE
+                    holder.btnDoctorCta.text = if (chat.riskLevel == "high" || chat.riskLevel == "critical") "Hubungi Psikolog" else "Lihat Daftar Psikolog"
+                    holder.btnDoctorCta.setOnClickListener { onDoctorCtaClick() }
+                } else {
+                    holder.btnDoctorCta.visibility = View.GONE
                 }
             }
         } else if (holder is UserViewHolder) {
@@ -155,6 +166,7 @@ class ChatAdapter(
     class BotViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtMessage: TextView = view.findViewById(R.id.tvMessage)
         val txtStatus: TextView = view.findViewById(R.id.tvStatus)
+        val btnDoctorCta: MaterialButton = view.findViewById(R.id.btnDoctorCta)
     }
 
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -1,5 +1,7 @@
 package com.android.capstone.sereluna.data.api
 
+import com.google.gson.annotations.SerializedName
+
 data class ChatRequestDto(
     val text: String,
     val room_id: String? = null,
@@ -502,4 +504,20 @@ data class GamificationUpdateDto(
     val celestial_event: Boolean = false,
     val streak_rescued: Boolean = false,
     val oracle_echo: String? = null
+)
+
+// --- DOCTOR DTOs ---
+
+data class DoctorListResponse(
+    val doctors: List<DoctorDto> = emptyList()
+)
+
+data class DoctorDto(
+    val id: String = "",
+    val name: String = "",
+    val specialty: String = "",
+    @SerializedName("whatsapp_number")
+    val whatsappNumber: String = "",
+    @SerializedName("image_url")
+    val imageUrl: String? = ""
 )

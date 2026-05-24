@@ -456,6 +456,10 @@ class SerelunaRepository(
         return api.getOracleReading(authHeader())
     }
 
+    suspend fun getDoctors(): com.android.capstone.sereluna.data.api.DoctorListResponse {
+        return api.getDoctors(authHeader())
+    }
+
     companion object {
         fun todayString(date: Date = Date()): String =
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)

@@ -96,6 +96,19 @@ class MainActivity : AppCompatActivity() {
         
         val filter = IntentFilter(MyFirebaseMessagingService.ACTION_NOTIFICATION_REFRESH)
         ContextCompat.registerReceiver(this, internalBroadcastReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+        
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra("OPEN_DOCTOR_FRAGMENT", false) == true) {
+            navController.navigate(R.id.doctorFragment)
+        }
     }
 
     private fun startPortalAnimation(view: ImageView?) {

@@ -237,4 +237,9 @@ interface SerelunaApi {
     suspend fun getOracleReading(
         @Header("Authorization") authorization: String
     ): GamificationOracleResponseDto
+
+    @GET("api/v1/doctors")
+    suspend fun getDoctors(
+        @Header("Authorization") authorization: String
+    ): DoctorListResponse
 }

@@ -1,25 +1,35 @@
 package com.android.capstone.sereluna.ui.main
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.android.capstone.sereluna.R
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.capstone.sereluna.data.adapter.DoctorAdapter
+import com.android.capstone.sereluna.data.api.DoctorDto
 import com.android.capstone.sereluna.databinding.FragmentDoctorBinding
-import com.android.capstone.sereluna.ui.diary.DiaryActivity
-import com.squareup.picasso.Picasso
+import com.android.capstone.sereluna.ui.viewmodel.DoctorViewModel
+import com.android.capstone.sereluna.ui.viewmodel.UiState
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class DoctorFragment : Fragment() {
 
     private var _binding: FragmentDoctorBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: DoctorViewModel by viewModels()
+    private lateinit var doctorAdapter: DoctorAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentDoctorBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -27,44 +37,74 @@ class DoctorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // You can load doctor information dynamically here
-        loadDoctorData()
+        setupRecyclerView()
+        setupObservers()
 
-        // Example handling click for cvDoctor1
-        binding.cvDoctor1.setOnClickListener {
-            // Handle Doctor 1 click event
-            // Example: Show DoctorDetailFragment or start DoctorActivity
-            // For now, let's open DiaryActivity as an example
-            val intent = Intent(requireContext(), DiaryActivity::class.java)
-            startActivity(intent)
+        viewModel.loadDoctors()
+    }
+
+    private fun setupRecyclerView() {
+        doctorAdapter = DoctorAdapter(emptyList()) { doctor ->
+            showWhatsAppConfirmation(doctor)
         }
-
-        binding.cvDoctor2.setOnClickListener {
-            // Handle Doctor 2 click event
-            // Example: Show DoctorDetailFragment or start DoctorActivity
-            // For now, let's open DiaryActivity as an example
-            val intent = Intent(requireContext(), DiaryActivity::class.java)
-            startActivity(intent)
+        binding.rvDoctors.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = doctorAdapter
         }
+    }
 
-        // Similarly, handle click events for other doctors (cvDoctor3, cvDoctor4, etc.)
-        // You can replace DiaryActivity with your specific doctor detail view or activity
+    private fun setupObservers() {
+        viewModel.doctors.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.rvDoctors.visibility = View.GONE
+                    binding.tvEmptyState.visibility = View.GONE
+                }
+                is UiState.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    if (state.data.isEmpty()) {
+                        binding.tvEmptyState.visibility = View.VISIBLE
+                        binding.rvDoctors.visibility = View.GONE
+                    } else {
+                        binding.tvEmptyState.visibility = View.GONE
+                        binding.rvDoctors.visibility = View.VISIBLE
+                        doctorAdapter.updateData(state.data)
+                    }
+                }
+                is UiState.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.tvEmptyState.visibility = View.VISIBLE
+                    binding.tvEmptyState.text = state.message
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun showWhatsAppConfirmation(doctor: DoctorDto) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Konsultasi Psikolog")
+            .setMessage("Kamu akan diarahkan ke WhatsApp untuk konsultasi dengan ${doctor.name}.")
+            .setPositiveButton("Lanjutkan") { _, _ ->
+                openWhatsApp(requireContext(), doctor.whatsappNumber, doctor.name)
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    private fun openWhatsApp(context: Context, number: String, doctorName: String) {
+        val cleanNumber = number.filter { it.isDigit() }
+        val message = Uri.encode(
+            "Halo, saya ingin konsultasi melalui Sereluna dengan $doctorName."
+        )
+        val url = "https://wa.me/$cleanNumber?text=$message"
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun loadDoctorData() {
-        // Example code to load doctor data (replace with your logic)
-        // You can load doctor names, images, etc., dynamically here
-        Picasso.get().load(R.drawable.doctor_icon).into(binding.ivDoctorIcon1)
-        binding.tvDoctorName1.text = "Doctor 1"
-
-        Picasso.get().load(R.drawable.doctor_icon).into(binding.ivDoctorIcon2)
-        binding.tvDoctorName2.text = "Doctor 2"
-
-        // Load data for other doctors similarly
     }
 }
