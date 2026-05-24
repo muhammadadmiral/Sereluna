@@ -100,14 +100,14 @@ class MainActivity : AppCompatActivity() {
         handleIntent(intent)
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleIntent(intent)
     }
 
     private fun handleIntent(intent: Intent?) {
         if (intent?.getBooleanExtra("OPEN_DOCTOR_FRAGMENT", false) == true) {
-            navController.navigate(R.id.doctorFragment)
+            navController.navigate(R.id.DoctorFragment)
         }
     }
 
