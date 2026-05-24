@@ -7,6 +7,9 @@ data class ChatRequestDto(
     val room_id: String? = null,
     val session_id: String? = null,
     val mood_signal: String? = "",
+    val client_timezone: String? = null,
+    val client_utc_offset: String? = null,
+    val client_local_datetime: String? = null,
     val mode: String? = "chat",
     val has_image: Boolean = false,
     val media_ids: List<String>? = null
@@ -171,6 +174,8 @@ data class DiaryEntryItemDto(
     val diary_id: String = "",
     val session_id: String = "",
     val date: String = "",
+    val title: String? = null,
+    val content: String? = null,
     val summary: String = "",
     val preview: String = "",
     val status: String = "",
@@ -190,6 +195,8 @@ data class DiaryDetailDto(
 data class DiarySessionDto(
     val id: String = "",
     val model: String = "",
+    val title: String? = null,
+    val content: String? = null,
     val summary: String = "",
     val start_time: String? = null,
     val end_time: String? = null

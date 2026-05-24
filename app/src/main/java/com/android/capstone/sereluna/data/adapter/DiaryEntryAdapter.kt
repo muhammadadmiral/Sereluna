@@ -9,6 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.capstone.sereluna.data.model.DiaryFeedItem
 import com.android.capstone.sereluna.databinding.ItemDiaryEntryBinding
 
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
 class DiaryEntryAdapter(
     private val onSeeMoreClick: (DiaryFeedItem) -> Unit
 ) : ListAdapter<DiaryFeedItem, DiaryEntryAdapter.ViewHolder>(DIFF_CALLBACK) {
@@ -29,14 +34,18 @@ class DiaryEntryAdapter(
             binding.tvEntryStatus.text = item.status.ifBlank { "session" }
             binding.tvEntryModel.text = item.model.ifBlank { "model" }
             binding.tvEntryTime.text = buildTimeText(item)
-            binding.tvEntrySummary.text = item.summary.ifBlank { item.preview }.ifBlank { "Tidak ada ringkasan." }
-            binding.tvEntryPreview.text = item.preview.ifBlank { item.summary }.ifBlank { "Tidak ada preview." }
+
+            val displayTitle = item.title?.takeIf { it.isNotBlank() } ?: item.summary.ifBlank { item.preview }.ifBlank { "Tidak ada ringkasan." }
+            val displayContent = item.content?.takeIf { it.isNotBlank() } ?: item.preview.ifBlank { item.summary }.ifBlank { "Tidak ada preview." }
+
+            binding.tvEntrySummary.text = displayTitle
+            binding.tvEntryPreview.text = displayContent
 
             val isExpanded = expandedStates.contains(item.id)
             updateExpandedState(isExpanded)
 
             binding.tvEntryToggle.visibility =
-                if ((item.summary.length + item.preview.length) > 120) View.VISIBLE else View.GONE
+                if ((displayTitle.length + displayContent.length) > 120) View.VISIBLE else View.GONE
 
             binding.tvEntryToggle.setOnClickListener {
                 onSeeMoreClick(item)
@@ -47,21 +56,28 @@ class DiaryEntryAdapter(
             if (isExpanded) {
                 binding.tvEntrySummary.maxLines = Int.MAX_VALUE
                 binding.tvEntryPreview.maxLines = Int.MAX_VALUE
-                binding.tvEntryToggle.text = "Buka detail"
+                binding.tvEntryToggle.setText(com.android.capstone.sereluna.R.string.buka_detail)
             } else {
                 binding.tvEntrySummary.maxLines = 4
                 binding.tvEntryPreview.maxLines = 3
-                binding.tvEntryToggle.text = "Lihat lebih lanjut"
+                binding.tvEntryToggle.setText(com.android.capstone.sereluna.R.string.lihat_lebih_lanjut)
             }
         }
 
         private fun buildTimeText(item: DiaryFeedItem): String {
-            val parts = listOfNotNull(item.startTime, item.endTime).filter { it.isNotBlank() }
-            return when {
-                parts.isEmpty() -> item.date
-                parts.size == 1 -> parts.first()
-                else -> "${parts.first()} - ${parts.last()}"
+            val timestamp = item.endTime?.takeIf { it.isNotBlank() }
+                ?: item.updatedAt?.takeIf { it.isNotBlank() }
+                ?: item.startTime?.takeIf { it.isNotBlank() }
+
+            if (timestamp != null) {
+                try {
+                    val local = OffsetDateTime.parse(timestamp).atZoneSameInstant(ZoneId.systemDefault())
+                    return local.format(DateTimeFormatter.ofPattern("HH:mm", Locale("id", "ID")))
+                } catch (_: Exception) {
+                    // Ignore and fallback
+                }
             }
+            return item.date
         }
     }
 

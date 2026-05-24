@@ -5,6 +5,8 @@ data class DiaryFeedItem(
     val diaryId: String = "",
     val sessionId: String = "",
     val date: String = "",
+    val title: String? = null,
+    val content: String? = null,
     val summary: String = "",
     val preview: String = "",
     val status: String = "",

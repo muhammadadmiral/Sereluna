@@ -73,6 +73,9 @@ class SerelunaRepository(
         hasImage: Boolean = false,
         mediaIds: List<String>? = null
     ): ChatResponseDto {
+        val zoneId = java.time.ZoneId.systemDefault()
+        val now = java.time.ZonedDateTime.now(zoneId)
+
         return api.chat(
             authorization = authHeader(),
             request = ChatRequestDto(
@@ -80,6 +83,9 @@ class SerelunaRepository(
                 room_id = roomId,
                 session_id = sessionId,
                 mood_signal = moodSignal,
+                client_timezone = zoneId.id,
+                client_utc_offset = now.offset.id,
+                client_local_datetime = now.format(java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME),
                 mode = "chat",
                 has_image = hasImage,
                 media_ids = mediaIds

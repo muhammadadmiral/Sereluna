@@ -41,6 +41,9 @@
     <string name="title_statistic">Statistic Kesehatan Mental</string>
     <string name="stats_placeholder">Statistik akan tampil di sini...</string>
 
+    <string name="buka_detail">Buka detail</string>
+    <string name="lihat_lebih_lanjut">Lihat lebih lanjut</string>
+
     <string name="terms_content" translatable="false"><![CDATA[
         <big><b>SYARAT DAN KETENTUAN PENGGUNAAN SERELUNA</b></big><br><br>
         <i>Terakhir Diperbarui: 21 Mei 2026</i><br><br>

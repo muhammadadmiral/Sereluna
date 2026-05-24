@@ -26,6 +26,10 @@ class DiaryActivity : AppCompatActivity() {
 
         setupRecyclerView()
         setupListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
         loadDiaries()
     }
 
@@ -37,6 +41,8 @@ class DiaryActivity : AppCompatActivity() {
                     putExtra(DiaryDetailActivity.EXTRA_DIARY_ID, item.diaryId)
                     putExtra(DiaryDetailActivity.EXTRA_SESSION_ID, item.sessionId)
                     putExtra(DiaryDetailActivity.EXTRA_DATE, item.date)
+                    putExtra(DiaryDetailActivity.EXTRA_TITLE, item.title)
+                    putExtra(DiaryDetailActivity.EXTRA_CONTENT, item.content)
                     putExtra(DiaryDetailActivity.EXTRA_SUMMARY, item.summary)
                     putExtra(DiaryDetailActivity.EXTRA_PREVIEW, item.preview)
                     putExtra(DiaryDetailActivity.EXTRA_STATUS, item.status)
@@ -72,6 +78,8 @@ class DiaryActivity : AppCompatActivity() {
                             diaryId = item.diary_id,
                             sessionId = item.session_id,
                             date = item.date,
+                            title = item.title,
+                            content = item.content,
                             summary = item.summary,
                             preview = item.preview,
                             status = item.status,
