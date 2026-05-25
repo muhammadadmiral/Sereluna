@@ -117,6 +117,36 @@ class GamificationActivity : AppCompatActivity() {
                     binding.vAuraInnerGlow.backgroundTintList = ColorStateList.valueOf(color)
                 } catch (_: Exception) {}
 
+                // Fetch and render quests
+                val questsDto = repository.getGamificationQuests()
+                binding.questsContainer.removeAllViews()
+
+                if (questsDto.daily.isEmpty()) {
+                    val emptyText = android.widget.TextView(this@GamificationActivity).apply {
+                        text = "Kamu sudah menyelesaikan semua misi hari ini! 🎉"
+                        setTextColor(Color.WHITE)
+                        alpha = 0.7f
+                        gravity = android.view.Gravity.CENTER
+                        setPadding(0, 16, 0, 16)
+                    }
+                    binding.questsContainer.addView(emptyText)
+                } else {
+                    questsDto.daily.forEach { quest ->
+                        val view = layoutInflater.inflate(R.layout.item_quest, binding.questsContainer, false)
+                        val tvDesc = view.findViewById<android.widget.TextView>(R.id.tvQuestDesc)
+                        val tvReward = view.findViewById<android.widget.TextView>(R.id.tvQuestReward)
+                        val pbProgress = view.findViewById<android.widget.ProgressBar>(R.id.pbQuestProgress)
+
+                        tvDesc.text = quest.desc
+                        tvReward.text = "+${quest.reward_stardust}"
+                        
+                        pbProgress.max = quest.target
+                        pbProgress.progress = quest.progress
+
+                        binding.questsContainer.addView(view)
+                    }
+                }
+
             } catch (e: Exception) {
                 // Fallback to "Gacor" UI state since API is still being built
                 val tierName = "CELESTIAL GUARDIAN"
@@ -147,6 +177,27 @@ class GamificationActivity : AppCompatActivity() {
                     binding.vAuraGlow.backgroundTintList = ColorStateList.valueOf(color)
                     binding.vAuraInnerGlow.backgroundTintList = ColorStateList.valueOf(color)
                 } catch (_: Exception) {}
+
+                // Fallback quests
+                binding.questsContainer.removeAllViews()
+                val dummyQuests = listOf(
+                    com.android.capstone.sereluna.data.api.GamificationQuestDto("1", "Tulis 200 kata di Diary", 100, 200, 50),
+                    com.android.capstone.sereluna.data.api.GamificationQuestDto("2", "Lakukan Skrining DASS-21", 0, 1, 100)
+                )
+                dummyQuests.forEach { quest ->
+                    val view = layoutInflater.inflate(R.layout.item_quest, binding.questsContainer, false)
+                    val tvDesc = view.findViewById<android.widget.TextView>(R.id.tvQuestDesc)
+                    val tvReward = view.findViewById<android.widget.TextView>(R.id.tvQuestReward)
+                    val pbProgress = view.findViewById<android.widget.ProgressBar>(R.id.pbQuestProgress)
+
+                    tvDesc.text = quest.desc
+                    tvReward.text = "+${quest.reward_stardust}"
+                    
+                    pbProgress.max = quest.target
+                    pbProgress.progress = quest.progress
+
+                    binding.questsContainer.addView(view)
+                }
             }
         }
     }
