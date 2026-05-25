@@ -15,6 +15,7 @@ import com.android.capstone.sereluna.R
 import com.android.capstone.sereluna.data.repository.SerelunaRepository
 import com.android.capstone.sereluna.databinding.ActivityGamificationBinding
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
 class GamificationActivity : AppCompatActivity() {
@@ -38,11 +39,26 @@ class GamificationActivity : AppCompatActivity() {
         }
 
         binding.btnOracle.setOnClickListener {
-            // Trigger cinematic Oracle Reading
-            Snackbar.make(binding.root, "Membuka koneksi ke Moon Oracle...", Snackbar.LENGTH_LONG)
+            binding.btnOracle.isEnabled = false
+            Snackbar.make(binding.root, "Membuka koneksi ke Moon Oracle...", Snackbar.LENGTH_SHORT)
                 .setBackgroundTint(Color.parseColor("#FFD700"))
                 .setTextColor(Color.parseColor("#150926"))
                 .show()
+
+            lifecycleScope.launch {
+                try {
+                    val response = repository.getOracleReading()
+                    MaterialAlertDialogBuilder(this@GamificationActivity)
+                        .setTitle("Pesan dari Moon Oracle")
+                        .setMessage(response.reading)
+                        .setPositiveButton("Tutup", null)
+                        .show()
+                } catch (e: Exception) {
+                    Snackbar.make(binding.root, "Gagal terhubung ke Moon Oracle", Snackbar.LENGTH_LONG).show()
+                } finally {
+                    binding.btnOracle.isEnabled = true
+                }
+            }
         }
     }
 
