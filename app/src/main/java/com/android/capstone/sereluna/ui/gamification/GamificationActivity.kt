@@ -91,11 +91,32 @@ class GamificationActivity : AppCompatActivity() {
     private fun loadGamificationData() {
         lifecycleScope.launch {
             try {
-                // Fetch actual data using the new API DTOs.
-                // For now, we will use the dummy data requested to showcase the UI immediately.
-                val dto = repository.getGamificationPlayerCard() 
+                val dto = repository.getGamificationPlayerCard()
+
+                binding.tvRankTitle.text = dto.tier_name.uppercase()
+                binding.tvEquippedTitle.text = dto.equipped_title ?: "Novice Explorer"
+                binding.tvLevel.text = (dto.current_xp / 100).toString() // Simplified level calculation
                 
-                binding.tvLevel.text = dto.current_xp.toString() // Fallback if API is live
+                val nextXp = dto.next_tier_xp
+                binding.tvXp.text = "${dto.current_xp} / $nextXp XP"
+                
+                val progress = if (nextXp > 0) ((dto.current_xp.toFloat() / nextXp.toFloat()) * 100).toInt() else 100
+                binding.pbLevelProgress.progress = progress
+                
+                binding.tvStreak.text = dto.streak.toString()
+                binding.tvStardust.text = dto.stardust.toString()
+                binding.tvShields.text = dto.eclipse_shields_active.toString()
+
+                // Apply dynamic color mapping
+                try {
+                    val color = Color.parseColor(dto.tier_color)
+                    binding.tvRankTitle.setTextColor(color)
+                    binding.tvLevel.setTextColor(color)
+                    binding.pbLevelProgress.progressTintList = ColorStateList.valueOf(color)
+                    binding.vAuraGlow.backgroundTintList = ColorStateList.valueOf(color)
+                    binding.vAuraInnerGlow.backgroundTintList = ColorStateList.valueOf(color)
+                } catch (_: Exception) {}
+
             } catch (e: Exception) {
                 // Fallback to "Gacor" UI state since API is still being built
                 val tierName = "CELESTIAL GUARDIAN"
@@ -104,10 +125,11 @@ class GamificationActivity : AppCompatActivity() {
                 val currentXp = 4500
                 val nextXp = 5000
                 val stardust = "1,250"
-                val streak = "14 Days"
-                val shields = "1 Active"
+                val streak = "14"
+                val shields = "1"
 
                 binding.tvRankTitle.text = tierName
+                binding.tvEquippedTitle.text = "Master of the Moon"
                 binding.tvLevel.text = level.toString()
                 binding.tvXp.text = "$currentXp / $nextXp XP"
                 binding.tvStardust.text = stardust
@@ -117,13 +139,13 @@ class GamificationActivity : AppCompatActivity() {
                 val progress = ((currentXp.toFloat() / nextXp.toFloat()) * 100).toInt()
                 binding.pbLevelProgress.progress = progress
 
-                // Apply dynamic color mapping
                 try {
                     val color = Color.parseColor(tierColorHex)
                     binding.tvRankTitle.setTextColor(color)
                     binding.tvLevel.setTextColor(color)
                     binding.pbLevelProgress.progressTintList = ColorStateList.valueOf(color)
                     binding.vAuraGlow.backgroundTintList = ColorStateList.valueOf(color)
+                    binding.vAuraInnerGlow.backgroundTintList = ColorStateList.valueOf(color)
                 } catch (_: Exception) {}
             }
         }
