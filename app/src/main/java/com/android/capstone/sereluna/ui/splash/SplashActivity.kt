@@ -30,22 +30,37 @@ class SplashActivity: AppCompatActivity() {
         // Apply dark mode based on saved preference
         DarkModePrefUtil.applySavedMode(this)
 
+        // Initialize Firebase early to avoid crash in ViewModel/Repository
+        try {
+            FirebaseApp.initializeApp(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupObservers()
+        // Check if Firebase is available before proceeding to setup observers/ViewModel
+        val isFirebaseAvailable = try {
+            FirebaseApp.getInstance()
+            true
+        } catch (e: Exception) {
+            false
+        }
 
-        val firebaseApp = FirebaseApp.initializeApp(this)
-        if (firebaseApp == null) {
+        if (!isFirebaseAvailable) {
             Toast.makeText(
                 this,
                 "Firebase config belum tersedia. Tambahkan app/google-services.json lokal.",
                 Toast.LENGTH_LONG
             ).show()
+            // Optional: show some error UI or button to retry/exit
             return
         }
 
-        val auth = FirebaseAuth.getInstance(firebaseApp)
+        setupObservers()
+
+        val auth = FirebaseAuth.getInstance()
         if (auth.currentUser != null && AuthSessionManager.isSessionValid(this)) {
             fetchInitialData()
         } else if (auth.currentUser != null && !AuthSessionManager.isSessionValid(this)) {
