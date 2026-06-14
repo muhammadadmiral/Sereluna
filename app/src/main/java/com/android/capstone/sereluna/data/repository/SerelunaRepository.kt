@@ -61,7 +61,7 @@ class SerelunaRepository(
 ) {
     private suspend fun authHeader(): String {
         val user = auth.currentUser ?: error("User belum login")
-        val token = user.getIdToken(false).await().token ?: error("Firebase ID token kosong")
+        val token = user.getIdToken(true).await().token ?: error("Firebase ID token kosong")
         return "Bearer $token"
     }
 
